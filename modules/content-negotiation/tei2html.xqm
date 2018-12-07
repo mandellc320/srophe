@@ -148,35 +148,14 @@ declare function tei2html:summary-view($nodes as node()*, $lang as xs:string?, $
     let $title := if($nodes/descendant-or-self::tei:title[@syriaca-tags='#syriaca-headword'][@xml:lang='en']) then 
                     $nodes/descendant-or-self::tei:title[@syriaca-tags='#syriaca-headword'][@xml:lang='en'][1]/text()
                   else $nodes/descendant-or-self::tei:title[1]/text()
-    let $series := for $a in distinct-values($nodes/descendant::tei:seriesStmt/tei:biblScope/tei:title)
-                   return $a
     return 
         <div class="short-rec-view">
             <div>{string($nodes/@sort)}</div>
-            <a href="{replace($id,$config:base-uri,$config:nav-base)}" dir="ltr">{$title}</a>
-            <button type="button" class="btn btn-sm btn-default copy-sm clipboard"  
-                data-toggle="tooltip" title="Copies record title &amp; URI to clipboard." 
-                data-clipboard-action="copy" data-clipboard-text="{normalize-space($title[1])} - {normalize-space($id[1])}">
-                    <span class="glyphicon glyphicon-copy" aria-hidden="true"/>
-            </button>
-            {if($series != '') then <span class="results-list-desc type" dir="ltr" lang="en">{(' (',$series,') ')}</span> else ()}
-            {if($nodes/descendant-or-self::*[starts-with(@xml:id,'abstract')]) then 
-                for $abstract in $nodes/descendant::*[starts-with(@xml:id,'abstract')]
-                let $string := string-join($abstract/descendant-or-self::*/text(),' ')
-                let $blurb := 
-                    if(count(tokenize($string, '\W+')[. != '']) gt 25) then  
-                        concat(string-join(for $w in tokenize($string, '\W+')[position() lt 25]
-                        return $w,' '),'...')
-                     else $string 
-                return 
-                    <span class="results-list-desc desc" dir="ltr" lang="en">{
-                        if($abstract/descendant-or-self::tei:quote) then concat('"',normalize-space($blurb),'"')
-                        else $blurb
-                    }</span>
-            else()}
+            <!--<a href="{replace($id,$config:base-uri,$config:nav-base)}" dir="ltr">{$title}</a>-->
+            {bibl2html:citation($nodes/descendant::tei:sourceDesc/tei:biblStruct)}
             {
             if($id != '') then 
-            <span class="results-list-desc uri"><span class="srp-label">URI: </span><a href="{replace($id,$config:base-uri,$config:nav-base)}">{$id}</a></span>
+            <span class="results-list-desc uri">View: <a href="{$config:nav-base}/work/{replace($id,$config:base-uri,$config:nav-base)}">HTML</a> | <a href="{replace($id,$config:base-uri,$config:nav-base)}.xml">XML</a></span>
             else()
             }
         </div>   

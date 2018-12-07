@@ -45,25 +45,22 @@ let $list :=
 return 
 if($list != '') then 
     if($config:get-access-config/descendant::contact[@listID =  $list]) then 
-        for $contact in $config:get-access-config/descendant::contact[@listID =  $list]/child::*[not(local-name(.) = 'from')]
+        for $contact in $config:get-access-config/descendant::contact[@listID =  $list]/child::*
         return element { fn:local-name($contact) } {$contact/text()}
     else 
-        for $contact in $config:get-access-config/descendant::contact[1]/child::*[not(local-name(.) = 'from')]
+        for $contact in $config:get-access-config/descendant::contact[1]/child::*
         return element { fn:local-name($contact) } {$contact/text()}
 else 
-    for $contact in $config:get-access-config/descendant::contact[1]/child::*[not(local-name(.) = 'from')]
+    for $contact in $config:get-access-config/descendant::contact[1]/child::*
     return 
          element { fn:local-name($contact) } {$contact/text()}
 };
 
 declare function local:build-message(){
 let $rec-uri := if(request:get-parameter('id','')) then concat('for ',request:get-parameter('id','')) else ()
-let $from := if($config:get-access-config//*:contact[not(@listID)]//*:from) then
-               concat('&lt;',$config:get-access-config//*:contact[not(@listID)]//*:from[1]//text(),'&gt;')
-             else concat('&lt;',$config:get-access-config//*:contact[not(@listID)]/child::*[1]//text(),'&gt;')
 return
     <mail>
-    <from>{$config:app-title} &#160;{$from}</from>
+    <from>{$config:app-title} &#160;{concat('&lt;',$config:get-access-config//*:contact[not(@listID)]/child::*[1]//text(),'&gt;')}</from>
     {local:email-list()}
     <subject>{request:get-parameter('subject','')}&#160; {$rec-uri}</subject>
     <message>
@@ -90,7 +87,7 @@ let $smtp := if($config:get-access-config//*:smtp/text() != '') then $config:get
 return 
     if(exists(request:get-parameter('email','')) and request:get-parameter('email','') != '')  then 
         if(exists(request:get-parameter('comments','')) and request:get-parameter('comments','') != '') then 
-          if($secret-key != '') then
+            if($secret-key != '') then
                 if(local:recaptcha() = true()) then 
                    let $mail := local:build-message()
                    return 
@@ -105,6 +102,6 @@ return
                     if(mail:send-email($mail,$smtp, ()) ) then
                        <h4>Thank you. Your message has been sent.</h4>
                     else
-                       <h4>Could not send message.</h4>      
+                       <h4>Could not send message.</h4>
         else  <h4>Incomplete form.</h4>
    else  <h4>Incomplete form.</h4>

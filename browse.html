@@ -2,7 +2,7 @@
 <div xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
     <div class="container top-padding">
         <h1>Browse</h1>
-        <p class="indent">Listings of records.</p>
+        <p class="indent">Listings of works.</p>
         <div data-template="browse:get-all" data-template-element="tei:titleStmt/tei:title[@level='a']">
         <!-- Example limits data to places collection, see example entry in repo-config.xml -->    
 <!--        <div data-template="browse:get-all" data-template-collection="places">-->
@@ -11,15 +11,6 @@
                 <ul class="nav nav-tabs" id="nametabs">
                     <li>
                         <a href="browse.html" default="default">All</a>
-                    </li>
-                    <li>
-                        <a href="browse.html?alpha-filter-value=A&amp;element=tei:place/tei:placeName">Places</a>
-                    </li>
-                    <li>
-                        <a href="browse.html?alpha-filter-value=A&amp;element=tei:person/tei:persName">Persons</a>
-                    </li>
-                    <li>
-                        <a href="browse.html?view=map">Map</a>
                     </li>
                 </ul>
                 <!-- Browse Content -->

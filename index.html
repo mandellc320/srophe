@@ -1,48 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<div xmlns="http://www.w3.org/1999/xhtml" xmlns:xi="http://www.w3.org/2001/XInclude" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
-    <xi:include href="banner.html"/>
-    <div class="container top-padding">
-        <h1>About the Application</h1>
+<div xmlns="http://www.w3.org/1999/xhtml" xmlns:xi="http://www.w3.org/2001/XInclude" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">    
+    <div class="container home-page">
         <div class="row">
-            <div class="col-md-8">
-                <p>The Srophé Application is an open source TEI publishing framework. Originally developed as a 
-                    digital publication platform for Syriaca.org [<a href="http://syriaca.org/">http://syriaca.org/</a>] the 
-                    Srophé software has been generalized for use with any TEI publications. 
-                </p>
-                <p>   
-                    The software features multilingual browse and search options, faceted search and browse, maps, 
-                    RDF integration and more. 
-                </p>
-                <h4>Features of the application:</h4>
-                <ul>
-                    <li>Browse</li>
-                    <li>Search</li>
-                    <li>Facets</li>
-                    <li>Maps (Google or Leafletjs)</li>
-                    <li>Timelines (https://timeline.knightlab.com/)</li>
-                    <li>D3js visualizations</li>
-                    <li>Content Negotiation module
-                        <ul>
-                            <li>HTML</li>
-                            <li>TEI</li>
-                            <li>geoJSON/KML</li>
-                            <li>JSONLD</li>
-                            <li>RDF/XML</li>
-                            <li>RDF/TTL</li>
-                            <li>Atom</li>
-                            <li>PDF</li>
-                            <li>Plain text</li>
-                        </ul>
-                    </li>
-                </ul>
+            <div class="col-md-5 col-md-offset-7 home-page-text">
+                <br/>
+                <h2>Welcome</h2>
                 <p>
-                    <a href="https://github.com/srophe/srophe/wiki">Read the documentation.</a>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce cursus urna scelerisque ipsum maximus, et tristique justo sollicitudin. Aenean elementum porttitor efficitur. Proin id lorem pulvinar, volutpat ex et, tempor leo. Sed sit amet dapibus felis. Nunc interdum quam ut lectus euismod efficitur. Nunc ac imperdiet eros. Ut id vulputate risus. Curabitur eu consequat purus, sit amet pulvinar massa.
                 </p>
+                <p>
+                    Sed rhoncus quam eget porta tristique. Donec cursus lacus sit amet magna mollis interdum. Fusce id tortor mauris. Etiam convallis ipsum eu leo ullamcorper dictum. Ut pellentesque risus eget lectus convallis, at congue nunc malesuada. Mauris et purus sollicitudin, blandit dui eu, aliquam eros. Donec felis massa, imperdiet at volutpat a, hendrerit vel justo. In tellus libero, mollis at justo ac, mattis imperdiet lorem. Praesent vitae tempor sem, a rutrum quam. Aliquam neque leo, tristique ac vehicula eu, consequat ut turpis.
+                </p>
+                <span>
+                    <a href="about.html" class="btn btn-default">Read more </a>
+                </span>
             </div>
-            <div class="col-md-4">
-                <h4>Application Info</h4>
-                <div data-template="config:app-info"/>
-            </div>
+            <span class="img-credit">
+                <label>Image Credit:</label> Poetess LACMA M.2006.136.76 (1 of 2) 
+                <button class="btn btn-link white-link" data-toggle="collapse" data-target="#img-rights">
+                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"/>
+                </button>
+                <div id="img-rights" class="collapse">
+                    Los Angeles County Museum of Art [Public domain] see <a href="https://commons.wikimedia.org/wiki/File:Poetess_LACMA_M.2006.136.76_(1_of_2).jpg">https://commons.wikimedia.org/wiki/File:Poetess_LACMA_M.2006.136.76_(1_of_2).jpg</a>
+                </div>
+            </span>
         </div>
     </div>
 </div>

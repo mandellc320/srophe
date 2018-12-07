@@ -29,7 +29,7 @@
 .banner-container {display:inline-block; line-height:2.5em;}
 .banner-text {color: #888; display:inline-block; margin-top:-.95em; vertical-align: middle; letter-spacing: -1px; font:1.35em Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;}
 .banner-icon img{height:40px; overflow:hidden; padding-left: 1em; vertical-align: middle; margin:-.25em .5em 0 .5em; padding:0;}
-body {font-family: arial, sans-serif; background-color:white;}
+body {font-family: arial, sans-serif; background-color:#white;}
 /* browse menus*/
 .browse-alpha {border-bottom:1px solid #ccc; padding:.5em 1em; margin:1em 0; text-align: justify;}
 .browse-alpha li + li {padding-left: .75em;}
@@ -63,6 +63,7 @@ code.inline{
     white-space: -o-pre-wrap;    /* Opera 7 */
     word-wrap: break-word;       /* Internet Explorer 5.5+ */
 	}
+
 /* D */
 dt {
 	margin-top: 1.5em;
@@ -92,22 +93,6 @@ footer .poweredby img { width: 120px; }
 /* I */
 .indent {margin-left: 1em;}
 img{ margin:0px }
-.img-credit{
-    position:absolute;
-    bottom:0;
-    right:0;
-    width:100%;
-    text-align:right;
-    font-size: smaller;
-    font-weight:200;
-    background: rgb(34,34,34); /* for IE */
-    background: rgba(34,34,34,0.55);
-    color: white; 
-    display: inline;
-    padding: 0.5em;
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
-}
 
 /* K */
 .keboard-btn {margin-left:-1em;}
@@ -148,6 +133,7 @@ img{ margin:0px }
 }
 
 /* M */
+#main_content {margin:4em; padding-top:2em;}
 .map-lg #map {height:500px !important;}
 .map-md #map {height:300px !important;}
 .map-sm #map {height:250px !important;}

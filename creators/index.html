@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<div xmlns="http://www.w3.org/1999/xhtml" xmlns:xi="http://www.w3.org/2001/XInclude" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
+    <div class="image-banner">
+    <span class="img-credit">
+        <label>Photo Credit</label>  
+        <button class="btn btn-link white-link" data-toggle="collapse" data-target="#img-rights">
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"/>
+        </button>
+        <div id="img-rights" class="collapse">
+            Hosoda Eisui, <em>Poetess</em>. circa 1800. Los Angeles County Museum of Art [Public domain] see <a href="https://commons.wikimedia.org/wiki/File:Poetess_LACMA_M.2006.136.76_(1_of_2).jpg">https://commons.wikimedia.org/wiki/File:Poetess_LACMA_M.2006.136.76_(1_of_2).jpg</a>
+        </div>
+    </span>
+</div>
+    <div>
+        <div data-template="search:search-data" data-template-collection="creators">
+        <div class="row">
+            <div class="col-md-9 right-menu">
+                <div class="introduction">
+                    <h1>Authors</h1>
+                    <p>Our search buttons on the right offer to sort by "Author or Creator." By "creators," we mean not simply authors of texts (criticism, poetry, essays, books), but also editors, publishers, painters, engravers, and even architects.  Sometimes pictures of the latters' buildings were engraved as plates in literary annuals.  This page will automatically give you creators listed alphabetically by type. You may limit or further organize your search, if you wish, using buttons on the right. Anonymous productions appear at the end of this list. </p>
+                </div>
+                <div class="results browse-authors">
+                    <div data-template="search:group-by-author">
+                        <!-- Need alpha menu and pagint? but not results?  -->
+                        <!--<div data-template="app:pageination" data-template-search-string="yes" data-template-sort-options="author,title,pubDate,pubPlace,relevance"/>-->
+                        <div data-template="search:author-menu" data-template-sort-options="author,title,pubDate,pubPlace,relevance"/>
+                        <div data-template="search:show-authors" data-template-collection="creators" data-template-kwic="yes"/>    
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <h2>Search Options</h2>
+                <div class="indent">
+                    <form action="" method="get" title="Limit Search Results">
+                        <label for="keyword" class="control-label">Search Authors: </label>
+                        <div class="input-group">
+                            <input type="text" class="form-control keyboard" placeholder="search" name="author" id="author"/>
+                            <div class="input-group-btn">
+                                <button class="btn btn-default" type="submit" data-toggle="tooltip" title="Enter a search term" placeholder="Enter a search term">
+                                    <span class="glyphicon glyphicon-search"/>
+                                </button>
+                            </div>
+                        </div>
+                        <input type="checkbox" name="details" value="true"/> Include Work Detail<br/>
+                    
+                    <h3>Limit results:</h3>  
+                    <div class="indent">
+                        <div data-template="app:display-facets" data-template-collection="creators"/>
+                    </div>
+                    
+                    <br/>
+                    <hr/>
+                        <button class="btn btn-default" type="submit" data-toggle="tooltip" title="Enter a search term" placeholder="Enter a search term">
+                            <span class="glyphicon glyphicon-search"/> Search
+                        </button>
+                        <a href="index.html" class="btn btn-default">Reset</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>

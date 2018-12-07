@@ -126,14 +126,15 @@ declare function facet:group-by-range($results as item()*, $facet-definitions as
 declare function facet:group-by-array($results as item()*, $facet-definitions as element(facet:facet-definition)?){
     let $path := concat('$results/',$facet-definitions/facet:group-by/facet:sub-path/text()) 
     let $sort := $facet-definitions/facet:order-by
-    let $d := tokenize(string-join(util:eval($path),' '),' ')
+    let $results := util:eval($path)
+    let $d := tokenize(string-join($results,' '),' ')
     for $f in $d
     group by $facet-grp := tokenize($f,' ')
     order by 
         if($sort/text() = 'value') then $f[1]
         else count($f)
         descending
-    return <key xmlns="http://expath.org/ns/facet" count="{count($f)}" value="{$facet-grp}" label="{$facet-grp}"/>
+    return <key xmlns="http://expath.org/ns/facet" count="{count($f)}" value="{$facet-grp}" label="{facet:controlled-labels($results[1], $facet-grp)}"/>
 };
 
 (:~
@@ -174,16 +175,17 @@ declare function facet:type($value as item()*, $type as xs:string?) as item()*{
 :)
 declare function facet:facet-filter($facet-definitions as node()*)  as item()*{
     if($facet:fq != '') then 
-       string-join(
-        for $facet in tokenize($facet:fq,';fq-')
-        let $facet-name := substring-before($facet,':')
-        let $facet-value := normalize-space(substring-after($facet,':'))
+      string-join(
+        for $facet-param in tokenize($facet:fq,';fq-')
+        let $facet-name := substring-before($facet-param,':')
+        let $facet-value := normalize-space(substring-after($facet-param,':'))
         return 
             for $facet in $facet-definitions/descendant-or-self::facet:facet-definition[@name = $facet-name]
             let $path := 
                          if(matches($facet/descendant::facet:sub-path/text(), '^/@')) then concat('descendant::*/',substring($facet/descendant::facet:sub-path/text(),2))
                          else $facet/descendant::facet:sub-path/text()                
             return 
+            
                 if($facet-value != '') then 
                     if($facet/facet:range) then
                         if($facet/facet:range/facet:bucket[@name = $facet-value]/@lt and $facet/facet:range/facet:bucket[@name = $facet-value]/@lt != '') then
@@ -194,7 +196,7 @@ declare function facet:facet-filter($facet-definitions as node()*)  as item()*{
                     else if($facet/facet:group-by[@function="facet:group-by-array"]) then 
                         concat('[',$path,'[matches(., "',$facet-value,'(\W|$)")]',']')                     
                     else concat('[',$path,'[normalize-space(.) = "',replace($facet-value,'"','""'),'"]',']')
-                else()
+                else ()
         ,'')
     else  ()   
 };
@@ -276,7 +278,7 @@ return
                     if($facet:fq) then concat('fq=',$facet:fq,$facet-query)
                     else concat('fq=',normalize-space($facet-query))
                 let $active := if(contains($facet:fq,concat(';fq-',string($f/@name),':',string($key/@value)))) then 'active' else ()    
-                return <a href="?{$new-fq}{facet:url-params()}" class="facet-label {$active}">{string($key/@label)} <span class="count"> ({string($key/@count)})</span></a> 
+                return <a href="?{replace($new-fq,'#','%23')}{facet:url-params()}" class="facet-label {$active}">{string($key/@label)} <span class="count"> ({string($key/@count)})</span></a> 
                 }
             </div>
             <div class="facet-list collapse" id="{concat('show',replace(string($f/@name),' ',''))}">{
@@ -285,7 +287,7 @@ return
                 let $new-fq := 
                     if($facet:fq) then concat('fq=',$facet:fq,$facet-query)
                     else concat('fq=',$facet-query)
-                return <a href="?{$new-fq}{facet:url-params()}" class="facet-label">{string($key/@label)} <span class="count"> ({string($key/@count)})</span></a>
+                return <a href="?{replace($new-fq,'#','%23')}{facet:url-params()}" class="facet-label">{string($key/@label)} <span class="count"> ({string($key/@count)})</span></a>
                 }
             </div>
             {if($count gt ($f/@show - 1)) then 
@@ -296,4 +298,14 @@ return
     </div>
     else()
 )    
+};
+
+(: Poetess specific functions :)
+(: Translate labels begining with # to a matching category with matching xml:id :)
+declare function facet:controlled-labels($result, $label) {
+   if(starts-with($label,'#')) then 
+        let $id := substring-after($label,'#')
+        let $text-lable := $result/ancestor-or-self::tei:TEI/descendant::*[@xml:id = $id]//text()
+        return $text-lable
+   else $label
 };

@@ -46,8 +46,9 @@ let $pagination-links :=
             if($search-string = ('yes','Yes')) then  
                 if(page:display-search-params($collection) != '') then 
                 <div class="col-sm-5 search-string">
-                    <h3 class="hit-count paging">Search results: </h3>
-                    <p class="col-md-offset-1 hit-count">{$total-result-count} matches for {page:display-search-params($collection)} </p>
+                    <!--<h3 class="hit-count paging">Search results: </h3>-->
+                    <h4 class="col-md-offset-1 hit-count" style="padding-top:.75em;">{$total-result-count} results for {page:display-search-params($collection)} </h4>
+                    <!--
                     <p class="col-md-offset-1 hit-count note small">
                         You may wish to expand your search by using wildcard characters to increase results. See  
                         <a href="#" data-toggle="collapse" data-target="#searchTips">search tips</a> for more details.
@@ -62,9 +63,9 @@ let $pagination-links :=
                                 doc($search-config)//*:search-tips
                             else ()
                         }
-                    </div>
+                    </div>-->
                  </div>
-                else ()
+                else <div class="col-sm-5 search-string"><h4 class="col-md-offset-1 hit-count" style="padding-top:.75em;">Results {$total-result-count}</h4></div>
              else ()
              }
             <div>
@@ -100,7 +101,7 @@ let $pagination-links :=
                         else(),
                         <li><a href="{concat($param-string,'1&amp;perpage=',$total-result-count)}">All</a></li>,
                         if($search-string != '') then
-                            <li class="pull-right search-new"><a href="search.html"><span class="glyphicon glyphicon-search"/> New</a></li>
+                            <li class="pull-right search-new"><a href="{request:get-uri()}"><span class="glyphicon glyphicon-search"/> New</a></li>
                         else ()    
                         )}
                 </ul>
@@ -110,7 +111,7 @@ let $pagination-links :=
                     if($sort-options != '') then page:sort($param-string, $start, $sort-options)
                     else(),
                     if($search-string = ('yes','Yes')) then   
-                        <li class="pull-right"><a href="search.html" class="clear-search"><span class="glyphicon glyphicon-search"/> New</a></li>
+                        <li class="pull-right"><a href="{request:get-uri()}" class="clear-search"><span class="glyphicon glyphicon-search"/> New</a></li>
                     else() 
                     )}
                 </ul>
@@ -138,8 +139,9 @@ declare function page:sort($param-string as xs:string?, $start as xs:integer?, $
                     <li role="presentation">
                         <a role="menuitem" tabindex="-1" href="{concat(replace($param-string,'&amp;sort-element=(\w+)', ''),$start,'&amp;sort-element=',$option)}" id="rel">
                             {
-                                if($option = 'pubDate' or $option = 'persDate') then 'Date'
-                                else if($option = 'pubPlace') then 'Place of publication'
+                                if($option = 'pubDate' or $option = 'persDate') then 'Year Published'
+                                else if($option = 'persDate') then 'Date'
+                                else if($option = 'pubPlace') then 'Place of Publication'
                                 else functx:capitalize-first($option)
                             }
                         </a>
@@ -156,7 +158,7 @@ declare function page:sort($param-string as xs:string?, $start as xs:integer?, $
  : Filters out $start, $sort-element and $perpage parameters. 
 :)
 declare function page:display-search-params($collection as xs:string?){
-<span xmlns="http://www.w3.org/1999/xhtml">: 
+<span xmlns="http://www.w3.org/1999/xhtml">
 {(
     let $parameters :=  request:get-parameter-names()
     for  $parameter in $parameters

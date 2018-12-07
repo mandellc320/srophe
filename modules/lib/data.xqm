@@ -81,7 +81,7 @@ declare function data:element-filter($element as xs:string?) as xs:string? {
 declare function data:build-collection-path($collection as xs:string?) as xs:string?{  
     let $collection-path := 
             if(config:collection-vars($collection)/@data-root != '') then concat('/',config:collection-vars($collection)/@data-root)
-            else if($collection != '') then concat('/',$collection)
+            (:else if($collection != '') then concat('/',$collection):)
             else ()
     let $get-series :=  
             if(config:collection-vars($collection)/@collection-URI != '') then string(config:collection-vars($collection)/@collection-URI)
@@ -103,7 +103,7 @@ declare function data:get-records($collection as xs:string*, $element as xs:stri
         if(request:get-parameter('sort', '') != '') then request:get-parameter('sort', '') 
         else if(request:get-parameter('sort-element', '') != '') then request:get-parameter('sort-element', '')
         else ()     
-    let $eval-string := concat(data:build-collection-path($collection),
+    let $eval-string := concat(data:build-collection-path($collection),data:create-query($collection),
                 facet:facet-filter(global:facet-definition-file($collection)),
                 data:element-filter($element))    
     let $hits := util:eval($eval-string)
@@ -151,7 +151,7 @@ declare function data:search($collection as xs:string*, $queryString as xs:strin
         else 
             for $hit in util:eval($eval-string)
             order by ft:score($hit) descending
-            return $hit/ancestor-or-self::tei:TEI 
+            return $hit/ancestor-or-self::tei:TEI
 };
 
 (:~   
@@ -181,21 +181,35 @@ declare function data:create-query($collection as xs:string?) as xs:string?{
 :)
 declare function data:add-sort-options($hit, $sort-option as xs:string*){
     if($sort-option != '') then
-        if($sort-option = 'title') then 
-            global:build-sort-string($hit/descendant::tei:titleStmt/tei:title[1],request:get-parameter('lang', ''))
+        if($sort-option = 'title') then
+            if($hit/descendant::tei:teiHeader/descendant::tei:biblStruct) then 
+                global:build-sort-string($hit/descendant::tei:teiHeader/descendant::tei:biblStruct[1]/descendant-or-self::tei:title[1],request:get-parameter('lang', ''))
+            else global:build-sort-string($hit/descendant::tei:titleStmt/tei:title[1],request:get-parameter('lang', ''))
         else if($sort-option = 'author') then 
-            if($hit/descendant::tei:titleStmt/tei:author[1]) then 
+            if($hit/descendant::tei:teiHeader/descendant::tei:biblStruct) then
+                if($hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:author[1]/descendant-or-self::tei:surname) then 
+                    $hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:author[1]/descendant-or-self::tei:surname[1]
+                else string-join($hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:author[1],'')
+            else if($hit/descendant::tei:titleStmt/tei:author[1]) then 
                 if($hit/descendant::tei:titleStmt/tei:author[1]/descendant-or-self::tei:surname) then 
                     $hit/descendant::tei:titleStmt/tei:author[1]/descendant-or-self::tei:surname[1]
-                else $hit//descendant::tei:author[1]
+                else string-join($hit//descendant::tei:author[1],'')
             else 
                 if($hit/descendant::tei:titleStmt/tei:editor[1]/descendant-or-self::tei:surname) then 
                     $hit/descendant::tei:titleStmt/tei:editor[1]/descendant-or-self::tei:surname[1]
                 else $hit/descendant::tei:titleStmt/tei:editor[1]
         else if($sort-option = 'pubDate') then 
-            $hit/descendant::tei:teiHeader/descendant::tei:imprint[1]/descendant-or-self::tei:date[1]
+            if($hit/descendant::tei:teiHeader/descendant::tei:biblStruct) then
+                if($hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:imprint/descendant-or-self::tei:date[1]) then 
+                    $hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:imprint/descendant-or-self::tei:date[1]
+                else $hit/descendant::tei:teiHeader[1]/descendant::tei:imprint[1]/descendant-or-self::tei:date[1]
+            else $hit/descendant::tei:teiHeader[1]/descendant::tei:imprint[1]/descendant-or-self::tei:date[1]
         else if($sort-option = 'pubPlace') then 
-            $hit/descendant::tei:teiHeader/descendant::tei:imprint[1]/descendant-or-self::tei:pubPlace[1]
+            if($hit/descendant::tei:teiHeader/descendant::tei:biblStruct) then
+                if($hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:imprint/descendant-or-self::tei:pubPlace[1]) then 
+                    $hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:imprint/descendant-or-self::tei:pubPlace[1]
+                else $hit/descendant::tei:teiHeader[1]/descendant::tei:imprint[1]/descendant-or-self::tei:pubPlace[1]
+            else $hit/descendant::tei:teiHeader[1]/descendant::tei:imprint[1]/descendant-or-self::tei:pubPlace[1]
         else if($sort-option = 'persDate') then
             if($hit/descendant::tei:birth) then $hit/descendant::tei:birth/@syriaca-computed-start
             else if($hit/descendant::tei:death) then $hit/descendant::tei:death/@syriaca-computed-start
@@ -269,10 +283,14 @@ declare function data:dynamic-paths($search-config as xs:string?){
 declare function data:keyword-search(){
     if(request:get-parameter('keyword', '') != '') then 
         for $query in request:get-parameter('keyword', '') 
-        return concat("[ft:query(.//tei:body,'",data:clean-string($query),"',data:search-options()) or ft:query(.//tei:teiHeader,'",data:clean-string($query),"',data:search-options())]")
+        return concat("[ft:query(.//tei:body,'",data:clean-string($query),"',data:search-options()) 
+        or ft:query(.//tei:fileDesc,'",data:clean-string($query),"',data:search-options()) 
+        or ft:query(.//tei:front,'",data:clean-string($query),"',data:search-options())
+        or ft:query(.//tei:back,'",data:clean-string($query),"',data:search-options())
+        ]")
     else if(request:get-parameter('q', '') != '') then 
         for $query in request:get-parameter('q', '') 
-        return concat("[ft:query(.//tei:body,'",data:clean-string($query),"',data:search-options()) or ft:query(.//tei:teiHeader,'",data:clean-string($query),"',data:search-options())]")
+        return concat("[ft:query(.//tei:text,'",data:clean-string($query),"',data:search-options()) or ft:query(.//tei:teiHeader,'",data:clean-string($query),"',data:search-options())]")
     else ()
 };
 

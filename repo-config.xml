@@ -5,24 +5,23 @@
     -->
     <config>
         <!-- Application title -->
-        <title>The Srophe web application</title>
+        <title>The Poetess Archive </title>
         <!-- App description -->
-        <description>A collaborative research project publishling online reference works concerning the
-            culture, history, and literature of Syriac communities from antiquity to the present.</description>
+        <description/>
         <!-- Contact email -->
-        <contact>info@syriaca.org</contact>
+        <contact/>
         <!-- Logo name (assumes path to logo is $app-root/resources/images/) -->
-        <logo>srophe.svg</logo>
+        <logo>logo.svg</logo>
         <!-- Web Site URL -->
-        <url>http://syriaca.org/</url>
+        <url>http://idhmcmain.tamu.edu/poetess/</url>
         <!-- Root of app for building dynamic links. Default is eXist app root -->
-        <nav-base>/exist/apps/srophe</nav-base>
+        <nav-base>/exist/apps/poetess</nav-base>
         <!-- eXist app root for app deployment-->
-        <app-root>srophe</app-root>
+        <app-root>poetess</app-root>
         <!-- eXist data app root for TEI application.  -->
-        <data-root>srophe-data</data-root>
+        <data-root>poetess-data</data-root>
         <!-- Base URI for identifiers in app data -->
-        <base_uri>http://syriaca.org</base_uri>
+        <base_uri>http://www.poetessarchive.org</base_uri>
         <!-- 
             Path to ODD file. Can be used in XSLT or XQuery transformations for controlled values. 
             Path to ODD file from app-root, or as an absolute path. 
@@ -49,14 +48,14 @@
             If adding additional keyboards you will need to make sure to add the link to the 
             keyboard javascript file in the HTML header of templates/page.html
             See resources/keyboard/layouts for more options. 
-        -->
+        
         <keyboard-options>
             <option id="syriac-phonetic">Syriac Phonetic</option>
             <option id="syriac-standard">Syriac Standard</option>
             <option id="ms-Arabic (101)">Arabic Mod. Standard</option>
             <option id="qwerty">English QWERTY</option>
         </keyboard-options>
-        
+        -->
         <!-- Configure Collections. Optional -->
         <collections>
             <!--<collection name="Short-name used in html pages to reference collection, module name" 
@@ -65,10 +64,14 @@
                 record-URI-pattern="URI for building links to record views."
                 app-root="folder name in app" 
                 data-root="folder name in data"/>-->
-            <collection name="places" title="The Syriac Gazetteer" app-root="/geo/" data-root="places" record-URI-pattern="http://syriaca.org/place/"/>
-            <collection name="persons" title="SBD" app-root="/" data-root="persons" record-URI-pattern="http://syriaca.org/person/"/>
-            <collection name="works" title="NHSL" app-root="/" data-root="works" record-URI-pattern="http://syriaca.org/work/"/>
-            <collection name="bibl" title="Works Cited" app-root="/" data-root="bibl" record-URI-pattern="http://syriaca.org/bibl/"/>
+            <!--
+            <collection name="critarchive" title="Criticism" app-root="/criticism/" data-root="critarchive" record-URI-pattern=""/>
+            <collection name="bijou" title="Works" app-root="/bijou/" data-root="bijou" record-URI-pattern=""/>
+            <collection name="people" title="People" app-root="/people/" data-root="people" record-URI-pattern=""/>
+            -->
+            <collection name="critarchive" title="Criticism" app-root="/criticism/" data-root="critarchive" record-URI-pattern=""/>
+            <collection name="creators" title="Authors" app-root="/creators/" data-root="" record-URI-pattern=""/>
+            <collection name="collections" title="Collections" app-root="/collections/" data-root="" record-URI-pattern=""/>
         </collections>
     </config>
 </meta>

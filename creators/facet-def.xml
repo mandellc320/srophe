@@ -1,17 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <facets xmlns="http://expath.org/ns/facet">
-    <!-- BIBLIOGRAPHY TYPE: 
-    <facet-definition name="Bibliography Type">
-        <group-by function="facet:bibl-type">
-            <sub-path>descendant::tei:catRef[@scheme='#g']/@target</sub-path>
-        </group-by>
-        <max-values show="10">60</max-values>
-        <order-by direction="ascending">value</order-by>
-    </facet-definition>
-    -->
-    <facet-definition name="Genre">
-        <group-by function="facet:group-by-array">
-            <sub-path>descendant::tei:catRef[@scheme='#g']/@target</sub-path>
+    <facet-definition name="Creator Type">
+        <group-by>
+            <sub-path>descendant::tei:author/@type</sub-path>
         </group-by>
         <max-values show="10">60</max-values>
         <order-by direction="ascending">value</order-by>
@@ -30,6 +21,7 @@
         <max-values show="10">60</max-values>
         <order-by direction="ascending">value</order-by>
     </facet-definition>
+    <!--
     <facet-definition name="Keywords">
         <group-by>
             <sub-path>descendant::tei:profileDesc/tei:textClass/tei:keywords/tei:list/tei:item</sub-path>
@@ -37,19 +29,6 @@
         <max-values show="10">60</max-values>
         <order-by direction="ascending">value</order-by>
     </facet-definition>
-    <!-- Primary or sec
-        ARC Format Categories
-    <facet-definition name="Genre">
-        <group-by function="facet:group-by-array">
-            <sub-path>descendant::tei:catRef[@scheme='#g']/@target</sub-path>
-        </group-by>
-        <max-values show="10">60</max-values>
-        <order-by direction="ascending">value</order-by>
-    </facet-definition>
-    Primary or secondary
-     <catRef target="#ps1" scheme="#p"/>
-     Genre 
-            <catRef target="#g22 #g29" scheme="#g"/>
     -->
     <!-- TYPES OF WORKS -->
     <!-- BIBLIOGRAPHY TYPE -->
