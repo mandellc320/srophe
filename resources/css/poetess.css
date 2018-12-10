@@ -25,7 +25,7 @@ footer {border-top:4px solid #739CC0 !important; text-align:center;}
 /* H */
 h2 {color:#B47459;}
 h3 {color:#B47459;}
-
+h4 {color: #46597D; font-size:inherit; line-height:inherit;}
 .home-page-text h2 {color:white;}
 .home-page-text {
     font-weight:200;
@@ -42,10 +42,10 @@ h3 {color:#B47459;}
     position:relative;
     margin:0;
     padding:0;
-	background-image:url('../images/home3.png');
+	background-image:url('../images/home5.png');
 	background-size:cover;
 	background-position:top;
-    min-height:500px;
+    min-height:450px;
     width:100%;
     border-bottom:4px solid #739CC0 !important;
 }
@@ -58,7 +58,7 @@ h3 {color:#B47459;}
     position:relative;
     margin-top:-1em;
     padding-top:0;
-	background-image:url('../images/home3.png');
+	background-image:url('../images/banner.png');
 	background-size:cover;
 	background-position:top;
     height:175px;
@@ -105,7 +105,13 @@ h3 {color:#B47459;}
 .right-menu {border-right:1px solid #ccc;}
 /* N */
 .navbar {border-bottom:4px solid #739CC0 !important;}
-
+.nav li {
+    font-size:inherit; 
+    line-height:normal;
+    letter-spacing:normal; 
+    margin-bottom:inherit; 
+    
+}
 /* S */
 .search {margin:0;padding:0;}
 .search-form{
