@@ -153,7 +153,6 @@ declare function tei2html:summary-view($nodes as node()*, $lang as xs:string?, $
     return 
         <div class="short-rec-view">
             <div>{string($nodes/@sort)}</div>
-            <div>Series : {$series} collection: {$collection-path}</div>
             <!--<a href="{replace($id,$config:base-uri,$config:nav-base)}" dir="ltr">{$title}</a>-->
             {bibl2html:citation($nodes/descendant::tei:sourceDesc/tei:biblStruct)}
             {

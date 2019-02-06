@@ -14,9 +14,9 @@
         <!-- Web Site URL -->
         <url>http://idhmcmain.tamu.edu/poetess/</url>
         <!-- Root of app for building dynamic links. Default is eXist app root -->
-        <nav-base>/exist/apps/poetess</nav-base>
+        <nav-base></nav-base>
         <!-- eXist app root for app deployment-->
-        <app-root>poetess</app-root>
+        <app-root>srophe</app-root>
         <!-- eXist data app root for TEI application.  -->
         <data-root>poetess-data</data-root>
         <!-- Base URI for identifiers in app data -->

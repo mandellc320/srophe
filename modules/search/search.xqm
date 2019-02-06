@@ -50,7 +50,7 @@ declare %templates:wrap function search:group-by-author($node as node(), $model 
         let $hits := $model("hits")
         (:let $groups := distinct-values(for $a in $hits//tei:biblStruct/descendant::tei:author return normalize-space($a)):)
         let $authors := distinct-values(
-                        for $a in $hits/descendant::tei:author 
+                        for $a in $hits/descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:author | $hits/descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:editor 
                         let $name := if($a/tei:name/@reg) then string($a/tei:name/@reg) 
                                      else if($a/tei:name) then $a/tei:name//text()
                                      else $a//text()
@@ -67,8 +67,6 @@ declare %templates:wrap function search:group-by-author($node as node(), $model 
                 order by $author 
                 return 
                     <browse xmlns="http://www.w3.org/1999/xhtml" author="{$author}"/>
-
-
    }    
 };
 

@@ -81,6 +81,14 @@ if ($exist:path eq '') then
         <redirect url="{request:get-uri()}/"/>
     </dispatch>
     
+(: Resource paths starting with $nav-base are resolved relative to app :)
+else if (contains($exist:path, "/$nav-base/")) then
+        <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+            <forward url="{concat($exist:controller,'/', substring-after($exist:path, '/$nav-base/'))}">
+                <set-header name="Cache-Control" value="max-age=3600, must-revalidate"/>
+            </forward>
+        </dispatch> 
+        
 else if ($exist:path eq "/") then
     (: forward root path to index.xql :)
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
@@ -122,19 +130,17 @@ else if(ends-with($exist:path,('/tei','/xml','/txt','/pdf','/json','/geojson','/
     local:content-negotiation($exist:path, $exist:resource)
 else if(ends-with($exist:resource,('.tei','.xml','.txt','.pdf','.json','.geojson','.kml','.jsonld','.rdf','.ttl','.atom'))) then
     local:content-negotiation($exist:path, $exist:resource)
-(: For poetess:)    
+(: For poetess records :)    
 else if(contains($exist:path, '/work/')) then
         let $path := substring-before($exist:path,'/work/')
         let $document := substring-after($exist:path,'/work/')
         let $id := if(ends-with($document,('.html','/html'))) then
                         replace($document,'/html|.html','')
                    else $document
-        (:           
         let $record-uri-root := replace($exist:path,$exist:resource,'')
         let $id := if($config:get-config//repo:collection[ends-with(@record-URI-pattern, $record-uri-root)]) then
                         concat($config:get-config//repo:collection[ends-with(@record-URI-pattern, $record-uri-root)]/@record-URI-pattern,$id)
                    else $id
-        :)           
         let $html-path := concat($path,'/record.html')
         let $format := fn:tokenize($exist:resource, '\.')[fn:last()]
         return 
@@ -149,7 +155,23 @@ else if(contains($exist:path, '/work/')) then
                     <forward url="{$exist:controller}/error-page.html" method="get"/>
                     <forward url="{$exist:controller}/modules/view.xql"/>
                 </error-handler>
-            </dispatch> 
+            </dispatch>  
+(:            
+<div>
+full path : {concat($exist:controller,$html-path)}
+$html-path : {$html-path}
+$exist:path : {$exist:path}<br/>
+$exist:resource : {$exist:resource} <br/> 
+$exist:controller : {$exist:controller} <br/>
+$exist:prefix : {$exist:prefix} <br/> 
+$exist:root : {$exist:root} <br/> 
+replace($exist:path, $exist:resource,'') : {replace($exist:path, $exist:resource,'')}<br/>
+$exist:record-uris {$exist:record-uris} <br/>
+replace(replace($exist:path, $exist:resource,''),'/','') : {replace(replace($exist:path, $exist:resource,''),'/','')} <br/>
+$exist:collection-names : {$exist:collection-names}<br/>
+$exist:collection-uris : {$exist:collection-uris}
+</div>
+:)
 (: Checks for any record uri patterns as defined in repo.xml :)    
 else if(replace($exist:path, $exist:resource,'') =  $exist:record-uris or 
     replace($exist:path, $exist:resource,'') = $exist:collection-uris 
