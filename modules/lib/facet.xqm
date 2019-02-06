@@ -134,7 +134,9 @@ declare function facet:group-by-array($results as item()*, $facet-definitions as
         if($sort/text() = 'value') then $f[1]
         else count($f)
         descending
-    return <key xmlns="http://expath.org/ns/facet" count="{count($f)}" value="{$facet-grp}" label="{facet:controlled-labels($results[1], $facet-grp)}"/>
+    return 
+        if($facet-grp != ('',' ')) then <key xmlns="http://expath.org/ns/facet" count="{count($f)}" value="{$facet-grp}" label="{facet:controlled-labels($results[1], $facet-grp)}"/>
+        else ()
 };
 
 (:~

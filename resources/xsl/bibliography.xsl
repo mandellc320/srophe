@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:saxon="http://saxon.sf.net/" xmlns:local="http://syriaca.org/ns" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:t="http://www.tei-c.org/ns/1.0" xmlns:x="http://www.w3.org/1999/xhtml" xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs t x saxon local" version="2.0">
+<xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:t="http://www.tei-c.org/ns/1.0" xmlns:x="http://www.w3.org/1999/xhtml" xmlns:saxon="http://saxon.sf.net/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:local="http://syriaca.org/ns" exclude-result-prefixes="xs t x saxon local" version="2.0">
 
     <!-- ================================================================== 
        Copyright 2013 New York University
@@ -1165,7 +1165,7 @@
                     <xsl:text>Link to Zotero Bibliographic record</xsl:text>
                 </xsl:when>
                 <xsl:when test="starts-with($ref,$base-uri)">
-                    <xsl:value-of select="concat('Link to Syriaca.org Bibliographic Record for', $title-string)"/>
+                    <xsl:value-of select="concat('Link to ',$repository-title,' Bibliographic Record for', $title-string)"/>
                 </xsl:when>
                 <!-- glyphicon glyphicon-book -->
                 <xsl:when test="starts-with($ref,'http://www.worldcat.org/')">
@@ -1200,7 +1200,7 @@
                 <img src="{$nav-base}/resources/images/zotero.png" alt="Link to Zotero Bibliographic Record" height="18px"/>
             </xsl:when>
             <xsl:when test="starts-with($ref,$base-uri)">
-                <img src="{$nav-base}/resources/images/icons-syriaca-sm.png" alt="Link to Syriaca.org Bibliographic Record" height="18px"/>
+                <img src="{$nav-base}/resources/images/icons-syriaca-sm.png" alt="{concat('Link to ',$repository-title,' Bibliographic Record.')}" height="18px"/>
             </xsl:when>
             <!-- glyphicon glyphicon-book -->
             <xsl:when test="contains($ref,'worldcat.org/')">

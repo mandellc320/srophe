@@ -2,28 +2,31 @@ $(document).ready(function() {
 // Main javascript functions used by place pages
 // validate contact forms
 $.validator.setDefaults({
-	submitHandler: function() { 
-	//Ajax submit for contact form
-    $.ajax({
-            type:'POST', 
-            url: $('#email').attr('action'), 
-            data: $('#email').serializeArray(),
-            dataType: "html", 
-            success: function(response) {
-                var temp = response;
-                if(temp == 'Recaptcha fail') {
-                    alert('please try again');
-                    Recaptcha.reload();
-                }else {
-                    $('div#modal-body').html(temp);
-                    $('#email-submit').hide();
-                    $('#email')[0].reset();
-                }
-               // $('div#modal-body').html(temp);
-        }});
+	submitHandler: function() {
+	   if($('input#url').val().length == 0)
+         { 
+       	//Ajax submit for contact form
+           $.ajax({
+                   type:'POST', 
+                   url: $('#email').attr('action'), 
+                   data: $('#email').serializeArray(),
+                   dataType: "html", 
+                   success: function(response) {
+                       var temp = response;
+                       if(temp == 'Recaptcha fail') {
+                           alert('please try again');
+                           Recaptcha.reload();
+                       }else {
+                           $('div#modal-body').html(temp);
+                           $('#email-submit').hide();
+                           $('#email')[0].reset();
+                       }
+                      // $('div#modal-body').html(temp);
+               }});
+        }
+        return false;
 	}
 });
-
 
 $("#email").validate({
 		rules: {
@@ -101,4 +104,13 @@ clipboard.on('error', function(e) {
     console.error('Action:', e.action);
     console.error('Trigger:', e.trigger);
 });
+
+//add active class to browse tabs
+var params = window.location.search;
+if(params !== 'undefined' && params !== ''){
+    $('.nav-tabs a[href*="' + params + '"]').parents('li').addClass('active');
+} else {
+    $('.nav-tabs li').first().addClass('active');
+}
+
 });
