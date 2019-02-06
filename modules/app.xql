@@ -68,16 +68,17 @@ declare %templates:wrap function app:get-work($node as node(), $model as map(*))
  : Dynamically build html title based on TEI record and/or sub-module. 
  : @param request:get-parameter('id', '') if id is present find TEI title, otherwise use title of sub-module
 :)
-declare function app:record-title($node as node(), $model as map(*), $collection as xs:string?){
+declare %templates:wrap function app:record-title($node as node(), $model as map(*), $collection as xs:string?){
     if(request:get-parameter('id', '')) then
        if(contains($model("hits")/descendant::tei:titleStmt[1]/tei:title[1]/text(),' — ')) then
             substring-before($model("hits")/descendant::tei:titleStmt[1]/tei:title[1],' — ')
+       else if($model("hits")/descendant::tei:titleStmt[1]/tei:title[@type='main']) then 
+            app:title-string($node,$model)
        else $model("hits")/descendant::tei:titleStmt[1]/tei:title[1]/text()
     else if($collection != '') then
         string(config:collection-vars($collection)/@title)
     else $config:app-title
 };  
-
 
 (:~ 
  : Add header links for alternative formats.
@@ -92,13 +93,12 @@ declare function app:metadata($node as node(), $model as map(*)) {
     <link type="text/plain" href="id.nt" rel="alternate"/>
     <link type="application/json+ld" href="id.jsonld" rel="alternate"/>
     :)
-    <meta name="DC.title " property="dc.title " content="{$model("hits")/ancestor::tei:TEI/descendant::tei:title[1]/text()}"/>,
+    <meta property="og:title" content="{app:title-string($node,$model)}"/>,
     if($model("hits")/ancestor::tei:TEI/descendant::tei:desc or $model("hits")/ancestor::tei:TEI/descendant::tei:note[@type="abstract"]) then 
         <meta name="DC.description " property="dc.description " content="{$model("hits")/ancestor::tei:TEI/descendant::tei:desc[1]/text() | $model("hits")/ancestor::tei:TEI/descendant::tei:note[@type="abstract"]}"/>
     else (),
     <link xmlns="http://www.w3.org/1999/xhtml" type="text/html" href="{request:get-parameter('id', '')}.html" rel="alternate"/>,
-    <link xmlns="http://www.w3.org/1999/xhtml" type="text/xml" href="{request:get-parameter('id', '')}/tei" rel="alternate"/>,
-    <link xmlns="http://www.w3.org/1999/xhtml" type="application/atom+xml" href="{request:get-parameter('id', '')}/atom" rel="alternate"/>
+    <link xmlns="http://www.w3.org/1999/xhtml" type="text/xml" href="{request:get-parameter('id', '')}/tei" rel="alternate"/>
     )
     else ()
 };
@@ -590,4 +590,18 @@ function app:google-analytics($node as node(), $model as map(*)){
 (: Poetess function :)
 declare function app:count($node as node(), $model as map(*)){
     <span class="count">{count($model("hits"))}</span>
+};
+
+(: Poetess :)
+declare function app:title-string($node as node(), $model as map(*)){
+    let $title := if($model("hits")/descendant::tei:titleStmt[1]/tei:title[@type='main']) then 
+            if($model("hits")/descendant::tei:titleStmt[1]/tei:title[@type='subordinate']) then
+                concat($model("hits")/descendant::tei:titleStmt[1]/tei:title[@type='main'],' in ', 
+                $model("hits")/descendant::tei:titleStmt[1]/tei:title[@type='subordinate'], ' by ', 
+                $model("hits")/descendant::tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:author)
+            else 
+                concat($model("hits")/descendant::tei:titleStmt[1]/tei:title[@type='main'],' by ',
+                $model("hits")/descendant::tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:author)
+        else $model("hits")/descendant::tei:titleStmt[1]/tei:title[1]
+    return normalize-space($title)        
 };
