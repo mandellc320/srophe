@@ -32,7 +32,7 @@ declare function global:tei2html($nodes as node()*) {
 :)
 declare function global:tei2html($nodes as node()*, $collection as xs:string?) {
 if($config:get-config//repo:collection[@name=$collection]/@xslt != '') then
-  transform:transform($nodes, doc($config:app-root || string($config:get-config//repo:collection[@name=$collection]/@xslt)), 
+   transform:transform($nodes, doc($config:app-root || '/' || string($config:get-config//repo:collection[@name=$collection]/@xslt)), 
     <parameters>
         <param name="data-root" value="{$config:data-root}"/>
         <param name="app-root" value="{$config:app-root}"/>
@@ -40,7 +40,7 @@ if($config:get-config//repo:collection[@name=$collection]/@xslt != '') then
         <param name="base-uri" value="{$config:base-uri}"/>
         <param name="base-uri" value="{$collection}"/>
     </parameters>
-    )      
+    )
 else 
   transform:transform($nodes, doc($config:app-root || '/resources/xsl/tei2html.xsl'), 
     <parameters>

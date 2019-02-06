@@ -49,7 +49,7 @@ function app:logo($node as node(), $model as map(*)) {
  : @param $node the HTML node with the attribute which triggered this call
  : @param $model a map containing arbitrary data - used to pass information between template calls
  :)
-declare function app:get-work($node as node(), $model as map(*)) {
+declare %templates:wrap function app:get-work($node as node(), $model as map(*)) {
     if(request:get-parameter('id', '') != '' or request:get-parameter('doc', '') != '') then
         let $rec := data:get-document()
         return 
@@ -64,12 +64,11 @@ declare function app:get-work($node as node(), $model as map(*)) {
     else map {"hits" := 'Output plain HTML page'}
 };
 
-
 (:~
  : Dynamically build html title based on TEI record and/or sub-module. 
  : @param request:get-parameter('id', '') if id is present find TEI title, otherwise use title of sub-module
 :)
-declare %templates:wrap function app:record-title($node as node(), $model as map(*), $collection as xs:string?){
+declare function app:record-title($node as node(), $model as map(*), $collection as xs:string?){
     if(request:get-parameter('id', '')) then
        if(contains($model("hits")/descendant::tei:titleStmt[1]/tei:title[1]/text(),' — ')) then
             substring-before($model("hits")/descendant::tei:titleStmt[1]/tei:title[1],' — ')

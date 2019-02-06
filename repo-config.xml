@@ -68,8 +68,8 @@
             <collection name="bijou" title="Works" app-root="/bijou/" data-root="bijou" record-URI-pattern=""/>
             <collection name="people" title="People" app-root="/people/" data-root="people" record-URI-pattern=""/>
             -->
-            <collection name="critarchive" title="Criticism" app-root="/criticism/" data-root="critarchive" record-URI-pattern="" custom-xslt="resources/xsl/toWebCritArc.xsl"/>
-            <collection name="bijou" title="The Bijou Literary Annual" app-root="/bijou/" data-root="bijou" record-URI-pattern="" custom-xslt="resources/xsl/toWebBijou.xsl"/>
+            <collection name="critarchive" title="The Criticism Archive" app-root="/criticism/" data-root="critarchive" record-URI-pattern="" xslt="resources/xsl/toWebCritArc.xsl"/>
+            <collection name="bijou" title="The Bijou Literary Annual" app-root="/bijou/" data-root="bijou" record-URI-pattern="" xslt="resources/xsl/toWebBijou.xsl"/>
             <collection name="creators" title="Authors" app-root="/creators/" data-root="" record-URI-pattern=""/>
             <collection name="collections" title="Collections" app-root="/collections/" data-root="" record-URI-pattern=""/>
         </collections>

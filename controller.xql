@@ -124,6 +124,7 @@ else if(ends-with($exist:resource,('.tei','.xml','.txt','.pdf','.json','.geojson
     local:content-negotiation($exist:path, $exist:resource)
 (: For poetess:)    
 else if(contains($exist:path, '/work/')) then
+        let $path := substring-before($exist:path,'/work/')
         let $document := substring-after($exist:path,'/work/')
         let $id := if(ends-with($document,('.html','/html'))) then
                         replace($document,'/html|.html','')
@@ -134,14 +135,14 @@ else if(contains($exist:path, '/work/')) then
                         concat($config:get-config//repo:collection[ends-with(@record-URI-pattern, $record-uri-root)]/@record-URI-pattern,$id)
                    else $id
         :)           
-        let $html-path := '/record.html'
+        let $html-path := concat($path,'/record.html')
         let $format := fn:tokenize($exist:resource, '\.')[fn:last()]
         return 
           <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
                 <forward url="{$exist:controller}{$html-path}"></forward>
                 <view>
                     <forward url="{$exist:controller}/modules/view.xql">
-                       <add-parameter name="doc" value="{$id}"/>
+                       <add-parameter name="id" value="{$id}"/>
                     </forward>
                 </view>
                 <error-handler>

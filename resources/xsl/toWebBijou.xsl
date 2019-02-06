@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	xmlns="http://www.w3.org/1999/xhtml" exclude-result-prefixes="xs tei" version="2.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs tei" version="2.0">
 
 	<!-- script for converting XML-TEI to HTML. 		
 	Laura Mandell on 05/27/18 
@@ -14,8 +11,7 @@
 
 	<!-- Here is the document declaration necessary for an HTML5 (web) page -->
 
-	<xsl:output method="html" doctype-system="about:legacy-compat" omit-xml-declaration="yes"
-		indent="yes" encoding="UTF-8"/>
+	<xsl:output method="html" doctype-system="about:legacy-compat" omit-xml-declaration="yes" indent="yes" encoding="UTF-8"/>
 	<xsl:strip-space elements="*"/>
 
 	<!-- Make these variables so that you can easily change them. -->
@@ -35,10 +31,8 @@
 		<xsl:variable name="filename">
 			<xsl:value-of select="tei:teiHeader/tei:fileDesc/tei:publicationStmt/tei:idno"/>
 		</xsl:variable>
-		<xsl:variable name="mainTitle"
-			select="tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:title[@type = 'main']"/>
-		<xsl:variable name="subTitle"
-			select="tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:title[@type = 'subordinate']"/>
+		<xsl:variable name="mainTitle" select="tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:title[@type = 'main']"/>
+		<xsl:variable name="subTitle" select="tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:title[@type = 'subordinate']"/>
 		<xsl:variable name="author" select="tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:author"/>
 		<xsl:apply-templates select="tei:text"/>
 	</xsl:template>
@@ -108,9 +102,7 @@
 
 	<xsl:template match="tei:text">
 		<main>
-			<img
-				src="http://iiif.dh.tamu.edu/iiif/2/poetess/bijou/010.tif/200,360,1550,180/960,/0/gray.jpg"
-				class="partHead" alt="The Bijou"/>
+			<img src="http://iiif.dh.tamu.edu/iiif/2/poetess/bijou/010.tif/200,360,1550,180/960,/0/gray.jpg" class="partHead" alt="The Bijou"/>
 			<xsl:apply-templates/>
 			<xsl:if test="//tei:note">
 				<section class="notes">
@@ -128,9 +120,7 @@
 		<xsl:variable name="pages">
 			<xsl:choose>
 				<xsl:when test="$nbrPB &gt; 1">
-					<xsl:value-of
-						select="concat('pp. ', descendant::tei:pb[1]/@n, '-', descendant::tei:pb[last()]/@n)"
-					/>
+					<xsl:value-of select="concat('pp. ', descendant::tei:pb[1]/@n, '-', descendant::tei:pb[last()]/@n)"/>
 				</xsl:when>
 				<xsl:when test="$nbrPB = 1">
 					<xsl:value-of select="concat('p. ', descendant::tei:pb/@n)"/>
@@ -155,8 +145,7 @@
 							<table class="tei">
 								<tr>
 									<td class="a">
-										<h5>from <a
-												href="http://www.poetessarchive.org/bijou/HTML/bijou1828-p5.html">
+										<h5>from <a href="http://www.poetessarchive.org/bijou/HTML/bijou1828-p5.html">
 												<em>The Bijou</em>, 1828</a>
 											<xsl:choose>
 												<xsl:when test="not(descendant::tei:pb)"/>
@@ -171,12 +160,9 @@
 									<td class="b">
 										<a>
 											<xsl:attribute name="href">
-												<xsl:value-of
-												select="concat($baseURL, 'XML/bijou1828.', @type, @xml:id, '.xml')"
-												/>
+												<xsl:value-of select="concat($baseURL, 'XML/bijou1828.', @type, @xml:id, '.xml')"/>
 											</xsl:attribute>
-											<img class="tei" src="download.png"
-												alt="TEI-encoded version"/>
+											<img class="tei" src="download.png" alt="TEI-encoded version"/>
 										</a>
 									</td>
 									<!--tei image needs to be local -->
@@ -212,19 +198,14 @@
 						<table class="tei">
 							<tr>
 								<td class="a">
-									<h5>from <a
-											href="http://www.poetessarchive.org/bijou/HTML/bijou1828-p5.html"
-												><em>The Bijou</em>, 1828</a></h5>
+									<h5>from <a href="http://www.poetessarchive.org/bijou/HTML/bijou1828-p5.html"><em>The Bijou</em>, 1828</a></h5>
 								</td>
 								<td class="b">
 									<a>
 										<xsl:attribute name="href">
-											<xsl:value-of
-												select="concat($baseURL, 'XML/bijou1828.', @type, @xml:id, '.xml')"
-											/>
+											<xsl:value-of select="concat($baseURL, 'XML/bijou1828.', @type, @xml:id, '.xml')"/>
 										</xsl:attribute>
-										<img class="tei" src="download.png"
-											alt="TEI-encoded version"/>
+										<img class="tei" src="download.png" alt="TEI-encoded version"/>
 									</a>
 								</td>
 								<!--tei image needs to be local -->
@@ -248,8 +229,7 @@
 							<table class="tei">
 								<tr>
 									<td class="a">
-										<h5>from <a
-												href="http://www.poetessarchive.org/bijou/HTML/bijou1828-p5.html">
+										<h5>from <a href="http://www.poetessarchive.org/bijou/HTML/bijou1828-p5.html">
 												<em>The Bijou</em>, 1828</a>
 											<xsl:choose>
 												<xsl:when test="not(descendant::tei:pb)"/>
@@ -264,12 +244,9 @@
 									<td class="b">
 										<a>
 											<xsl:attribute name="href">
-												<xsl:value-of
-												select="concat($baseURL, 'XML/bijou1828.', @type, @xml:id, '.xml')"
-												/>
+												<xsl:value-of select="concat($baseURL, 'XML/bijou1828.', @type, @xml:id, '.xml')"/>
 											</xsl:attribute>
-											<img class="tei" src="download.png"
-												alt="TEI-encoded version"/>
+											<img class="tei" src="download.png" alt="TEI-encoded version"/>
 										</a>
 									</td>
 									<!--tei image needs to be local -->
@@ -343,13 +320,10 @@
 			</xsl:choose>
 		</xsl:variable>
 		<xsl:variable name="imageURL">
-			<xsl:value-of
-				select="concat('http://iiif.dh.tamu.edu/iiif/2/poetess/bijou/', $imageNbr, '.tif/full/full/', $rotate, '/default.jpg')"
-			/>
+			<xsl:value-of select="concat('http://iiif.dh.tamu.edu/iiif/2/poetess/bijou/', $imageNbr, '.tif/full/full/', $rotate, '/default.jpg')"/>
 		</xsl:variable>
 		<a href="{$imageURL}">
-			<img src="{@url}"
-				alt="a picture of {parent::tei:figure/parent::tei:div[@type='picture']/tei:head}"/>
+			<img src="{@url}" alt="a picture of {parent::tei:figure/parent::tei:div[@type='picture']/tei:head}"/>
 		</a>
 	</xsl:template>
 
@@ -397,15 +371,15 @@
 	</xsl:template>
 
 	<xsl:template match="tei:q">
-		<xsl:text>&quot;</xsl:text>
+		<xsl:text>"</xsl:text>
 		<xsl:apply-templates/>
-		<xsl:text>&quot;</xsl:text>
+		<xsl:text>"</xsl:text>
 	</xsl:template>
 
 	<xsl:template match="tei:quote">
 		<xsl:choose>
 			<xsl:when test="parent::tei:p | parent::tei:note">
-				<xsl:text disable-output-escaping="yes"><![CDATA[</p>]]></xsl:text>
+				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/p&gt;]]></xsl:text>
 				<blockquote>
 					<xsl:choose>
 						<xsl:when test="tei:p">
@@ -421,7 +395,7 @@
 						</xsl:otherwise>
 					</xsl:choose>
 				</blockquote>
-				<xsl:text disable-output-escaping="yes"><![CDATA[<p class="pnoindent">]]></xsl:text>
+				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;p class="pnoindent"&gt;]]></xsl:text>
 			</xsl:when>
 			<xsl:otherwise>
 				<blockquote>
@@ -489,11 +463,9 @@
 		<xsl:variable name="nbr">
 			<xsl:number from="tei:div" level="any"/>
 		</xsl:variable>
-		<xsl:variable name="epigNbr"
-			select="count(parent::tei:lg/parent::tei:div/tei:epigraph/tei:l)"/>
+		<xsl:variable name="epigNbr" select="count(parent::tei:lg/parent::tei:div/tei:epigraph/tei:l)"/>
 		<xsl:choose>
-			<xsl:when
-				test="parent::tei:lg/parent::tei:div[@type = 'poem'] | parent::tei:lg/parent::tei:sp/parent::tei:div[@type = 'scene']">
+			<xsl:when test="parent::tei:lg/parent::tei:div[@type = 'poem'] | parent::tei:lg/parent::tei:sp/parent::tei:div[@type = 'scene']">
 				<tr>
 					<td class="a">
 						<span>
@@ -647,8 +619,7 @@
 			</xsl:choose>
 		</xsl:variable>
 		<xsl:choose>
-			<xsl:when
-				test="ancestor-or-self::tei:TEI/tei:teiHeader/tei:fileDesc/tei:sourceDesc/tei:biblStruct/tei:analytic">
+			<xsl:when test="ancestor-or-self::tei:TEI/tei:teiHeader/tei:fileDesc/tei:sourceDesc/tei:biblStruct/tei:analytic">
 				<a href="bijou1828.{$PAtype}{$PAid}.html">
 					<xsl:apply-templates/>
 				</a>
@@ -787,9 +758,7 @@
 			<xsl:value-of select="substring-after($img, 'image')"/>
 		</xsl:variable>
 		<xsl:variable name="URL">
-			<xsl:value-of
-				select="concat('http://iiif.dh.tamu.edu/iiif/2/poetess/bijou/', $imgNbr, '.tif/full/full/0/default.jpg')"
-			/>
+			<xsl:value-of select="concat('http://iiif.dh.tamu.edu/iiif/2/poetess/bijou/', $imgNbr, '.tif/full/full/0/default.jpg')"/>
 		</xsl:variable>
 		<table class="pageNumber" id="{$imgNbr}">
 			<tr>
@@ -805,9 +774,7 @@
 							<xsl:value-of select="$URL"/>
 							<xsl:text disable-output-escaping="yes"><![CDATA[', 'newwindow', 'width=600, height=900')]]></xsl:text>
 						</xsl:attribute>
-						<img class="pageImage" alt="page image and link"
-							src="http://iiif.dh.tamu.edu/iiif/2/poetess/bijou/{$imgNbr}.tif/full/,70/0/default.jpg'"
-						/>
+						<img class="pageImage" alt="page image and link" src="http://iiif.dh.tamu.edu/iiif/2/poetess/bijou/{$imgNbr}.tif/full/,70/0/default.jpg'"/>
 					</a>
 				</td>
 			</tr>
@@ -834,7 +801,7 @@
 									<xsl:value-of select="@n"/>
 									<xsl:text>]</xsl:text>
 								</td>
-								<td class="b">&#160;</td>
+								<td class="b"> </td>
 							</tr>
 						</table>
 					</xsl:when>
@@ -844,7 +811,7 @@
 								<td class="a">
 									<xsl:text>[np]</xsl:text>
 								</td>
-								<td class="b">&#160;</td>
+								<td class="b"> </td>
 							</tr>
 						</table>
 					</xsl:otherwise>
@@ -853,73 +820,73 @@
 			<xsl:when test="parent::tei:quote">
 				<xsl:choose>
 					<xsl:when test="parent::tei:quote/parent::tei:p">
-						<xsl:text disable-output-escaping="yes"><![CDATA[</blockquote></p>]]></xsl:text>
+						<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/blockquote&gt;&lt;/p&gt;]]></xsl:text>
 						<hr/>
 						<xsl:call-template name="pageNandI">
 							<xsl:with-param name="img" select="@xml:id"/>
 							<xsl:with-param name="nbr" select="@n"/>
 						</xsl:call-template>
-						<xsl:text disable-output-escaping="yes"><![CDATA[<p class="pnoindent"><blockquote>]]></xsl:text>
+						<xsl:text disable-output-escaping="yes"><![CDATA[&lt;p class="pnoindent"&gt;&lt;blockquote&gt;]]></xsl:text>
 					</xsl:when>
 					<xsl:otherwise>
-						<xsl:text disable-output-escaping="yes"><![CDATA[</blockquote>]]></xsl:text>
+						<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/blockquote&gt;]]></xsl:text>
 						<hr/>
 						<xsl:call-template name="pageNandI">
 							<xsl:with-param name="img" select="@xml:id"/>
 							<xsl:with-param name="nbr" select="@n"/>
 						</xsl:call-template>
-						<xsl:text disable-output-escaping="yes"><![CDATA[<blockquote>]]></xsl:text>
+						<xsl:text disable-output-escaping="yes"><![CDATA[&lt;blockquote&gt;]]></xsl:text>
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:when>
 			<xsl:when test="parent::tei:p">
 				<xsl:choose>
 					<xsl:when test="parent::tei:p/parent::tei:quote">
-						<xsl:text disable-output-escaping="yes"><![CDATA[</p></blockquote>]]></xsl:text>
+						<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/p&gt;&lt;/blockquote&gt;]]></xsl:text>
 						<hr/>
 						<xsl:call-template name="pageNandI">
 							<xsl:with-param name="img" select="@xml:id"/>
 							<xsl:with-param name="nbr" select="@n"/>
 						</xsl:call-template>
-						<xsl:text disable-output-escaping="yes"><![CDATA[<blockquote><p class="pnoindent">]]></xsl:text>
+						<xsl:text disable-output-escaping="yes"><![CDATA[&lt;blockquote&gt;&lt;p class="pnoindent"&gt;]]></xsl:text>
 					</xsl:when>
 					<xsl:otherwise>
-						<xsl:text disable-output-escaping="yes"><![CDATA[</p>]]></xsl:text>
+						<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/p&gt;]]></xsl:text>
 						<hr/>
 						<xsl:call-template name="pageNandI">
 							<xsl:with-param name="img" select="@xml:id"/>
 							<xsl:with-param name="nbr" select="@n"/>
 						</xsl:call-template>
-						<xsl:text disable-output-escaping="yes"><![CDATA[<p class="pnoindent">]]></xsl:text>
+						<xsl:text disable-output-escaping="yes"><![CDATA[&lt;p class="pnoindent"&gt;]]></xsl:text>
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:when>
 			<xsl:when test="parent::tei:lg/parent::tei:quote">
-				<xsl:text disable-output-escaping="yes"><![CDATA[</table></blockquote>]]></xsl:text>
+				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/table&gt;&lt;/blockquote&gt;]]></xsl:text>
 				<hr/>
 				<xsl:call-template name="pageNandI">
 					<xsl:with-param name="img" select="@xml:id"/>
 					<xsl:with-param name="nbr" select="@n"/>
 				</xsl:call-template>
-				<xsl:text disable-output-escaping="yes"><![CDATA[<blockquote><table class="poem">]]></xsl:text>
+				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;blockquote&gt;&lt;table class="poem"&gt;]]></xsl:text>
 			</xsl:when>
 			<xsl:when test="parent::tei:lg/parent::sp/parent::tei:div[@type = 'scene']">
-				<xsl:text disable-output-escaping="yes"><![CDATA[</table>]]></xsl:text>
+				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/table&gt;]]></xsl:text>
 				<hr/>
 				<xsl:call-template name="pageNandI">
 					<xsl:with-param name="img" select="@xml:id"/>
 					<xsl:with-param name="nbr" select="@n"/>
 				</xsl:call-template>
-				<xsl:text disable-output-escaping="yes"><![CDATA[<table class="scene">]]></xsl:text>
+				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;table class="scene"&gt;]]></xsl:text>
 			</xsl:when>
 			<xsl:when test="parent::tei:lg">
-				<xsl:text disable-output-escaping="yes"><![CDATA[</table>]]></xsl:text>
+				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/table&gt;]]></xsl:text>
 				<hr/>
 				<xsl:call-template name="pageNandI">
 					<xsl:with-param name="img" select="@xml:id"/>
 					<xsl:with-param name="nbr" select="@n"/>
 				</xsl:call-template>
-				<xsl:text disable-output-escaping="yes"><![CDATA[<table class="poem">]]></xsl:text>
+				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;table class="poem"&gt;]]></xsl:text>
 			</xsl:when>
 			<xsl:when test="preceding-sibling::tei:p | preceding-sibling::tei:lg">
 				<hr/>
@@ -1126,8 +1093,7 @@
 		<p id="{$noteNBR}"><xsl:value-of select="$noteNBR"/>. <xsl:apply-templates/>
 			<xsl:text> </xsl:text>
 			<a>
-				<xsl:attribute name="href"><xsl:text>#back</xsl:text><xsl:value-of select="$noteNBR"
-					/></xsl:attribute>
+				<xsl:attribute name="href"><xsl:text>#back</xsl:text><xsl:value-of select="$noteNBR"/></xsl:attribute>
 				<xsl:text>Back</xsl:text>
 			</a>
 		</p>
