@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<div xmlns="http://www.w3.org/1999/xhtml" xmlns:xi="http://www.w3.org/2001/XInclude" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
+    <xi:include href="../banner.html"/>
+    <div>
+        <div data-template="search:search-data" data-template-collection="bijou">
+            <div class="row">
+                <div class="col-md-9 right-menu">
+                    <div class="introduction">
+                        <h1>The Bijou Literary Annual</h1>
+                        <div style="margin:0 2em;">
+                            <!-- Place holder for description -->    
+                        </div>                
+                        <hr/>
+                        <div data-template="app:pageination" data-template-collection="bijou" data-template-search-string="yes" data-template-sort-options="author,title,pubDate,pubPlace,relevance"/>
+                        <div data-template="search:show-hits" data-template-collection="bijou" data-template-kwic="yes"/>
+                        <div data-template="app:pageination" data-template-collection="bijou"/>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <h2>Search Options</h2>
+                    <div class="indent">
+                        <form action="" method="get" title="Limit Search Results">
+                            <label for="keyword" class="control-label">Keyword Search: </label>
+                            <div class="input-group">
+                                <input type="text" class="form-control keyboard" placeholder="search" name="keyword" id="keyword"/>
+                                <div class="input-group-btn">
+                                    <button class="btn btn-default" type="submit" data-toggle="tooltip" title="Enter a search term" placeholder="Enter a search term">
+                                        <span class="glyphicon glyphicon-search"/>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        <h3>Limit results:</h3>  
+                        <div class="indent">
+                            <div data-template="app:display-facets" data-template-collection="bijou"/>
+                        </div>
+                    </div>    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
