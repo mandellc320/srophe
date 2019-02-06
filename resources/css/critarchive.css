@@ -1,3 +1,8 @@
+body {
+	background: #fff; 
+	font-family: "Cormorant+Garmond";
+	margin-left: 5em;
+	}
 p { font-size: 16px;
 	line-height: 30px;
 	text-indent: 45px;
@@ -188,7 +193,7 @@ img.tei {
     padding: 20px;
 }
 .biography {
-     background-color:#ffffff;
+    background-color:#ffffff;
     border:solid 1px #666666;
     width:60em;
     padding: 20px;
@@ -329,4 +334,8 @@ figure {
 .sup {
     vertical-align: super;
     font-size: 70%;
+}
+section.noteSpace {
+    border: none;
+    height: 20em;
 }
