@@ -16,7 +16,7 @@
         <!-- Root of app for building dynamic links. Default is eXist app root -->
         <nav-base></nav-base>
         <!-- eXist app root for app deployment-->
-        <app-root>srophe</app-root>
+        <app-root>poetess</app-root>
         <!-- eXist data app root for TEI application.  -->
         <data-root>poetess-data</data-root>
         <!-- Base URI for identifiers in app data -->
