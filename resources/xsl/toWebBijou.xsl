@@ -1,4 +1,4 @@
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs tei" version="2.0">
+<xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs tei" version="2.0">
 
 	<!-- script for converting XML-TEI to HTML. 		
 	Laura Mandell on 05/27/18 
@@ -379,8 +379,7 @@
 	<xsl:template match="tei:quote">
 		<xsl:choose>
 			<xsl:when test="parent::tei:p | parent::tei:note">
-				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/p&gt;]]></xsl:text>
-				<blockquote>
+				<span class="tei-quote">
 					<xsl:choose>
 						<xsl:when test="tei:p">
 							<xsl:apply-templates/>
@@ -389,16 +388,13 @@
 							<xsl:apply-templates/>
 						</xsl:when>
 						<xsl:otherwise>
-							<p class="pnoindent">
-								<xsl:apply-templates/>
-							</p>
+							<span class="tei-p pnoindent"><xsl:apply-templates/></span>
 						</xsl:otherwise>
 					</xsl:choose>
-				</blockquote>
-				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;p class="pnoindent"&gt;]]></xsl:text>
+				</span>
 			</xsl:when>
 			<xsl:otherwise>
-				<blockquote>
+				<span class="tei-quote">
 					<xsl:choose>
 						<xsl:when test="tei:p">
 							<xsl:apply-templates/>
@@ -407,12 +403,10 @@
 							<xsl:apply-templates/>
 						</xsl:when>
 						<xsl:otherwise>
-							<p class="pnoindent">
-								<xsl:apply-templates/>
-							</p>
+							<span class="tei-p pnoindent"><xsl:apply-templates/></span>
 						</xsl:otherwise>
 					</xsl:choose>
-				</blockquote>
+				</span>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -784,122 +778,106 @@
 	<xsl:template match="tei:pb">
 		<xsl:choose>
 			<xsl:when test="parent::tei:div[@type = 'scene']">
-				<hr/>
-				<xsl:call-template name="pageNandI">
-					<xsl:with-param name="img" select="@xml:id"/>
-					<xsl:with-param name="nbr" select="@n"/>
-				</xsl:call-template>
+				<span class="tei-pb pageNumber">
+					<xsl:call-template name="pageNandI">
+						<xsl:with-param name="img" select="@xml:id"/>
+						<xsl:with-param name="nbr" select="@n"/>
+					</xsl:call-template>					
+				</span>
 			</xsl:when>
 			<xsl:when test="parent::tei:div[@type = 'picture']">
-				<hr/>
+				<span class="tei-pb pageNumber">
 				<xsl:choose>
 					<xsl:when test="@n">
-						<table class="pageNumber">
-							<tr>
-								<td class="a">
-									<xsl:text>[Page </xsl:text>
-									<xsl:value-of select="@n"/>
-									<xsl:text>]</xsl:text>
-								</td>
-								<td class="b"> </td>
-							</tr>
-						</table>
+						<xsl:text>[Page </xsl:text>
+						<xsl:value-of select="@n"/>
+						<xsl:text>]</xsl:text>
 					</xsl:when>
 					<xsl:otherwise>
-						<table class="pageNumber">
-							<tr>
-								<td class="a">
-									<xsl:text>[np]</xsl:text>
-								</td>
-								<td class="b"> </td>
-							</tr>
-						</table>
+						<xsl:text>[np]</xsl:text>
 					</xsl:otherwise>
 				</xsl:choose>
+				</span>
 			</xsl:when>
 			<xsl:when test="parent::tei:quote">
 				<xsl:choose>
 					<xsl:when test="parent::tei:quote/parent::tei:p">
-						<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/blockquote&gt;&lt;/p&gt;]]></xsl:text>
-						<hr/>
+						<span class="tei-pb pageNumber">
 						<xsl:call-template name="pageNandI">
 							<xsl:with-param name="img" select="@xml:id"/>
 							<xsl:with-param name="nbr" select="@n"/>
 						</xsl:call-template>
-						<xsl:text disable-output-escaping="yes"><![CDATA[&lt;p class="pnoindent"&gt;&lt;blockquote&gt;]]></xsl:text>
+						</span>
 					</xsl:when>
 					<xsl:otherwise>
-						<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/blockquote&gt;]]></xsl:text>
-						<hr/>
-						<xsl:call-template name="pageNandI">
+						<span class="tei-pb pageNumber">
+							<xsl:call-template name="pageNandI">
 							<xsl:with-param name="img" select="@xml:id"/>
 							<xsl:with-param name="nbr" select="@n"/>
-						</xsl:call-template>
-						<xsl:text disable-output-escaping="yes"><![CDATA[&lt;blockquote&gt;]]></xsl:text>
+							</xsl:call-template>
+						</span>
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:when>
 			<xsl:when test="parent::tei:p">
 				<xsl:choose>
 					<xsl:when test="parent::tei:p/parent::tei:quote">
-						<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/p&gt;&lt;/blockquote&gt;]]></xsl:text>
-						<hr/>
+						<span class="tei-pb pageNumber">
 						<xsl:call-template name="pageNandI">
 							<xsl:with-param name="img" select="@xml:id"/>
 							<xsl:with-param name="nbr" select="@n"/>
 						</xsl:call-template>
-						<xsl:text disable-output-escaping="yes"><![CDATA[&lt;blockquote&gt;&lt;p class="pnoindent"&gt;]]></xsl:text>
+						</span>
 					</xsl:when>
 					<xsl:otherwise>
-						<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/p&gt;]]></xsl:text>
-						<hr/>
+						<span class="tei-pb pageNumber">
 						<xsl:call-template name="pageNandI">
 							<xsl:with-param name="img" select="@xml:id"/>
 							<xsl:with-param name="nbr" select="@n"/>
 						</xsl:call-template>
-						<xsl:text disable-output-escaping="yes"><![CDATA[&lt;p class="pnoindent"&gt;]]></xsl:text>
+						</span>
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:when>
 			<xsl:when test="parent::tei:lg/parent::tei:quote">
-				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/table&gt;&lt;/blockquote&gt;]]></xsl:text>
-				<hr/>
+				<span class="tei-pb pageNumber">
 				<xsl:call-template name="pageNandI">
 					<xsl:with-param name="img" select="@xml:id"/>
 					<xsl:with-param name="nbr" select="@n"/>
 				</xsl:call-template>
-				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;blockquote&gt;&lt;table class="poem"&gt;]]></xsl:text>
+				</span>
 			</xsl:when>
 			<xsl:when test="parent::tei:lg/parent::sp/parent::tei:div[@type = 'scene']">
-				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/table&gt;]]></xsl:text>
-				<hr/>
+				<span class="tei-pb pageNumber">
 				<xsl:call-template name="pageNandI">
 					<xsl:with-param name="img" select="@xml:id"/>
 					<xsl:with-param name="nbr" select="@n"/>
 				</xsl:call-template>
-				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;table class="scene"&gt;]]></xsl:text>
+				</span>
 			</xsl:when>
 			<xsl:when test="parent::tei:lg">
-				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/table&gt;]]></xsl:text>
-				<hr/>
+				<span class="tei-pb pageNumber">
 				<xsl:call-template name="pageNandI">
 					<xsl:with-param name="img" select="@xml:id"/>
 					<xsl:with-param name="nbr" select="@n"/>
 				</xsl:call-template>
-				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;table class="poem"&gt;]]></xsl:text>
+				</span>
 			</xsl:when>
 			<xsl:when test="preceding-sibling::tei:p | preceding-sibling::tei:lg">
-				<hr/>
+				<span class="tei-pb pageNumber">
 				<xsl:call-template name="pageNandI">
 					<xsl:with-param name="img" select="@xml:id"/>
 					<xsl:with-param name="nbr" select="@n"/>
 				</xsl:call-template>
+				</span>
 			</xsl:when>
 			<xsl:otherwise>
+				<span class="tei-pb pageNumber">
 				<xsl:call-template name="pageNandI">
 					<xsl:with-param name="img" select="@xml:id"/>
 					<xsl:with-param name="nbr" select="@n"/>
 				</xsl:call-template>
+				</span>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>

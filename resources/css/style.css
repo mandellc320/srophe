@@ -289,8 +289,10 @@ pre {
     margin-left:-1.5em;
     padding-right:.5em;    
 }
-
+.tei-quote {display:block; margin:.5em 1.5em; border-left: 2px solid #739CC0;}
+.tei-pb {display:block; margin:1em; padding:.5em; text-align:center !important;}
 .top-padding {margin-top:4.5em !important;}
+.pageNumber {display:block; margin:1em; padding:.5em; text-align:center !important;}
 
 /* W */
 .white-link{color:white;}

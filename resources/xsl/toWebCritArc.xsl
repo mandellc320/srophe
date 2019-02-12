@@ -1,4 +1,4 @@
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs tei" version="2.0">
+<xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs tei" version="2.0">
 	
 	<!-- script for converting XML-TEI to HTML. 		
 	Laura Mandell on 05/27/18 
@@ -98,7 +98,7 @@
 	<!-- =======================================================
 	         body templates used by all types of documents -->
 
-	<xsl:template match="tei:text">
+	<xsl:template match="tei:text"> 
 				<xsl:apply-templates/>
 		<xsl:if test="//tei:note">
 				<section class="notes">
@@ -157,12 +157,12 @@
 	<xsl:template match="tei:lg">
 		<xsl:choose>
 			<xsl:when test="parent::tei:div[@type='poem']">
-		<xsl:apply-templates/>
-		<tr>
-			<td>
-				<br/>
-			</td>
-		</tr>
+				<xsl:apply-templates/>
+				<tr>
+					<td>
+						<br/>
+					</td>
+				</tr>
 			</xsl:when>
 			<xsl:otherwise>
 				<table>
@@ -194,8 +194,7 @@
 	<xsl:template match="tei:quote">
 		<xsl:choose>
 			<xsl:when test="parent::tei:p | parent::tei:note">
-			<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/p&gt;]]></xsl:text>
-			<blockquote>
+			<span class="tei-quote">
 				<xsl:choose>
 					<xsl:when test="tei:p">
 						<xsl:apply-templates/>
@@ -204,14 +203,13 @@
 						<xsl:apply-templates/>
 					</xsl:when>
 					<xsl:otherwise>
-				<p class="pnoindent"><xsl:apply-templates/></p>
+						<span class="tei-p pnoindent"><xsl:apply-templates/></span>
 					</xsl:otherwise>
 				</xsl:choose>
-			</blockquote>
-			<xsl:text disable-output-escaping="yes"><![CDATA[&lt;p class="pnoindent"&gt;]]></xsl:text>
+			</span>
 			</xsl:when>
 			<xsl:otherwise>
-				<blockquote>
+				<span class="tei-quote">
 					<xsl:choose>
 						<xsl:when test="tei:p">
 							<xsl:apply-templates/>
@@ -220,10 +218,10 @@
 							<xsl:apply-templates/>
 						</xsl:when>
 						<xsl:otherwise>
-							<p class="pnoindent"><xsl:apply-templates/></p>
+							<span class="tei-p pnoindent"><xsl:apply-templates/></span>
 						</xsl:otherwise>
 					</xsl:choose>
-				</blockquote>
+				</span>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -380,164 +378,36 @@
 	</xsl:template>
 
 	<xsl:template match="tei:pb">
-		<xsl:choose>
-			<xsl:when test="parent::tei:quote">
-				<xsl:choose>
-					<xsl:when test="parent::tei:quote/parent::tei:p">
-				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/blockquote&gt;]]></xsl:text>
-				<hr/>
-				<blockquote>
-					<p class="pnoindent"><xsl:apply-templates/></p>
-				</blockquote>
-				<p class="pageNumber">
-					<xsl:text>[Page </xsl:text>
-					<xsl:value-of select="@n"/>
-					<xsl:text>]</xsl:text>
-				</p>
-				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;p class="pnoindent"&gt;]]></xsl:text>
-					</xsl:when>
-					<xsl:otherwise>
-						<hr/>
-						<blockquote>
-							<p class="pnoindent"><xsl:apply-templates/></p>
-						</blockquote>
-						<p class="pageNumber">
-							<xsl:text>[Page </xsl:text>
-							<xsl:value-of select="@n"/>
-							<xsl:text>]</xsl:text>
-						</p>
-					</xsl:otherwise>
-				</xsl:choose>
-			</xsl:when>
-			<xsl:when test="parent::tei:p">
-				<xsl:choose>
-					<xsl:when test="parent::tei:p/parent::tei:quote">
-				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/p&gt;&lt;/blockquote&gt;]]></xsl:text>
-				<hr/>
-				<p class="pageNumber">
-						<xsl:text>[Page </xsl:text>
-						<xsl:value-of select="@n"/>
-						<xsl:text>]</xsl:text>
-				</p>
-				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;blockquote&gt;&lt;p class="pnoindent"&gt;]]></xsl:text>
-					</xsl:when>
-						<xsl:otherwise>
-							<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/p&gt;]]></xsl:text>
-							<hr/>
-							<p class="pageNumber">
-								<xsl:text>[Page </xsl:text>
-								<xsl:value-of select="@n"/>
-								<xsl:text>]</xsl:text>
-							</p>
-							<xsl:text disable-output-escaping="yes"><![CDATA[&lt;p class="pnoindent"&gt;]]></xsl:text>
-						</xsl:otherwise>
-				</xsl:choose>
-			</xsl:when>
-			<xsl:when test="parent::tei:lg/parent::tei:quote">
-				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/table&gt;&lt;/blockquote&gt;]]></xsl:text>
-				<hr/>
-				<p class="pageNumber">
-					<xsl:text>[Page </xsl:text>
-					<xsl:value-of select="@n"/>
-					<xsl:text>]</xsl:text>
-				</p>
-				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;blockquote&gt;&lt;table&gt;]]></xsl:text>
-			</xsl:when>
-			<xsl:when test="parent::tei:lg">
-				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/table&gt;]]></xsl:text>
-				<hr/>
-				<p class="pageNumber">
-					<xsl:text>[Page </xsl:text>
-					<xsl:value-of select="@n"/>
-					<xsl:text>]</xsl:text>
-				</p>
-				<xsl:text disable-output-escaping="yes"><![CDATA[&lt;table&gt;]]></xsl:text>
-			</xsl:when>
-			<xsl:otherwise>
-				<hr/>
-				<p class="pageNumber">
-						<xsl:text>[Page </xsl:text>
-						<xsl:value-of select="@n"/>
-						<xsl:text>]</xsl:text>
-				</p>
-			</xsl:otherwise>
-		</xsl:choose>
+		<span class="pageNumber">
+			<xsl:text>[Page </xsl:text><xsl:value-of select="@n"/><xsl:text>]</xsl:text>		
+		</span>
 	</xsl:template>
 	
 		<xsl:template match="tei:milestone">
-			<xsl:choose>
-				<xsl:when test="preceding-sibling::tei:fw[1]"/>
-				<xsl:when test="parent::tei:p/parent::tei:quote">
-					<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/p&gt;&lt;/blockquote&gt;]]></xsl:text>
-					<table class="milestone">
-						<tr><td>
-							<xsl:value-of select="@n"/>
-						</td></tr>
-					</table>
-					<xsl:text disable-output-escaping="yes"><![CDATA[&lt;blockquote&gt;&lt;p class="pnoindent"&gt;]]></xsl:text>
-				</xsl:when>
-				<xsl:when test="parent::tei:p">
-					<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/p&gt;]]></xsl:text>
-					<table class="milestone">
-						<tr><td>
-							<xsl:value-of select="@n"/>
-						</td></tr>
-					</table>
-					<xsl:text disable-output-escaping="yes"><![CDATA[&lt;p class="pnoindent"&gt;]]></xsl:text>
-				</xsl:when>
-				<xsl:when test="parent::tei:lg/parent::tei:quote">
-					<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/table&gt;&lt;/blockquote&gt;]]></xsl:text>
-					<table class="milestone">
-						<tr><td><xsl:value-of select="@n"/></td></tr>
-					</table>
-					<xsl:text disable-output-escaping="yes"><![CDATA[&lt;blockquote&gt;&lt;table&gt;]]></xsl:text>
-				</xsl:when>
-				<xsl:when test="parent::tei:lg">
-					<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/table&gt;]]></xsl:text>
-					<table class="milestone">
-						<tr><td><xsl:value-of select="@n"/></td></tr>
-					</table>
-					<xsl:text disable-output-escaping="yes"><![CDATA[&lt;table&gt;]]></xsl:text>
-				</xsl:when>
-				<xsl:otherwise>
-					<table class="milestone">
-						<tr><td>
-							<xsl:value-of select="@n"/>
-						</td></tr>
-					</table>
-				</xsl:otherwise>
-			</xsl:choose>
+			<span class="tei-milestone milestone">
+				<xsl:value-of select="@n"/>
+			</span>
 		</xsl:template>
 		
 		<xsl:template match="tei:fw">
 			<xsl:choose>
-				<xsl:when test="parent::tei:quote">
-					<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/blockquote&gt;]]></xsl:text>
-					<xsl:call-template name="fwTable"/>
-					<xsl:text disable-output-escaping="yes"><![CDATA[&lt;blockquote&gt;]]></xsl:text>
-				</xsl:when>
-				<xsl:when test="parent::tei:p/parent::tei:quote">
-					<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/p&gt;&lt;/blockquote&gt;]]></xsl:text>
-					<xsl:call-template name="fwTable"/>
-					<xsl:text disable-output-escaping="yes"><![CDATA[&lt;blockquote&gt;&lt;p class="pnoindent"&gt;]]></xsl:text>
-				</xsl:when>
-				<xsl:when test="parent::tei:p">
-					<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/p&gt;]]></xsl:text>
-					<xsl:call-template name="fwTable"/>
-					<xsl:text disable-output-escaping="yes"><![CDATA[&lt;p class="pnoindent"&gt;]]></xsl:text>
-				</xsl:when>
-				<xsl:when test="parent::tei:lg/parent::tei:quote">
-					<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/table&gt;&lt;/blockquote&gt;]]></xsl:text>
-					<xsl:call-template name="fwTable"/>
-					<xsl:text disable-output-escaping="yes"><![CDATA[&lt;blockquote&gt;&lt;table&gt;]]></xsl:text>
-				</xsl:when>
-				<xsl:when test="parent::tei:lg">
-					<xsl:text disable-output-escaping="yes"><![CDATA[&lt;/table&gt;]]></xsl:text>
-					<xsl:call-template name="fwTable"/>
-					<xsl:text disable-output-escaping="yes"><![CDATA[&lt;table&gt;]]></xsl:text>
+				<xsl:when test="following-sibling::tei:milestone[1]">
+					<span class="mlst1 {string(@rendition)} tei-p">
+						<xsl:apply-templates/>
+					</span>
+					<span class="mlst2 {string(@rendition)} tei-p">
+						<xsl:value-of select="following-sibling::tei:milestone[1]/@n"/>
+					</span>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:call-template name="fwTable"/>
+					<span>
+						<xsl:if test="@rendition">
+							<xsl:attribute name="class">
+								<xsl:apply-templates select="@rendition"/>
+							</xsl:attribute>
+						</xsl:if>
+						<xsl:apply-templates/>
+					</span>
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:template>
