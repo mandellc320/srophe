@@ -142,7 +142,7 @@
 						<section id="@xml:id">
 							<xsl:attribute name="class" select="@type"/>
 							<xsl:apply-templates/>
-							<table class="tei">
+<!--							<table class="tei">
 								<tr>
 									<td class="a">
 										<h5>from <a href="http://www.poetessarchive.org/bijou/HTML/bijou1828-p5.html">
@@ -165,9 +165,8 @@
 											<img class="tei" src="download.png" alt="TEI-encoded version"/>
 										</a>
 									</td>
-									<!--tei image needs to be local -->
 								</tr>
-							</table>
+							</table> -->
 						</section>
 					</xsl:otherwise>
 				</xsl:choose>

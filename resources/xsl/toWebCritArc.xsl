@@ -110,19 +110,19 @@
 	
 	<xsl:template match="tei:div">
 		<xsl:variable name="workCode" select="ancestor-or-self::tei:TEI/tei:teiHeader/tei:fileDesc/tei:publicationStmt/tei:idno"/>
-		<xsl:variable name="URL" select="concat($baseURL, 'XML/', $workCode, '.xml')"/> <!-- needs to be switched to local tei link -->
+		<!--<xsl:variable name="URL" select="concat($baseURL, 'XML/', $workCode, '.xml')"/> -->
 		<xsl:choose>
 			<xsl:when test="@type='essay'">
 				<main id="{$workCode}">
 					<xsl:attribute name="class" select="@type"/>
-					<p class="tei"><a class="tei" href="{$URL}"><img class="tei" src="download.png" alt="TEI-encoded version"/></a></p> <!--tei image needs to be local -->
 					<xsl:apply-templates/>
 				</main>
 			</xsl:when>
 			<xsl:when test="@type = 'poem'">
 				<main id="{$workCode}">
-					<p class="tei"><a class="tei" href="{$URL}"><img class="tei" src="download.png" alt="TEI-encoded version"/></a></p> <!--tei image needs to be local -->
-					<xsl:apply-templates select="tei:head"/>
+					<p class="tei">
+						<xsl:apply-templates select="tei:head"/>
+					</p>
 					<table>
 						<xsl:apply-templates select="tei:lg"/>
 					</table>
