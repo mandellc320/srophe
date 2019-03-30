@@ -1,6 +1,7 @@
 <xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs tei" version="2.0">
 	
 	<!-- script for converting XML-TEI to HTML. 		
+
 	Laura Mandell on 05/27/18 
 	00-began with fork from /xslt/masters/HTMLtransform.xsl
 	01-filled master with needed code
@@ -110,19 +111,19 @@
 	
 	<xsl:template match="tei:div">
 		<xsl:variable name="workCode" select="ancestor-or-self::tei:TEI/tei:teiHeader/tei:fileDesc/tei:publicationStmt/tei:idno"/>
-		<xsl:variable name="URL" select="concat($baseURL, 'XML/', $workCode, '.xml')"/> <!-- needs to be switched to local tei link -->
+		<!--<xsl:variable name="URL" select="concat($baseURL, 'XML/', $workCode, '.xml')"/> -->
 		<xsl:choose>
 			<xsl:when test="@type='essay'">
 				<main id="{$workCode}">
 					<xsl:attribute name="class" select="@type"/>
-					<p class="tei"><a class="tei" href="{$URL}"><img class="tei" src="download.png" alt="TEI-encoded version"/></a></p> <!--tei image needs to be local -->
 					<xsl:apply-templates/>
 				</main>
 			</xsl:when>
 			<xsl:when test="@type = 'poem'">
 				<main id="{$workCode}">
-					<p class="tei"><a class="tei" href="{$URL}"><img class="tei" src="download.png" alt="TEI-encoded version"/></a></p> <!--tei image needs to be local -->
-					<xsl:apply-templates select="tei:head"/>
+					<p class="tei">
+						<xsl:apply-templates select="tei:head"/>
+					</p>
 					<table>
 						<xsl:apply-templates select="tei:lg"/>
 					</table>
