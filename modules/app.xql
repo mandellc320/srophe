@@ -598,10 +598,10 @@ declare function app:title-string($node as node(), $model as map(*)){
             if($model("hits")/descendant::tei:titleStmt[1]/tei:title[@type='subordinate']) then
                 concat($model("hits")/descendant::tei:titleStmt[1]/tei:title[@type='main'],' in ', 
                 $model("hits")/descendant::tei:titleStmt[1]/tei:title[@type='subordinate'], ' by ', 
-                $model("hits")/descendant::tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:author)
+                $model("hits")/descendant::tei:biblStruct/descendant::tei:author[1])
             else 
                 concat($model("hits")/descendant::tei:titleStmt[1]/tei:title[@type='main'],' by ',
-                $model("hits")/descendant::tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:author)
+                $model("hits")/descendant::tei:biblStruct/descendant::tei:author)
         else $model("hits")/descendant::tei:titleStmt[1]/tei:title[1]
     return normalize-space($title)        
 };
