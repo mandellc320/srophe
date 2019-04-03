@@ -308,6 +308,26 @@ declare function facet:controlled-labels($result, $label) {
    if(starts-with($label,'#')) then 
         let $id := substring-after($label,'#')
         let $text-lable := $result/ancestor-or-self::tei:TEI/descendant::*[@xml:id = $id]//text()
-        return $text-lable
+        return normalize-space(string-join($text-lable,' '))
    else $label
+};
+
+declare function facet:collection($results as item()*, $facet-definitions as element(facet:facet-definition)?){
+    let $path := concat('$results/',$facet-definitions/facet:group-by/facet:sub-path/text()) 
+    let $sort := $facet-definitions/facet:order-by
+    let $results := util:eval($path)
+    let $d := tokenize(string-join($results,' '),' ')
+    for $f in $d
+    group by $facet-grp := tokenize($f,' ')
+    order by 
+        if($sort/text() = 'value') then $f[1]
+        else count($f)
+        descending
+    return 
+        if($facet-grp != ('',' ')) then 
+            for $collection in $results[1]
+            let $label := facet:controlled-labels($collection, $facet-grp)(:replace(facet:controlled-labels($collection, $facet-grp),'collection ',''):)
+            where starts-with($label,'collection')
+            return <key xmlns="http://expath.org/ns/facet" count="{count($f)}" value="{$facet-grp}" label="{substring-after($label,'collection ')}"/>
+        else ()
 };

@@ -3,7 +3,7 @@
     <!-- Configuration for Github webhooks sync feature -->
     <git-config>
         <!-- github secret key can be stored here or as a environment variable. (prefered)  -->
-        <private-key></private-key>
+        <private-key>sp1VakF3mCon</private-key>
         <private-key-variable></private-key-variable>
         <!-- github token for rate limiting. can be stored here or as a environment variable. (prefered)  -->
         <gitToken></gitToken>
@@ -11,7 +11,7 @@
         <!-- Branch to sync, if empty assumes master -->
         <github-branch></github-branch>
         <!-- Collection in eXistdb to sync app to. example: /db/apps/tcadrt -->
-        <exist-collection></exist-collection>
+        <exist-collection>/db/apps/poetess</exist-collection>
         <!-- App root in git repository. example: srophe-app -->
         <repo-name></repo-name>
     </git-config>

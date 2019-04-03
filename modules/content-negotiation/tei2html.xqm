@@ -44,7 +44,7 @@ declare function tei2html:tei2html($nodes as node()*) as item()* {
             case element(tei:imprint) return element span {
                     if($node/tei:pubPlace/text()) then $node/tei:pubPlace[1]/text() else (),
                     if($node/tei:pubPlace/text() and $node/tei:publisher/text()) then ': ' else (),
-                    if($node/tei:publisher/text()) then $node/tei:publisher[1]/text() else (),
+                    if($node/tei:publisher/text()) then $node/tei:publisher[1]//text() else (),
                     if(not($node/tei:pubPlace) and not($node/tei:publisher) and $node/tei:title[@level='m']) then <abbr title="no publisher">n.p.</abbr> else (),
                     if($node/tei:date/preceding-sibling::*) then ', ' else (),
                     if($node/tei:date) then $node/tei:date else <abbr title="no date of publication">n.d.</abbr>,
@@ -145,16 +145,14 @@ declare function tei2html:summary-view($nodes as node()*, $lang as xs:string?, $
                         replace($id,'/tei','')
                     else $id 
                 else replace($nodes/descendant::tei:teiHeader/tei:fileDesc/tei:publicationStmt/tei:idno[@type='URL'],'/tei','')
-    let $title := if($nodes/descendant-or-self::tei:title[@syriaca-tags='#syriaca-headword'][@xml:lang='en']) then 
-                    $nodes/descendant-or-self::tei:title[@syriaca-tags='#syriaca-headword'][@xml:lang='en'][1]/text()
-                  else $nodes/descendant-or-self::tei:title[1]/text()
+    let $title := $nodes/descendant-or-self::tei:titleStmt/tei:title[1]/text()
     let $series := normalize-space(string($nodes/descendant-or-self::tei:seriesStmt/tei:title[@level="s"]))
     let $collection-path := string($config:get-config//repo:collection[@title=$series]/@app-root)                
     return 
         <div class="short-rec-view">
             <div>{string($nodes/@sort)}</div>
             <!--<a href="{replace($id,$config:base-uri,$config:nav-base)}" dir="ltr">{$title}</a>-->
-            {bibl2html:citation($nodes/descendant::tei:sourceDesc/tei:biblStruct)}
+            {bibl2html:citation($nodes/descendant::tei:sourceDesc)}
             {
             if($id != '') then 
             <span class="results-list-desc uri">View: <a href="{$config:nav-base}{$collection-path}work/{replace($id,$config:base-uri,$config:nav-base)}">HTML</a> | <a href="{$config:nav-base}{$collection-path}work/{replace($id,$config:base-uri,$config:nav-base)}.xml">XML</a></span>

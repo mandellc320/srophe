@@ -13,25 +13,4 @@
         <max-values show="10">60</max-values>
         <order-by direction="ascending">value</order-by>
     </facet-definition>
-    <facet-definition name="Format">
-        <group-by function="facet:group-by-array">
-            <sub-path>descendant::tei:catRef[@scheme='#f']/@target</sub-path>
-        </group-by>
-        <max-values show="10">60</max-values>
-        <order-by direction="ascending">value</order-by>
-    </facet-definition>
-    <!--
-    <facet-definition name="Keywords">
-        <group-by>
-            <sub-path>descendant::tei:profileDesc/tei:textClass/tei:keywords/tei:list/tei:item</sub-path>
-        </group-by>
-        <max-values show="10">60</max-values>
-        <order-by direction="ascending">value</order-by>
-    </facet-definition>
-    -->
-    <!-- TYPES OF WORKS -->
-    <!-- BIBLIOGRAPHY TYPE -->
-    <!-- SOURCE TYPE: -->
-    <!-- SORT RESULTS BY: -->
-    <!-- A simple facet for browsing by Syriaca.org place names (filtering on English) -->
 </facets>

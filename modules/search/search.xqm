@@ -34,27 +34,28 @@ declare variable $search:perpage {request:get-parameter('perpage', 20) cast as x
 declare %templates:wrap function search:search-data($node as node(), $model as map(*), $collection as xs:string?, $sort-element as xs:string?){
     let $queryExpr := if($collection = 'bibl') then
                             bibls:query-string()
-                      else search:query-string($collection)                        
+                      else search:query-string($collection)                 
     let $hits := if($queryExpr != '') then 
                      data:search($collection, $queryExpr, $sort-element)
                  else data:search($collection, '', $sort-element)
     return
         map {
                 "hits" := $hits,
-                "query" := $queryExpr
+                "query" := $queryExpr,
+                "sort" := $sort-element
         } 
 };
 
 declare %templates:wrap function search:group-by-author($node as node(), $model as map(*), $collection as xs:string?){
    map {"group-by-authors" := 
         let $hits := $model("hits")
-        (:let $groups := distinct-values(for $a in $hits//tei:biblStruct/descendant::tei:author return normalize-space($a)):)
         let $authors := distinct-values(
                         for $a in $hits/descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:author | $hits/descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:editor 
-                        let $name := if($a/tei:name/@reg) then string($a/tei:name/@reg) 
+                        let $name := if($a/tei:name/@reg) then string($a/tei:name/@reg)
+                                     else if($a/tei:name/tei:surname) then concat($a/tei:name/tei:surname//text(),', ', $a/tei:name/tei:forename)
                                      else if($a/tei:name) then $a/tei:name//text()
                                      else $a//text()
-                        let $normalized := if(contains($name,('Unknown','unknown','Anonymous','anonymous'))) then ' Anonymous' else normalize-space(string-join($name,''))                                     
+                        let $normalized := if(contains($name,('Unknown','unknown','Anonymous','anonymous','[anon.]','[anon]','[Anon.]'))) then ' Anonymous' else normalize-space(string-join($name,''))                                     
                         return $normalized)
         return 
             if(request:get-parameter('author-exact', '')) then 
@@ -68,6 +69,104 @@ declare %templates:wrap function search:group-by-author($node as node(), $model 
                 return 
                     <browse xmlns="http://www.w3.org/1999/xhtml" author="{$author}"/>
    }    
+};
+
+declare %templates:wrap function search:group-by-collection($node as node(), $model as map(*), $collection as xs:string?){
+   map {"group-by-collection-type" := 
+        let $hits := $model("hits")                                       
+        for $collection in $hits/descendant::tei:taxonomy/tei:category[tei:catDesc[starts-with(.,'collection ')]]                
+        group by $collection-name := $collection/@xml:id
+        order by $collection[1] 
+        let $count-hits := count($hits/descendant::tei:catRef[@scheme="#g"][contains(@target, concat('#',$collection-name))])
+        return 
+            <browse xmlns="http://www.w3.org/1999/xhtml" collection="{$collection[1]//text()}" collection-type="{string($collection-name)}" count="{$count-hits}"/>
+   }    
+};
+
+(:~ 
+ : Builds results output
+ <div>debug {search:query-string($collection)}</div>
+:)
+declare 
+    %templates:default("start", 1)
+function search:show-collections($node as node()*, $model as map(*), $collection as xs:string?, $kwic as xs:string?) {
+    let $collections := $model("group-by-collection-type")
+    return
+    (<div class="collections-jump" id="top">
+    {
+        for $collection at $p in $collections 
+        let $collection-title := normalize-space(replace(string($collection/@collection),'collection ',''))
+        order by $collection-title
+        where xs:integer($collection/@count) gt 0
+        return 
+            if(request:get-parameter('collection-id', '')) then
+                <a href="{request:get-url()}#{$collection/@collection-type}" class="btn btn-primary">{$collection-title}</a>
+            else <a href="#{$collection/@collection-type}" class="btn btn-primary">{$collection-title}</a>
+        }</div>,
+    <div class="indent" id="search-results" xmlns="http://www.w3.org/1999/xhtml">{
+        if(request:get-parameter('collection-id', '')) then
+            <div>{
+                let $collection-param := replace(request:get-parameter('collection-id', ''),'.xml','')
+                let $collection := $model("hits")/*[descendant::tei:publicationStmt/tei:idno[1][. = $collection-param]]
+                let $collection-id := $collection/descendant::tei:seriesStmt/tei:idno[1]
+                return
+                <div>
+                    <span class="collection-titles">{tei2html:summary-view($collection, '', $collection-id)}</span>
+                    <div class="toolbar">{page:pages($model("hits"), $collection, $search:start, $search:perpage,'', 'author,title,pubDate,pubPlace')}</div>
+                    {
+                    for $work at $p in subsequence($model("hits"),$search:start,$search:perpage) 
+                    let $work-id := replace($work/descendant::tei:publicationStmt/tei:idno[1],'/tei','')
+                    let $kwic := if($kwic = ('true','yes','true()','kwic')) then kwic:expand($work) else ()               
+                    return 
+                        <div class="indent result">{(
+                            tei2html:summary-view($work, '', $work-id),
+                            if($kwic//exist:match) then 
+                                tei2html:output-kwic($kwic, $work-id)
+                            else ()
+                        )}</div>
+                    }
+                </div>    
+            }</div>
+        else 
+            let $collections := $model("group-by-collection-type")
+            for $collection at $p in $collections 
+            let $collection-title := normalize-space(replace(string($collection/@collection),'collection ',''))
+            let $hits := $model("hits")/descendant::tei:catRef[@scheme="#g"][contains(@target, concat('#',$collection/@collection-type))]
+            order by $collection-title
+            where xs:integer($collection/@count) gt 0
+            return
+                <div id="{string($collection/@collection-type)}">{(
+                    <h3>{concat(upper-case(substring($collection-title,1,1)),substring($collection-title,2))}</h3>,<hr/>,
+                    <div class="indent">{
+                        for $hit at $p in $hits
+                        let $root := $hit/ancestor::tei:TEI
+                        let $id := replace($root/descendant::tei:publicationStmt/tei:idno[1],'/tei','')
+                        let $collection-id := $root/descendant::tei:seriesStmt/tei:idno[1]
+                        let $collection-works := for $r in $model("hits")
+                                                 order by global:build-sort-string(data:add-sort-options($r, 'author'),'')
+                                                 where $r/descendant::tei:seriesStmt/tei:idno[. = $collection-id]
+                                                 return $r
+                        return
+                            <div class="collection result">
+                                <span class="collection-titles">{tei2html:summary-view($root, '', $id)}</span>
+                                <div class="collection result works indent">
+                                {(
+                                    for $work at $p in subsequence($collection-works,1,5)
+                                    let $work-id := replace($work/descendant::tei:idno[1],'/tei','')
+                                    let $kwic := if($kwic = ('true','yes','true()','kwic')) then kwic:expand($root) else ()
+                                    return 
+                                    <div class="indent result">{(
+                                        tei2html:summary-view($work, '', $work-id),
+                                        if($kwic//exist:match) then 
+                                            tei2html:output-kwic($kwic, $work-id)
+                                        else ()
+                                    )}</div>,
+                                    <div class="clearfix"><a class="btn btn-primary pull-right" href="{request:get-uri()}?collection-id={string($collection-id)}">See all {count($collection-works)} works in this collection</a></div>
+                                )}</div>
+                            </div>
+                    }</div>
+                )}</div>
+    }</div>)
 };
 
 (:~ 
@@ -85,7 +184,8 @@ function search:show-authors($node as node()*, $model as map(*), $collection as 
             group by $alpha-grp := $alpha
             return 
                 <div id="{if($alpha-grp = ' ') then 'Anonymous' else $alpha-grp}">{(
-                    <label>{if($alpha-grp = ' ') then 'Anonymous' else $alpha-grp}</label>,
+                    if(request:get-parameter('author-exact', '') != '') then ()
+                    else <label>{if($alpha-grp = ' ') then 'Anonymous' else $alpha-grp}</label>,
                     <div class="indent">{
                     for $a in $hit
                     return 
@@ -113,7 +213,6 @@ function search:show-authors($node as node()*, $model as map(*), $collection as 
    }  
 </div>
 };
-
 
 (:~ 
  : Builds results output
@@ -320,7 +419,37 @@ declare function search:author() as xs:string? {
 
 declare function search:author-exact() as xs:string? {
     if(request:get-parameter('author-exact', '') != '') then 
-    concat("[ft:query(descendant::tei:author,'",data:clean-string(request:get-parameter('author-exact', '')),"',data:search-options())]")
+        if(request:get-parameter('author-exact', '') = ('Anonymous',' Anonymous')) then 
+            "[descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:author
+            [contains(.,('Unknown','unknown','Anonymous','anonymous','[anon.]','[anon]','[Anon.]'))] 
+            or 
+            descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:editor
+            [contains(.,('Unknown','unknown','Anonymous','anonymous','[anon.]','[anon]','[Anon.]'))]
+            or descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:author/tei:name[@reg[contains(.,('Unknown','unknown','Anonymous','anonymous','[anon.]','[anon]','[Anon.]'))]]
+            or descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:editor/tei:name[@reg[contains(.,('Unknown','unknown','Anonymous','anonymous','[anon.]','[anon]','[Anon.]'))]]
+            ]"
+        else 
+            concat("
+            [descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:author
+            [ft:query(.,'",data:clean-string(request:get-parameter('author-exact', '')),"',data:search-options())] 
+            or 
+            descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:editor
+            [ft:query(.,'",data:clean-string(request:get-parameter('author-exact', '')),"',data:search-options())]
+            or descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:author/tei:name[@reg ='",request:get-parameter('author-exact', ''),"']
+            or descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:editor/tei:name[@reg ='",request:get-parameter('author-exact', ''),"']
+            ]")
+    else ()    
+};
+
+declare function search:collection-type() as xs:string? {
+    if(request:get-parameter('collection-type', '') != '') then 
+    concat("[descendant::tei:catRef[@scheme='#g'][contains(@target,'#",request:get-parameter('collection-type', ''),"')]]")
+    else ()    
+};
+
+declare function search:collection-id() as xs:string? {
+    if(request:get-parameter('collection-id', '') != '') then 
+    concat("[descendant::tei:seriesStmt[tei:idno ='",request:get-parameter('collection-id', ''),"']]")
     else ()    
 };
 
@@ -374,6 +503,8 @@ return
             data:keyword-search(),
             search:author(),
             search:author-exact(),
+            search:collection-id(),
+            search:collection-type(),
             search:works(),
             search:pubPlace(),
             search:publisher(),
@@ -389,6 +520,8 @@ return
         data:keyword-search(),
         search:author(),
         search:author-exact(),
+        search:collection-id(),
+        search:collection-type(),
         search:works(),
         search:pubPlace(),
         search:publisher(),
@@ -405,9 +538,8 @@ declare function search:author-menu($node as node(), $model as map(*), $sort-opt
         <ul class="list-inline">
         {
             for $letter in tokenize('A B C D E F G H I J K L M N O P Q R S T U V W X Y Z Anonymous', ' ')
-            return <li><a href="#{$letter}">{$letter}</a></li>
+            return <li><a href="{if(request:get-parameter('author-exact', '') != '') then request:get-url() else ()}#{$letter}">{$letter}</a></li>
         }
         </ul>
-        {(:page:pages($model("group-by-authors"), (), $search:start, $search:perpage,(), ()):)''}
     </div>
 };

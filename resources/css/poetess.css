@@ -16,9 +16,18 @@
 
 blockquote {font-size:small;}
 .browse-authors {margin:0 2em;}
+.btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
+    background-color: #739CC0 !important;
+    border-color: #739CC0 !important;
+}
 
 /* C */
 .content {padding: 1em 3em;}
+.collection-titles {font-size:1.15em; color:#739CC0; font-weight:600;}
+.collection-titles .results-list-desc {font-size:small; color:#333; font-weight:400;}
+.collections-jump {margin:.5em; padding:.5em;}
+.collections-jump a {margin-right:.5em;}
+
 /* F */
 footer {border-top:4px solid #739CC0 !important; text-align:center;}
 
@@ -113,6 +122,19 @@ h4 {color: #46597D; font-size:inherit; line-height:inherit;}
     margin-bottom:inherit; 
     
 }
+
+/* P*/
+.poetess-well {
+    min-height: 20px;
+    padding: 1em;
+    margin-bottom: 1em;
+    background-color: white;
+    border: 1px solid #739CC0;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+    overflow: auto;
+}
 /* S */
 .search {margin:0;padding:0;}
 .search-form{
@@ -129,8 +151,11 @@ h4 {color: #46597D; font-size:inherit; line-height:inherit;}
 /*.search {margin:0; padding:.5em 2em; background-color: #4D5C6C; color: white;}*/
 /*h1.search-header {margin-left: 2em; font-size:1.5em; color: white; font-weight:200 !important;}*/
 h1.search-header {margin-left: 3em; font-size:1.75em;padding-top:1em;}
-.search .results {margin-top:0; padding-top:2em; border-top:4px solid #739CC0;}
+.search .results {margin-top:0;}
 .search .list-results {margin:0 3em;}
 
 /* T */
 .text-block {margin: 0 4em; max-width: 70%;}
+.search .toolbar {margin-top:1.5em; border:none;} 
+.toolbar {border-top: 1px solid #739CC0; border-bottom: 1px solid #739CC0;}
+.toolbar .alpha-pages {margin:0;}

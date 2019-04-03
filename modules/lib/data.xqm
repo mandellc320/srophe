@@ -185,7 +185,7 @@ declare function data:search($collection as xs:string*, $queryString as xs:strin
         else if($sort-element != '' and $sort-element != 'relevance') then  
             for $hit in util:eval($eval-string)
             order by global:build-sort-string(data:add-sort-options($hit, $sort-element),'')
-            return $hit/ancestor-or-self::tei:TEI
+            return $hit/ancestor-or-self::tei:TEI 
         else 
             for $hit in util:eval($eval-string)
             order by ft:score($hit) descending
@@ -226,16 +226,24 @@ declare function data:add-sort-options($hit, $sort-option as xs:string*){
         else if($sort-option = 'author') then 
             if($hit/descendant::tei:teiHeader/descendant::tei:biblStruct) then
                 if($hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:author[1]/descendant-or-self::tei:surname) then 
-                    $hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:author[1]/descendant-or-self::tei:surname[1]
-                else string-join($hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:author[1],'')
+                    global:build-sort-string($hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:author[1]/descendant-or-self::tei:surname[1],'')
+                else if($hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:author[1]/descendant-or-self::tei:name/@reg) then 
+                    global:build-sort-string($hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:author[1]/descendant-or-self::tei:name/@reg,'')
+                else if($hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:author[1]) then 
+                    global:build-sort-string(string-join($hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:author[1],''),'')
+                else if($hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:editor[1]/descendant-or-self::tei:surname) then
+                    global:build-sort-string($hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:editor[1]/descendant-or-self::tei:surname[1],'')
+                else if($hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:editor[1]/descendant-or-self::tei:name/@reg) then
+                    global:build-sort-string(string($hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:editor[1]/descendant-or-self::tei:name/@reg),'')
+                else global:build-sort-string($hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:editor[1],'')
             else if($hit/descendant::tei:titleStmt/tei:author[1]) then 
                 if($hit/descendant::tei:titleStmt/tei:author[1]/descendant-or-self::tei:surname) then 
-                    $hit/descendant::tei:titleStmt/tei:author[1]/descendant-or-self::tei:surname[1]
-                else string-join($hit//descendant::tei:author[1],'')
+                   global:build-sort-string( $hit/descendant::tei:titleStmt/tei:author[1]/descendant-or-self::tei:surname[1],'')
+                else global:build-sort-string(string-join($hit//descendant::tei:author[1],''),'')
             else 
                 if($hit/descendant::tei:titleStmt/tei:editor[1]/descendant-or-self::tei:surname) then 
-                    $hit/descendant::tei:titleStmt/tei:editor[1]/descendant-or-self::tei:surname[1]
-                else $hit/descendant::tei:titleStmt/tei:editor[1]
+                    global:build-sort-string($hit/descendant::tei:titleStmt/tei:editor[1]/descendant-or-self::tei:surname[1],'')
+                else global:build-sort-string($hit/descendant::tei:titleStmt/tei:editor[1],'')
         else if($sort-option = 'pubDate') then 
             if($hit/descendant::tei:teiHeader/descendant::tei:biblStruct) then
                 if($hit/descendant::tei:teiHeader/descendant::tei:biblStruct/descendant::tei:imprint/descendant-or-self::tei:date[1]) then 
@@ -269,10 +277,14 @@ declare function data:add-sort-options-bibl($hit, $sort-option as xs:string*){
             if($hit/descendant::tei:body/tei:biblStruct/descendant-or-self::tei:author[1]) then 
                 if($hit/descendant::tei:body/tei:biblStruct/descendant-or-self::tei:author[1]/descendant-or-self::tei:surname) then 
                     $hit/descendant::tei:body/tei:biblStruct/descendant-or-self::tei:author[1]/descendant-or-self::tei:surname[1]
+                else if($hit/descendant::tei:body/tei:biblStruct/descendant-or-self::tei:author[1]/tei:name/@reg) then
+                    $hit/descendant::tei:body/tei:biblStruct/descendant-or-self::tei:author[1]/tei:name/@reg
                 else $hit/descendant::tei:body/tei:biblStruct/descendant-or-self::tei:author[1]
             else 
                 if($hit/descendant::tei:body/tei:biblStruct/descendant-or-self::tei:editor[1]/descendant-or-self::tei:surname) then 
                     $hit/descendant::tei:body/tei:biblStruct/descendant-or-self::tei:editor[1]/descendant-or-self::tei:surname[1]
+                else if($hit/descendant::tei:body/tei:biblStruct/descendant-or-self::tei:editor[1]/tei:name/@reg) then
+                    $hit/descendant::tei:body/tei:biblStruct/descendant-or-self::tei:editor[1]/tei:name/@reg
                 else $hit/descendant::tei:body/tei:biblStruct/descendant-or-self::tei:editor[1]
         else if($sort-option = 'pubDate') then 
             $hit/descendant::tei:body/tei:biblStruct/descendant-or-self::tei:imprint[1]/descendant-or-self::tei:date[1]

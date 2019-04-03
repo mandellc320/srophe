@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <div xmlns="http://www.w3.org/1999/xhtml" xmlns:xi="http://www.w3.org/2001/XInclude" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
     <div class="image-banner">
     <span class="img-credit">
@@ -15,22 +14,27 @@
         <div class="search-form">
             <form data-template="search:search-form"/>            
         </div>
-        <!-- <form data-template="search:search-form" data-template-collection="OPTIONAL: COLLECTION NAME"/>--> 
         <div class="results">
-            <br/>
             <div data-template="search:search-data">
-                <div data-template="app:pageination" data-template-search-string="yes" data-template-sort-options="author,title,pubDate,pubPlace,relevance"/>
-                <div data-template="app:display-map"/>
-                <hr/>
                 <div class="row list-results">
-                    <div class="col-md-8 col-md-push-4">
+                    <div class="col-md-9 right-menu">
+                        <div class="toolbar"><div data-template="app:pageination" data-template-search-string="yes" data-template-sort-options="author,title,pubDate,pubPlace,relevance"/></div>
+                        
+                        <div data-template="app:display-map"/>
+                        <hr/>
                         <div data-template="search:show-hits" data-template-kwic="yes"/>
+                        <div data-template="app:pageination"/>
                     </div>
-                    <div class="col-md-4 col-md-pull-8">
-                        <div data-template="app:display-facets"/>
+                    <div class="col-md-3">
+                        <br/>
+                        <div class="indent">
+                            <h3>Limit results:</h3>  
+                            <div class="indent">
+                                <div data-template="app:display-facets"/>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div data-template="app:pageination"/>
             </div>
         </div>
     </div>
