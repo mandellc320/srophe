@@ -67,11 +67,14 @@ code.inline{
 /* D */
 dt {
 	margin-top: 1.5em;
+	margin-bottom: .5em;
+	margin-left: 1em; 
 }
 dd {
-	margin-top: 0.5em;
+	margin-top: 0.25em;
+	margin-bottom: .5em;
+	margin-left:3em;
 }
-
 
 /* F */
 footer {border-top:4px solid #456889;}
@@ -261,6 +264,11 @@ pre {
 
 
 /* T */
+/* pad anchors */
+:target{
+ padding-top: 75px; 
+ margin-top: -75px;    
+}
 .tab-content {padding-top:.25em;}
 .text {margin:0}
 .title {border-bottom:1px solid grey}

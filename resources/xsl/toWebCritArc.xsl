@@ -368,10 +368,20 @@
 	</xsl:template>
 	
 	<xsl:template match="tei:term">
-		<dt>
-			<xsl:attribute name="id" select="@xml:id"/>
-				<xsl:apply-templates/>
-		</dt>
+		<xsl:choose>
+			<xsl:when test="parent::tei:item">
+				<dt>
+					<xsl:attribute name="id" select="@xml:id"/>
+					<xsl:apply-templates/>
+				</dt>				
+			</xsl:when>
+			<xsl:otherwise>
+				<span class="tei-term inline">
+					<xsl:attribute name="id" select="@xml:id"/>
+					<xsl:apply-templates/>
+				</span>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 	
 	<xsl:template match="tei:gloss">

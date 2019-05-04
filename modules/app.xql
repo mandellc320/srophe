@@ -596,12 +596,12 @@ declare function app:count($node as node(), $model as map(*)){
 declare function app:title-string($node as node(), $model as map(*)){
     let $title := if($model("hits")/descendant::tei:titleStmt[1]/tei:title[@type='main']) then 
             if($model("hits")/descendant::tei:titleStmt[1]/tei:title[@type='subordinate']) then
-                concat($model("hits")/descendant::tei:titleStmt[1]/tei:title[@type='main'],' in ', 
-                $model("hits")/descendant::tei:titleStmt[1]/tei:title[@type='subordinate'], ' by ', 
-                $model("hits")/descendant::tei:biblStruct/descendant::tei:author[1])
+                concat(string-join($model("hits")/descendant::tei:titleStmt[1]/tei:title[@type='main'],''),' in ', 
+                string-join($model("hits")/descendant::tei:titleStmt[1]/tei:title[@type='subordinate'],''), ' by ', 
+                string-join($model("hits")/descendant::tei:biblStruct/descendant::tei:author[1],''))
             else 
-                concat($model("hits")/descendant::tei:titleStmt[1]/tei:title[@type='main'],' by ',
-                $model("hits")/descendant::tei:biblStruct/descendant::tei:author)
+                concat(string-join($model("hits")/descendant::tei:titleStmt[1]/tei:title[@type='main'],''),' by ',
+                string-join($model("hits")/descendant::tei:biblStruct/descendant::tei:author,''))
         else $model("hits")/descendant::tei:titleStmt[1]/tei:title[1]
-    return normalize-space($title)        
+    return normalize-space(string-join($title,''))        
 };
