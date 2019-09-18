@@ -3,7 +3,7 @@
     <!-- Configuration for Github webhooks sync feature -->
     <git-config>
         <!-- github secret key can be stored here or as a environment variable. (prefered)  -->
-        <private-key>sp1VakF3mCon</private-key>
+        <private-key></private-key>
         <private-key-variable></private-key-variable>
         <!-- github token for rate limiting. can be stored here or as a environment variable. (prefered)  -->
         <gitToken></gitToken>
