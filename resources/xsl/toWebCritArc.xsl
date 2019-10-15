@@ -1,7 +1,9 @@
-<xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs tei" version="2.0">
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns="http://www.w3.org/1999/xhtml" exclude-result-prefixes="xs tei" version="2.0">
 	
 	<!-- script for converting XML-TEI to HTML. 		
-
 	Laura Mandell on 05/27/18 
 	00-began with fork from /xslt/masters/HTMLtransform.xsl
 	01-filled master with needed code
@@ -11,36 +13,20 @@
 
 	<!-- Here is the document declaration necessary for an HTML5 (web) page -->
 
-	<xsl:output method="html" doctype-system="about:legacy-compat" omit-xml-declaration="yes" indent="yes" encoding="UTF-8"/>
+	<xsl:output method="html" doctype-system="about:legacy-compat"
+		omit-xml-declaration="yes" indent="yes" encoding="UTF-8"/>
 	<xsl:strip-space elements="*"/>
 
-	<!-- Make these variables so that you can easily change them. -->
-	<xsl:variable name="stylesheet">critarchive.css</xsl:variable>
-	<xsl:variable name="baseURL">http://www.poetessarchive.org/critarchive/</xsl:variable>
-	
-	<!-- for running one document --> 
-	<xsl:template match="/">
-		<xsl:apply-templates/>
-	</xsl:template>
 
-	<!-- running multiple documents in an XML directory  -->
-	<xsl:template match="list">
-		<xsl:for-each select="item">
-			<xsl:apply-templates select="document(@code)/tei:TEI"/>
-		</xsl:for-each>
-	</xsl:template>
 	
 
 	<!--structuring the document-->
 
 	<xsl:template match="tei:TEI">
-		<xsl:variable name="filename">
-			<xsl:value-of select="tei:teiHeader/tei:fileDesc/tei:publicationStmt/tei:idno"/>
-		</xsl:variable>
-		<xsl:variable name="mainTitle" select="tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:title[@type='main']"/>
-		<xsl:variable name="subTitle" select="tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:title[@type='subordinate']"/>
-		<xsl:variable name="author" select="tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:author"/>
-		<xsl:apply-templates select="tei:text"/>
+				<body>
+					<xsl:apply-templates select="tei:text"/>
+					<section class="noteSpace"/>
+				</body>
 	</xsl:template>
 	
 	<!-- =======================================================
@@ -99,7 +85,7 @@
 	<!-- =======================================================
 	         body templates used by all types of documents -->
 
-	<xsl:template match="tei:text"> 
+	<xsl:template match="tei:text">
 				<xsl:apply-templates/>
 		<xsl:if test="//tei:note">
 				<section class="notes">
@@ -110,20 +96,16 @@
 	</xsl:template>
 	
 	<xsl:template match="tei:div">
-		<xsl:variable name="workCode" select="ancestor-or-self::tei:TEI/tei:teiHeader/tei:fileDesc/tei:publicationStmt/tei:idno"/>
-		<!--<xsl:variable name="URL" select="concat($baseURL, 'XML/', $workCode, '.xml')"/> -->
 		<xsl:choose>
 			<xsl:when test="@type='essay'">
-				<main id="{$workCode}">
+				<main>
 					<xsl:attribute name="class" select="@type"/>
 					<xsl:apply-templates/>
 				</main>
 			</xsl:when>
 			<xsl:when test="@type = 'poem'">
-				<main id="{$workCode}">
-					<p class="tei">
-						<xsl:apply-templates select="tei:head"/>
-					</p>
+				<main>
+					<xsl:attribute name="class" select="@type"/>
 					<table>
 						<xsl:apply-templates select="tei:lg"/>
 					</table>
@@ -158,12 +140,12 @@
 	<xsl:template match="tei:lg">
 		<xsl:choose>
 			<xsl:when test="parent::tei:div[@type='poem']">
-				<xsl:apply-templates/>
-				<tr>
-					<td>
-						<br/>
-					</td>
-				</tr>
+		<xsl:apply-templates/>
+		<tr>
+			<td>
+				<br/>
+			</td>
+		</tr>
 			</xsl:when>
 			<xsl:otherwise>
 				<table>
@@ -171,6 +153,10 @@
 				</table>
 			</xsl:otherwise>
 		</xsl:choose>
+	</xsl:template>
+	
+	<xsl:template match="tei:lg" mode="inQuote">
+		<span class="poem"><xsl:apply-templates/></span>
 	</xsl:template>
 	
 	<xsl:template match="tei:epigraph[@rend='poem']">
@@ -187,30 +173,28 @@
 	</xsl:template>
 	
 	<xsl:template match="tei:q">
-		<xsl:text>"</xsl:text>
+		<xsl:text>&quot;</xsl:text>
 		<xsl:apply-templates/>
-		<xsl:text>"</xsl:text>
+		<xsl:text>&quot;</xsl:text>
 	</xsl:template>
 	
 	<xsl:template match="tei:quote">
 		<xsl:choose>
-			<xsl:when test="parent::tei:p | parent::tei:note">
-			<span class="tei-quote">
-				<xsl:choose>
+			<xsl:when test="parent::tei:p">
+					<xsl:choose>
 					<xsl:when test="tei:p">
-						<xsl:apply-templates/>
+						<xsl:apply-templates mode="inQuote"/>
 					</xsl:when>
 					<xsl:when test="tei:lg">
-						<xsl:apply-templates/>
+						<xsl:apply-templates mode="inQuote"/>
 					</xsl:when>
 					<xsl:otherwise>
-						<span class="tei-p pnoindent"><xsl:apply-templates/></span>
+						<span class="blockquote"><xsl:apply-templates/></span>
 					</xsl:otherwise>
 				</xsl:choose>
-			</span>
 			</xsl:when>
 			<xsl:otherwise>
-				<span class="tei-quote">
+				<p class="pnoindent">
 					<xsl:choose>
 						<xsl:when test="tei:p">
 							<xsl:apply-templates/>
@@ -219,10 +203,10 @@
 							<xsl:apply-templates/>
 						</xsl:when>
 						<xsl:otherwise>
-							<span class="tei-p pnoindent"><xsl:apply-templates/></span>
+							<span class="blockquote"><xsl:apply-templates/></span>
 						</xsl:otherwise>
 					</xsl:choose>
-				</span>
+				</p>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -243,6 +227,9 @@
 
 	<xsl:template match="tei:l">
 		<xsl:choose>
+			<xsl:when test="parent::tei:lg/parent::tei:quote">
+				<span class="line"><xsl:apply-templates/></span>
+			</xsl:when>
 			<xsl:when test="parent::tei:lg/parent::tei:div[@type='poem']">
 		<tr>
 			<td>
@@ -320,8 +307,24 @@
 		</p>
 	</xsl:template>
 	
+	<xsl:template match="tei:p" mode="inQuote">
+		<span class="blockquote">
+			<xsl:choose>
+				<xsl:when test="@rendition">
+					<xsl:attribute name="class">
+						<xsl:apply-templates select="@rendition"/>
+					</xsl:attribute>
+				</xsl:when>
+				<xsl:when test="@type">
+					<xsl:attribute name="class" select="@type"/>
+				</xsl:when>
+			</xsl:choose>
+			<xsl:apply-templates/>
+		</span>
+	</xsl:template>
+	
 	<xsl:template match="tei:lb">
-		<br/>
+		<br />
 	</xsl:template>
 	
 	<xsl:template match="tei:hi">
@@ -368,20 +371,10 @@
 	</xsl:template>
 	
 	<xsl:template match="tei:term">
-		<xsl:choose>
-			<xsl:when test="parent::tei:item">
-				<dt>
-					<xsl:attribute name="id" select="@xml:id"/>
-					<xsl:apply-templates/>
-				</dt>				
-			</xsl:when>
-			<xsl:otherwise>
-				<span class="tei-term inline">
-					<xsl:attribute name="id" select="@xml:id"/>
-					<xsl:apply-templates/>
-				</span>
-			</xsl:otherwise>
-		</xsl:choose>
+		<dt>
+			<xsl:attribute name="id" select="@xml:id"/>
+				<xsl:apply-templates/>
+		</dt>
 	</xsl:template>
 	
 	<xsl:template match="tei:gloss">
@@ -389,79 +382,100 @@
 	</xsl:template>
 
 	<xsl:template match="tei:pb">
-		<span class="pageNumber">
-			<xsl:text>[Page </xsl:text><xsl:value-of select="@n"/><xsl:text>]</xsl:text>		
-		</span>
+		<xsl:choose>
+			<xsl:when test="parent::tei:quote">
+				<xsl:choose>
+					<xsl:when test="parent::tei:quote/parent::tei:p">
+				<xsl:text disable-output-escaping="yes"><![CDATA[</blockquote>]]></xsl:text>
+				<hr />
+				<blockquote>
+					<p class="pnoindent"><xsl:apply-templates/></p>
+				</blockquote>
+				<p class="pageNumber">
+					<xsl:text>[Page </xsl:text>
+					<xsl:value-of select="@n"/>
+					<xsl:text>]</xsl:text>
+				</p>
+				<xsl:text disable-output-escaping="yes"><![CDATA[<p class="pnoindent">]]></xsl:text>
+					</xsl:when>
+					<xsl:otherwise>
+						<hr />
+						<blockquote>
+							<p class="pnoindent"><xsl:apply-templates/></p>
+						</blockquote>
+						<p class="pageNumber">
+							<xsl:text>[Page </xsl:text>
+							<xsl:value-of select="@n"/>
+							<xsl:text>]</xsl:text>
+						</p>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:when test="parent::tei:p">
+				<xsl:choose>
+					<xsl:when test="parent::tei:p/parent::tei:quote">
+				<xsl:text disable-output-escaping="yes"><![CDATA[</p></blockquote>]]></xsl:text>
+				<hr />
+				<p class="pageNumber">
+						<xsl:text>[Page </xsl:text>
+						<xsl:value-of select="@n"/>
+						<xsl:text>]</xsl:text>
+				</p>
+				<xsl:text disable-output-escaping="yes"><![CDATA[<blockquote><p class="pnoindent">]]></xsl:text>
+					</xsl:when>
+						<xsl:otherwise>
+							<xsl:text disable-output-escaping="yes"><![CDATA[</p>]]></xsl:text>
+							<hr />
+							<p class="pageNumber">
+								<xsl:text>[Page </xsl:text>
+								<xsl:value-of select="@n"/>
+								<xsl:text>]</xsl:text>
+							</p>
+							<xsl:text disable-output-escaping="yes"><![CDATA[<p class="pnoindent">]]></xsl:text>
+						</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:when test="parent::tei:lg/parent::tei:quote">
+				<xsl:text disable-output-escaping="yes"><![CDATA[</table></blockquote>]]></xsl:text>
+				<hr />
+				<p class="pageNumber">
+					<xsl:text>[Page </xsl:text>
+					<xsl:value-of select="@n"/>
+					<xsl:text>]</xsl:text>
+				</p>
+				<xsl:text disable-output-escaping="yes"><![CDATA[<blockquote><table>]]></xsl:text>
+			</xsl:when>
+			<xsl:when test="parent::tei:lg">
+				<xsl:text disable-output-escaping="yes"><![CDATA[</table>]]></xsl:text>
+				<hr />
+				<p class="pageNumber">
+					<xsl:text>[Page </xsl:text>
+					<xsl:value-of select="@n"/>
+					<xsl:text>]</xsl:text>
+				</p>
+				<xsl:text disable-output-escaping="yes"><![CDATA[<table>]]></xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<hr />
+				<p class="pageNumber">
+						<xsl:text>[Page </xsl:text>
+						<xsl:value-of select="@n"/>
+						<xsl:text>]</xsl:text>
+				</p>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 	
 		<xsl:template match="tei:milestone">
-			<span class="tei-milestone milestone">
+			<span class="milestone">
 				<xsl:value-of select="@n"/>
 			</span>
 		</xsl:template>
 		
 		<xsl:template match="tei:fw">
-			<xsl:choose>
-				<xsl:when test="following-sibling::tei:milestone[1]">
-					<span class="mlst1 {string(@rendition)} tei-p">
-						<xsl:apply-templates/>
-					</span>
-					<span class="mlst2 {string(@rendition)} tei-p">
-						<xsl:value-of select="following-sibling::tei:milestone[1]/@n"/>
-					</span>
-				</xsl:when>
-				<xsl:otherwise>
-					<span>
-						<xsl:if test="@rendition">
-							<xsl:attribute name="class">
-								<xsl:apply-templates select="@rendition"/>
-							</xsl:attribute>
-						</xsl:if>
-						<xsl:apply-templates/>
-					</span>
-				</xsl:otherwise>
-			</xsl:choose>
+			<span class="fw"><xsl:apply-templates/></span>
 		</xsl:template>
 	
-	<xsl:template name="fwTable">
-		<table style="width:100%" class="fw">
-			<xsl:choose>
-				<xsl:when test="following-sibling::tei:milestone[1]">
-		<tr>
-			<td class="mlst1">
-			<p>
-			<xsl:if test="@rendition">
-				<xsl:attribute name="class">
-					<xsl:apply-templates select="@rendition"/>
-				</xsl:attribute>
-			</xsl:if>
-			<xsl:apply-templates/>
-			</p>
-			</td>
-			<td class="mlst2">
-					<xsl:value-of select="following-sibling::tei:milestone[1]/@n"/>
-			</td>
-			<td class="mlst3"><xsl:text> </xsl:text></td>
-		</tr>
-				</xsl:when>
-				<xsl:otherwise>
-					<tr>
-						<td>
-							<p>
-								<xsl:if test="@rendition">
-									<xsl:attribute name="class">
-										<xsl:apply-templates select="@rendition"/>
-									</xsl:attribute>
-								</xsl:if>
-								<xsl:apply-templates/>
-							</p>
-						</td>
-					</tr>
-				</xsl:otherwise>
-			</xsl:choose>
-		</table>
-	</xsl:template>
-
 	<xsl:template match="tei:salute | tei:signed">
 		<p>
 			<xsl:if test="@rend">
@@ -515,7 +529,8 @@
 		<p id="{$noteNBR}"><xsl:value-of select="$noteNBR"/>. <xsl:apply-templates/>
 			<xsl:text> </xsl:text>
 			<a>
-				<xsl:attribute name="href"><xsl:text>#back</xsl:text><xsl:value-of select="$noteNBR"/></xsl:attribute>
+				<xsl:attribute name="href"><xsl:text>#back</xsl:text><xsl:value-of select="$noteNBR"
+					/></xsl:attribute>
 				<xsl:text>Back</xsl:text>
 			</a>
 		</p>
