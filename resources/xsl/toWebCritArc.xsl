@@ -17,9 +17,6 @@
 		omit-xml-declaration="yes" indent="yes" encoding="UTF-8"/>
 	<xsl:strip-space elements="*"/>
 
-
-	
-
 	<!--structuring the document-->
 
 	<xsl:template match="tei:TEI">
