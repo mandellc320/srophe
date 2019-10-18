@@ -20,10 +20,15 @@
 	<!--structuring the document-->
 
 	<xsl:template match="tei:TEI">
+		<html>
+			<head><title><xsl:value-of select="tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:title"/></title>
+				<link rel="stylesheet" type="text/css" href="critarchive.css"/>
+			</head>
 				<body>
 					<xsl:apply-templates select="tei:text"/>
 					<section class="noteSpace"/>
 				</body>
+		</html>
 	</xsl:template>
 	
 	<!-- =======================================================
