@@ -306,16 +306,6 @@
 	
 	<xsl:template match="tei:p" mode="inQuote">
 		<span class="blockquote">
-			<xsl:choose>
-				<xsl:when test="@rendition">
-					<xsl:attribute name="class">
-						<xsl:apply-templates select="@rendition"/>
-					</xsl:attribute>
-				</xsl:when>
-				<xsl:when test="@type">
-					<xsl:attribute name="class" select="@type"/>
-				</xsl:when>
-			</xsl:choose>
 			<xsl:apply-templates/>
 		</span>
 	</xsl:template>
@@ -379,7 +369,6 @@
 	</xsl:template>
 
 	<xsl:template match="tei:pb">
-		<hr />
 		<span class="pageNumber">
 			<xsl:text>[Page </xsl:text>
 			<xsl:value-of select="@n"/>
