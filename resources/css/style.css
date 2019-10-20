@@ -321,3 +321,11 @@ pre {
     }
 .caret {float:left; margin-left:.5em; margin-top:.5em;}    
 }
+@media screen and (max-width: 1750px) {
+.navbar {font-size:.85em;} 
+.nav>li>a {
+    position: relative;
+    display: block;
+    padding: 10px 8px;
+}
+}
