@@ -46,7 +46,13 @@
         <script type="text/javascript" src="$nav-base/resources/keyboard/layouts/ms-Russian.min.js"/>
         <script type="text/javascript" src="$nav-base/resources/keyboard/layouts/ms-Arabic.min.js"/>
         -->
-        <script xmlns="" src="https://hypothes.is/embed.js" async="async"></script>
+        <script src="https://hypothes.is/embed.js" async="async"></script>
+        <script type="application/javascript" src="pageNoProb.js"></script>
+        <script type="application/javascript">
+					document.addEventListener("DOMContentLoaded", function() {
+						pageNoFix();
+					});
+				</script>
         <script type="text/javascript">
             $(document).ready(function () {
                 $('[data-toggle="tooltip"]').tooltip({ container: 'body' })
