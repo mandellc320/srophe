@@ -20,6 +20,7 @@
 	<!--structuring the document-->
 
 	<xsl:template match="tei:TEI">
+		
 				<body>
 					<xsl:apply-templates select="tei:text"/>
 					<section class="noteSpace"/>
