@@ -20,7 +20,6 @@
 	<!--structuring the document-->
 
 	<xsl:template match="tei:TEI">
-		
 				<body>
 					<xsl:apply-templates select="tei:text"/>
 					<section class="noteSpace"/>
@@ -370,7 +369,27 @@
 	</xsl:template>
 
 	<xsl:template match="tei:pb">
-		<span class="pageNumber">
+		<xsl:variable name="class">
+		<xsl:choose>
+			<xsl:when test="parent::tei:p/parent::tei:quote/parent::tei:div">
+				<xsl:text>pageNumber</xsl:text>
+			</xsl:when>
+			<xsl:when test="parent::tei:p/parent::tei:quote">
+				<xsl:text>pageNoInside</xsl:text>
+			</xsl:when>
+			<xsl:when test="parent::tei:note/parent::tei:quote"></xsl:when>
+			<xsl:when test="parent::tei:lg/parent::tei:quote">
+				<xsl:text>pageNoInside</xsl:text>
+			</xsl:when>
+			<xsl:when test="parent::tei:l/parent::tei:lg/parent::tei:quote">
+				<xsl:text>pageNoInside</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>pageNumber</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose></xsl:variable>
+		<span>
+			<xsl:attribute name="class" select="$class"/>
 			<xsl:text>[Page </xsl:text>
 			<xsl:value-of select="@n"/>
 			<xsl:text>]</xsl:text>

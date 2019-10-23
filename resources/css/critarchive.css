@@ -117,8 +117,20 @@ a:hover {
 	line-height: 30px;
 	text-indent: 0px;
 	letter-spacing: 0.3px;
-	text-align: left;
+	/*  text-align: left; */
 	}
+.pageNoInside {
+    border-top: 1.2px solid black;
+    display: block;
+    width: 60em;
+    margin: 1em -1em 1em -10em;
+    margin-bottom: 1em;
+	font-size: 16px;
+	line-height: 30px;
+	text-indent: 0px;
+	letter-spacing: 0.3px;
+	/*  text-align: left; */
+}
 .pnoindent {
 	font-size: 16px;
 	line-height: 30px;
