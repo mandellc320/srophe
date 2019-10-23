@@ -401,7 +401,7 @@
 		<xsl:template match="tei:milestone">
 			<xsl:variable name="class">
 				<xsl:choose>
-					<xsl:when test="preceding-sibling::tei:fw[1]/@place='bottom-left'">
+					<xsl:when test="preceding-sibling::node()[1]/@place='bottom-left'">
 						<xsl:text>milesWithFW</xsl:text>
 					</xsl:when>
 					<xsl:when test="parent::tei:p/parent::tei:quote/parent::tei:div">
@@ -456,6 +456,7 @@
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:variable>
+			<br />
 					<span>
 						<xsl:attribute name="class" select="$class"/>
 						<xsl:apply-templates/>
