@@ -16,6 +16,11 @@
 	<xsl:output method="html" doctype-system="about:legacy-compat" omit-xml-declaration="yes" indent="yes" encoding="UTF-8"/>
 	<xsl:strip-space elements="*"/>
 
+	<!-- Make these variables so that you can easily change them. -->
+	<xsl:variable name="stylesheet">bijou.css</xsl:variable>
+	<xsl:variable name="baseURL">http://www.poetessarchive.org/bijou/</xsl:variable>
+
+
 	<xsl:template match="tei:TEI">
 		<body>
 			<xsl:apply-templates select="tei:text"/>
@@ -36,7 +41,13 @@
 		</section>
 	</xsl:template>
 
-	<xsl:template match="tei:titlePart">
+	<xsl:template match="tei:titlePart[@type='main']">
+		<h2 class="tp">
+			<a href="http://poetess.dh.tamu.edu/bijou/work/bijou1828-p5"><xsl:apply-templates/></a>
+		</h2>
+	</xsl:template>
+	
+	<xsl:template match="tei:titlePart[@type='subordinate']">
 		<h2 class="tp">
 			<xsl:apply-templates/>
 		</h2>
@@ -64,28 +75,17 @@
 	</xsl:template>
 
 	<xsl:template match="tei:docEdition">
-		<xsl:choose>
-			<xsl:when test="tei:bibl/tei:biblScope/@unit">
-				<p>
-					<xsl:text>Vol. </xsl:text>
-					<xsl:value-of select="tei:bibl/tei:biblScope[@unit = 'volume']"/>
-					<xsl:text>, </xsl:text>
+				<h5>
 					<xsl:text>pp. </xsl:text>
 					<xsl:value-of select="tei:bibl/tei:biblScope[@unit = 'page']"/>
-				</p>
-			</xsl:when>
-			<xsl:otherwise>
-				<p class="tp">
-					<xsl:apply-templates/>
-				</p>
-			</xsl:otherwise>
-		</xsl:choose>
+				</h5>
 	</xsl:template>
 
 
 	<!-- =======================================================
 	         body templates used by all types of documents -->
 
+	
 	<xsl:template match="tei:text">
 		<main>
 			<img src="http://iiif.dh.tamu.edu/iiif/2/poetess%2Fbijou%2F010.tif/200,360,1550,180/960,/0/gray.jpg" class="partHead" alt="The Bijou"/>
@@ -100,19 +100,6 @@
 	</xsl:template>
 
 	<xsl:template match="tei:div">
-		<xsl:variable name="nbrPB">
-			<xsl:value-of select="count(descendant::tei:pb)"/>
-		</xsl:variable>
-		<xsl:variable name="pages">
-			<xsl:choose>
-				<xsl:when test="$nbrPB &gt; 1">
-					<xsl:value-of select="concat('pp. ', descendant::tei:pb[1]/@n, '-', descendant::tei:pb[last()]/@n)"/>
-				</xsl:when>
-				<xsl:when test="$nbrPB = 1">
-					<xsl:value-of select="concat('p. ', descendant::tei:pb/@n)"/>
-				</xsl:when>
-			</xsl:choose>
-		</xsl:variable>
 		<xsl:choose>
 			<xsl:when test=".[@type = 'poem'] | .[@type = 'drama'] | .[@type = 'scene']">
 				<section id="{@xml:id}">
@@ -132,33 +119,10 @@
 				</section>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:choose>
-					<xsl:when test="ancestor-or-self::tei:TEI/tei:teiHeader/tei:fileDesc/tei:publicationStmt/tei:idno = 'bijou1828-p5'">
 						<section id="{@xml:id}">
 							<xsl:attribute name="class" select="@type"/>
 							<xsl:apply-templates/>
 						</section>
-					</xsl:when>
-					<xsl:otherwise>
-						<section id="{@xml:id}">
-							<xsl:attribute name="class" select="@type"/>
-							<xsl:apply-templates/>
-							<section class="citation">
-										<h5>from <a href="http://www.poetessarchive.org/bijou/HTML/bijou1828-p5.html">
-												<em>The Bijou</em>, 1828</a>
-											<xsl:choose>
-												<xsl:when test="not(descendant::tei:pb)"/>
-												<xsl:when test="not(descendant::tei:pb/@n)"/>
-												<xsl:otherwise>
-												<xsl:text>, </xsl:text>
-												<xsl:value-of select="$pages"/>
-												</xsl:otherwise>
-											</xsl:choose>
-										</h5>
-							</section>
-						</section>
-					</xsl:otherwise>
-				</xsl:choose>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -652,11 +616,6 @@
 			</xsl:if>
 			<xsl:apply-templates/>
 		</p>
-	</xsl:template>
-
-	<xsl:template name="pageNandI">
-		
-		
 	</xsl:template>
 	
 	<xsl:template match="tei:pb">
