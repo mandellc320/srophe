@@ -369,7 +369,29 @@
 	</xsl:template>
 
 	<xsl:template match="tei:pb">
-		<span class="pageNumber">
+		<xsl:variable name="class">
+		<xsl:choose>
+			<xsl:when test="parent::tei:p/parent::tei:quote/parent::tei:div">
+				<xsl:text>pageNumber</xsl:text>
+			</xsl:when>
+			<xsl:when test="parent::tei:p/parent::tei:quote">
+				<xsl:text>pageNoInside</xsl:text>
+			</xsl:when>
+			<xsl:when test="parent::tei:note/parent::tei:quote">
+				<xsl:text>pageNoInside</xsl:text>
+			</xsl:when>
+			<xsl:when test="parent::tei:lg/parent::tei:quote">
+				<xsl:text>pageNoInside</xsl:text>
+			</xsl:when>
+			<xsl:when test="parent::tei:l/parent::tei:lg/parent::tei:quote">
+				<xsl:text>pageNoInside</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>pageNumber</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose></xsl:variable>
+		<span>
+			<xsl:attribute name="class" select="$class"/>
 			<xsl:text>[Page </xsl:text>
 			<xsl:value-of select="@n"/>
 			<xsl:text>]</xsl:text>
@@ -377,13 +399,68 @@
 	</xsl:template>
 	
 		<xsl:template match="tei:milestone">
-			<span class="milestone">
-				<xsl:value-of select="@n"/>
-			</span>
+			<xsl:variable name="class">
+				<xsl:choose>
+					<xsl:when test="preceding-sibling::node()[1]/@place='bottom-left'">
+						<xsl:text>milesWithFW</xsl:text>
+					</xsl:when>
+					<xsl:when test="parent::tei:p/parent::tei:quote/parent::tei:div">
+						<xsl:text>milestone</xsl:text>
+					</xsl:when>
+					<xsl:when test="parent::tei:p/parent::tei:quote">
+						<xsl:text>milesNoInside</xsl:text>
+					</xsl:when>
+					<xsl:when test="parent::tei:note/parent::tei:quote">
+						<xsl:text>milesNoInside</xsl:text>
+					</xsl:when>
+					<xsl:when test="parent::tei:lg/parent::tei:quote">
+						<xsl:text>milesNoInside</xsl:text>
+					</xsl:when>
+					<xsl:when test="parent::tei:l/parent::tei:lg/parent::tei:quote">
+						<xsl:text>milesNoInside</xsl:text>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:text>milestone</xsl:text>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
+					<span>
+						<xsl:attribute name="class" select="$class"/>
+						<xsl:value-of select="@n"/>
+					</span>
 		</xsl:template>
 		
 		<xsl:template match="tei:fw">
-			<span class="fw"><xsl:apply-templates/></span>
+			<xsl:variable name="class">
+				<xsl:choose>
+					<xsl:when test="@place='bottom-left'">
+						<xsl:text>fwWithMiles</xsl:text>
+					</xsl:when>
+					<xsl:when test="parent::tei:p/parent::tei:quote/parent::tei:div">
+						<xsl:text>fw</xsl:text>
+					</xsl:when>
+					<xsl:when test="parent::tei:p/parent::tei:quote">
+						<xsl:text>fwNoInside</xsl:text>
+					</xsl:when>
+					<xsl:when test="parent::tei:note/parent::tei:quote">
+						<xsl:text>fwNoInside</xsl:text>
+					</xsl:when>
+					<xsl:when test="parent::tei:lg/parent::tei:quote">
+						<xsl:text>fwNoInside</xsl:text>
+					</xsl:when>
+					<xsl:when test="parent::tei:l/parent::tei:lg/parent::tei:quote">
+						<xsl:text>fwNoInside</xsl:text>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:text>fw</xsl:text>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
+			<br />
+					<span>
+						<xsl:attribute name="class" select="$class"/>
+						<xsl:apply-templates/>
+					</span>
 		</xsl:template>
 	
 	<xsl:template match="tei:salute | tei:signed">

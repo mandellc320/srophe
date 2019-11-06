@@ -8,6 +8,7 @@
 	02-revised plays, simplified by eliminating TOC (toWebComplete.xsl)
 	03-created for critarchive 10/17/18 (toWebCritArchive.xsl)
 	04-re-used for bijou 10/21/18, and added back elements from 02 (toWebBijou.xsl)
+	05-reformed for srophe 11/03/19
 -->
 
 	<!-- Here is the document declaration necessary for an HTML5 (web) page -->
@@ -19,23 +20,12 @@
 	<xsl:variable name="stylesheet">bijou.css</xsl:variable>
 	<xsl:variable name="baseURL">http://www.poetessarchive.org/bijou/</xsl:variable>
 
-	<!-- running multiple documents via a list -->
-	<xsl:template match="list">
-		<xsl:for-each select="item">
-			<xsl:apply-templates select="document(@code)/tei:TEI"/>
-		</xsl:for-each>
-	</xsl:template>
-
-	<!--structuring the document-->
 
 	<xsl:template match="tei:TEI">
-		<xsl:variable name="filename">
-			<xsl:value-of select="tei:teiHeader/tei:fileDesc/tei:publicationStmt/tei:idno"/>
-		</xsl:variable>
-		<xsl:variable name="mainTitle" select="tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:title[@type = 'main']"/>
-		<xsl:variable name="subTitle" select="tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:title[@type = 'subordinate']"/>
-		<xsl:variable name="author" select="tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:author"/>
-		<xsl:apply-templates select="tei:text"/>
+		<body>
+			<xsl:apply-templates select="tei:text"/>
+			<section class="noteSpace"/>
+		</body>
 	</xsl:template>
 
 	<!-- =======================================================
@@ -51,7 +41,13 @@
 		</section>
 	</xsl:template>
 
-	<xsl:template match="tei:titlePart">
+	<xsl:template match="tei:titlePart[@type='main']">
+		<h2 class="tp">
+			<a href="http://poetess.dh.tamu.edu/bijou/work/bijou1828-p5"><xsl:apply-templates/></a>
+		</h2>
+	</xsl:template>
+	
+	<xsl:template match="tei:titlePart[@type='subordinate']">
 		<h2 class="tp">
 			<xsl:apply-templates/>
 		</h2>
@@ -79,31 +75,20 @@
 	</xsl:template>
 
 	<xsl:template match="tei:docEdition">
-		<xsl:choose>
-			<xsl:when test="tei:bibl/tei:biblScope/@unit">
-				<p>
-					<xsl:text>Vol. </xsl:text>
-					<xsl:value-of select="tei:bibl/tei:biblScope[@unit = 'volume']"/>
-					<xsl:text>, </xsl:text>
+				<h5>
 					<xsl:text>pp. </xsl:text>
 					<xsl:value-of select="tei:bibl/tei:biblScope[@unit = 'page']"/>
-				</p>
-			</xsl:when>
-			<xsl:otherwise>
-				<p class="tp">
-					<xsl:apply-templates/>
-				</p>
-			</xsl:otherwise>
-		</xsl:choose>
+				</h5>
 	</xsl:template>
 
 
 	<!-- =======================================================
 	         body templates used by all types of documents -->
 
+	
 	<xsl:template match="tei:text">
 		<main>
-			<img src="http://iiif.dh.tamu.edu/iiif/2/poetess/bijou/010.tif/200,360,1550,180/960,/0/gray.jpg" class="partHead" alt="The Bijou"/>
+			<img src="http://iiif.dh.tamu.edu/iiif/2/poetess%2Fbijou%2F010.tif/200,360,1550,180/960,/0/gray.jpg" class="partHead" alt="The Bijou"/>
 			<xsl:apply-templates/>
 			<xsl:if test="//tei:note">
 				<section class="notes">
@@ -115,146 +100,29 @@
 	</xsl:template>
 
 	<xsl:template match="tei:div">
-		<xsl:variable name="nbrPB">
-			<xsl:value-of select="count(descendant::tei:pb)"/>
-		</xsl:variable>
-		<xsl:variable name="pages">
-			<xsl:choose>
-				<xsl:when test="$nbrPB &gt; 1">
-					<xsl:value-of select="concat('pp. ', descendant::tei:pb[1]/@n, '-', descendant::tei:pb[last()]/@n)"/>
-				</xsl:when>
-				<xsl:when test="$nbrPB = 1">
-					<xsl:value-of select="concat('p. ', descendant::tei:pb/@n)"/>
-				</xsl:when>
-			</xsl:choose>
-		</xsl:variable>
-		<xsl:variable name="URL" select="concat($baseURL, 'XML/bijou1828.', @type, @xml:id, '.xml')"/>
-		<!--needs to be switched to local tei file link -->
 		<xsl:choose>
 			<xsl:when test=".[@type = 'poem'] | .[@type = 'drama'] | .[@type = 'scene']">
-				<xsl:choose>
-					<xsl:when test="following-sibling::tei:div | preceding-sibling::tei:div">
-						<section id="{@xml:id}">
-							<xsl:attribute name="class" select="@type"/>
-							<xsl:apply-templates/>
-						</section>
-					</xsl:when>
-					<xsl:otherwise>
-						<section id="@xml:id">
-							<xsl:attribute name="class" select="@type"/>
-							<xsl:apply-templates/>
-<!--							<table class="tei">
-								<tr>
-									<td class="a">
-										<h5>from <a href="http://www.poetessarchive.org/bijou/HTML/bijou1828-p5.html">
-												<em>The Bijou</em>, 1828</a>
-											<xsl:choose>
-												<xsl:when test="not(descendant::tei:pb)"/>
-												<xsl:when test="not(descendant::tei:pb/@n)"/>
-												<xsl:otherwise>
-												<xsl:text>, </xsl:text>
-												<xsl:value-of select="$pages"/>
-												</xsl:otherwise>
-											</xsl:choose>
-										</h5>
-									</td>
-									<td class="b">
-										<a>
-											<xsl:attribute name="href">
-												<xsl:value-of select="concat($baseURL, 'XML/bijou1828.', @type, @xml:id, '.xml')"/>
-											</xsl:attribute>
-											<img class="tei" src="download.png" alt="TEI-encoded version"/>
-										</a>
-									</td>
-								</tr>
-							</table> -->
-						</section>
-					</xsl:otherwise>
-				</xsl:choose>
+				<section id="{@xml:id}">
+					<xsl:attribute name="class" select="@type"/>
+					<xsl:apply-templates/>
+				</section>
 			</xsl:when>
 			<xsl:when test="@type = 'index'">
-				<xsl:choose>
-					<xsl:when test="following-sibling::tei:div | preceding-sibling::tei:div">
-						<section id="{@xml:id}">
-							<xsl:attribute name="class" select="@type"/>
-							<xsl:apply-templates select="tei:head"/>
-							<br/>
-							<table>
-								<xsl:attribute name="class" select="@type"/>
-								<xsl:apply-templates select="tei:bibl"/>
-							</table>
-						</section>
-					</xsl:when>
-					<xsl:otherwise>
-						<section id="@xml:id">
-							<xsl:attribute name="class" select="@type"/>
-							<xsl:apply-templates select="tei:head"/>
-							<br/>
-							<table>
-								<xsl:attribute name="class" select="@type"/>
-								<xsl:apply-templates select="tei:bibl"/>
-							</table>
-						</section>
-						<table class="tei">
-							<tr>
-								<td class="a">
-									<h5>from <a href="http://www.poetessarchive.org/bijou/HTML/bijou1828-p5.html"><em>The Bijou</em>, 1828</a></h5>
-								</td>
-								<td class="b">
-									<a>
-										<xsl:attribute name="href">
-											<xsl:value-of select="concat($baseURL, 'XML/bijou1828.', @type, @xml:id, '.xml')"/>
-										</xsl:attribute>
-										<img class="tei" src="download.png" alt="TEI-encoded version"/>
-									</a>
-								</td>
-								<!--tei image needs to be local -->
-							</tr>
-						</table>
-					</xsl:otherwise>
-				</xsl:choose>
+				<section id="{@xml:id}">
+					<xsl:attribute name="class" select="@type"/>
+					<xsl:apply-templates select="tei:head"/>
+					<br/>
+					<table>
+						<xsl:attribute name="class" select="@type"/>
+						<xsl:apply-templates select="tei:bibl"/>
+					</table>
+				</section>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:choose>
-					<xsl:when test="following-sibling::tei:div | preceding-sibling::tei:div">
 						<section id="{@xml:id}">
 							<xsl:attribute name="class" select="@type"/>
 							<xsl:apply-templates/>
 						</section>
-					</xsl:when>
-					<xsl:otherwise>
-						<section id="{@xml:id}">
-							<xsl:attribute name="class" select="@type"/>
-							<xsl:apply-templates/>
-							<table class="tei">
-								<tr>
-									<td class="a">
-										<h5>from <a href="http://www.poetessarchive.org/bijou/HTML/bijou1828-p5.html">
-												<em>The Bijou</em>, 1828</a>
-											<xsl:choose>
-												<xsl:when test="not(descendant::tei:pb)"/>
-												<xsl:when test="not(descendant::tei:pb/@n)"/>
-												<xsl:otherwise>
-												<xsl:text>, </xsl:text>
-												<xsl:value-of select="$pages"/>
-												</xsl:otherwise>
-											</xsl:choose>
-										</h5>
-									</td>
-									<td class="b">
-										<a>
-											<xsl:attribute name="href">
-												<xsl:value-of select="concat($baseURL, 'XML/bijou1828.', @type, @xml:id, '.xml')"/>
-											</xsl:attribute>
-											<img class="tei" src="download.png" alt="TEI-encoded version"/>
-										</a>
-									</td>
-									<!--tei image needs to be local -->
-								</tr>
-							</table>
-						</section>
-					</xsl:otherwise>
-				</xsl:choose>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -320,7 +188,7 @@
 			</xsl:choose>
 		</xsl:variable>
 		<xsl:variable name="imageURL">
-			<xsl:value-of select="concat('http://iiif.dh.tamu.edu/iiif/2/poetess/bijou/', $imageNbr, '.tif/full/full/', $rotate, '/default.jpg')"/>
+			<xsl:value-of select="concat('http://iiif.dh.tamu.edu/iiif/2/poetess%2Fbijou%2F', $imageNbr, '.tif/full/full/', $rotate, '/default.jpg')"/>
 		</xsl:variable>
 		<a href="{$imageURL}">
 			<img src="{@url}" alt="a picture of {parent::tei:figure/parent::tei:div[@type='picture']/tei:head}"/>
@@ -353,6 +221,10 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
+	
+	<xsl:template match="tei:lg" mode="inQuote">
+		<span class="poem"><xsl:apply-templates/></span>
+	</xsl:template>
 
 	<xsl:template match="tei:epigraph">
 		<xsl:choose>
@@ -378,23 +250,21 @@
 
 	<xsl:template match="tei:quote">
 		<xsl:choose>
-			<xsl:when test="parent::tei:p | parent::tei:note">
-				<span class="tei-quote">
-					<xsl:choose>
-						<xsl:when test="tei:p">
-							<xsl:apply-templates/>
-						</xsl:when>
-						<xsl:when test="tei:lg">
-							<xsl:apply-templates/>
-						</xsl:when>
-						<xsl:otherwise>
-							<span class="tei-p pnoindent"><xsl:apply-templates/></span>
-						</xsl:otherwise>
-					</xsl:choose>
-				</span>
+			<xsl:when test="parent::tei:p">
+				<xsl:choose>
+					<xsl:when test="tei:p">
+						<xsl:apply-templates mode="inQuote"/>
+					</xsl:when>
+					<xsl:when test="tei:lg">
+						<xsl:apply-templates mode="inQuote"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<span class="blockquote"><xsl:apply-templates/></span>
+					</xsl:otherwise>
+				</xsl:choose>
 			</xsl:when>
 			<xsl:otherwise>
-				<span class="tei-quote">
+				<p class="pnoindent">
 					<xsl:choose>
 						<xsl:when test="tei:p">
 							<xsl:apply-templates/>
@@ -403,10 +273,10 @@
 							<xsl:apply-templates/>
 						</xsl:when>
 						<xsl:otherwise>
-							<span class="tei-p pnoindent"><xsl:apply-templates/></span>
+							<span class="blockquote"><xsl:apply-templates/></span>
 						</xsl:otherwise>
 					</xsl:choose>
-				</span>
+				</p>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -560,6 +430,12 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
+	
+	<xsl:template match="tei:p" mode="inQuote">
+		<span class="blockquote">
+			<xsl:apply-templates/>
+		</span>
+	</xsl:template>
 
 	<xsl:template match="tei:lb">
 		<br/>
@@ -607,9 +483,6 @@
 				<xsl:when test="contains($PAid, 'I')">
 					<xsl:text>index</xsl:text>
 				</xsl:when>
-				<xsl:otherwise>
-					<xsl:text>ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ</xsl:text>
-				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
 		<xsl:choose>
@@ -744,277 +617,59 @@
 			<xsl:apply-templates/>
 		</p>
 	</xsl:template>
-
-	<xsl:template name="pageNandI">
-		<xsl:param name="img"/>
-		<xsl:param name="nbr"/>
+	
+	<xsl:template match="tei:pb">
 		<xsl:variable name="imgNbr">
-			<xsl:value-of select="substring-after($img, 'image')"/>
+			<xsl:value-of select="substring-after(@xml:id, 'image')"/>
 		</xsl:variable>
 		<xsl:variable name="URL">
-			<xsl:value-of select="concat('http://iiif.dh.tamu.edu/iiif/2/poetess/bijou/', $imgNbr, '.tif/full/full/0/default.jpg')"/>
+			<xsl:value-of select="concat('http://iiif.dh.tamu.edu/iiif/2/poetess%2Fbijou%2F', $imgNbr, '.tif/full/full/0/default.jpg')"/>
 		</xsl:variable>
-		<table class="pageNumber" id="{$imgNbr}">
-			<tr>
-				<td class="a">
+		<xsl:variable name="class">
+			<xsl:choose>
+				<xsl:when test="parent::tei:p/parent::tei:quote/parent::tei:div">
+					<xsl:text>pageNumber</xsl:text>
+				</xsl:when>
+				<xsl:when test="parent::tei:p/parent::tei:quote">
+					<xsl:text>pageNoInside</xsl:text>
+				</xsl:when>
+				<xsl:when test="parent::tei:note/parent::tei:quote">
+					<xsl:text>pageNoInside</xsl:text>
+				</xsl:when>
+				<xsl:when test="parent::tei:lg/parent::tei:quote">
+					<xsl:text>pageNoInside</xsl:text>
+				</xsl:when>
+				<xsl:when test="parent::tei:l/parent::tei:lg/parent::tei:quote">
+					<xsl:text>pageNoInside</xsl:text>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:text>pageNumber</xsl:text>
+				</xsl:otherwise>
+			</xsl:choose></xsl:variable>
+		<span>
+			<xsl:attribute name="class" select="$class"/>
+			<xsl:choose>
+				<xsl:when test="@n">
 					<xsl:text>[Page </xsl:text>
 					<xsl:value-of select="@n"/>
 					<xsl:text>]</xsl:text>
-				</td>
-				<td class="b">
-					<a href="#{$imgNbr}">
-						<xsl:attribute name="onclick">
-							<xsl:text disable-output-escaping="yes"><![CDATA[window.open(']]></xsl:text>
-							<xsl:value-of select="$URL"/>
-							<xsl:text disable-output-escaping="yes"><![CDATA[', 'newwindow', 'width=600, height=900')]]></xsl:text>
-						</xsl:attribute>
-						<img class="pageImage" alt="page image and link" src="http://iiif.dh.tamu.edu/iiif/2/poetess/bijou/{$imgNbr}.tif/full/,70/0/default.jpg'"/>
-					</a>
-				</td>
-			</tr>
-		</table>
-	</xsl:template>
-
-	<xsl:template match="tei:pb">
-		<xsl:choose>
-			<xsl:when test="parent::tei:div[@type = 'scene']">
-				<span class="tei-pb pageNumber">
-					<xsl:call-template name="pageNandI">
-						<xsl:with-param name="img" select="@xml:id"/>
-						<xsl:with-param name="nbr" select="@n"/>
-					</xsl:call-template>					
-				</span>
-			</xsl:when>
-			<xsl:when test="parent::tei:div[@type = 'picture']">
-				<span class="tei-pb pageNumber">
-				<xsl:choose>
-					<xsl:when test="@n">
-						<xsl:text>[Page </xsl:text>
-						<xsl:value-of select="@n"/>
-						<xsl:text>]</xsl:text>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:text>[np]</xsl:text>
-					</xsl:otherwise>
-				</xsl:choose>
-				</span>
-			</xsl:when>
-			<xsl:when test="parent::tei:quote">
-				<xsl:choose>
-					<xsl:when test="parent::tei:quote/parent::tei:p">
-						<span class="tei-pb pageNumber">
-						<xsl:call-template name="pageNandI">
-							<xsl:with-param name="img" select="@xml:id"/>
-							<xsl:with-param name="nbr" select="@n"/>
-						</xsl:call-template>
-						</span>
-					</xsl:when>
-					<xsl:otherwise>
-						<span class="tei-pb pageNumber">
-							<xsl:call-template name="pageNandI">
-							<xsl:with-param name="img" select="@xml:id"/>
-							<xsl:with-param name="nbr" select="@n"/>
-							</xsl:call-template>
-						</span>
-					</xsl:otherwise>
-				</xsl:choose>
-			</xsl:when>
-			<xsl:when test="parent::tei:p">
-				<xsl:choose>
-					<xsl:when test="parent::tei:p/parent::tei:quote">
-						<span class="tei-pb pageNumber">
-						<xsl:call-template name="pageNandI">
-							<xsl:with-param name="img" select="@xml:id"/>
-							<xsl:with-param name="nbr" select="@n"/>
-						</xsl:call-template>
-						</span>
-					</xsl:when>
-					<xsl:otherwise>
-						<span class="tei-pb pageNumber">
-						<xsl:call-template name="pageNandI">
-							<xsl:with-param name="img" select="@xml:id"/>
-							<xsl:with-param name="nbr" select="@n"/>
-						</xsl:call-template>
-						</span>
-					</xsl:otherwise>
-				</xsl:choose>
-			</xsl:when>
-			<xsl:when test="parent::tei:lg/parent::tei:quote">
-				<span class="tei-pb pageNumber">
-				<xsl:call-template name="pageNandI">
-					<xsl:with-param name="img" select="@xml:id"/>
-					<xsl:with-param name="nbr" select="@n"/>
-				</xsl:call-template>
-				</span>
-			</xsl:when>
-			<xsl:when test="parent::tei:lg/parent::sp/parent::tei:div[@type = 'scene']">
-				<span class="tei-pb pageNumber">
-				<xsl:call-template name="pageNandI">
-					<xsl:with-param name="img" select="@xml:id"/>
-					<xsl:with-param name="nbr" select="@n"/>
-				</xsl:call-template>
-				</span>
-			</xsl:when>
-			<xsl:when test="parent::tei:lg">
-				<span class="tei-pb pageNumber">
-				<xsl:call-template name="pageNandI">
-					<xsl:with-param name="img" select="@xml:id"/>
-					<xsl:with-param name="nbr" select="@n"/>
-				</xsl:call-template>
-				</span>
-			</xsl:when>
-			<xsl:when test="preceding-sibling::tei:p | preceding-sibling::tei:lg">
-				<span class="tei-pb pageNumber">
-				<xsl:call-template name="pageNandI">
-					<xsl:with-param name="img" select="@xml:id"/>
-					<xsl:with-param name="nbr" select="@n"/>
-				</xsl:call-template>
-				</span>
-			</xsl:when>
-			<xsl:otherwise>
-				<span class="tei-pb pageNumber">
-				<xsl:call-template name="pageNandI">
-					<xsl:with-param name="img" select="@xml:id"/>
-					<xsl:with-param name="nbr" select="@n"/>
-				</xsl:call-template>
-				</span>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-	<!--	Used by critarchive:
-		<xsl:template match="tei:milestone">
-		<xsl:choose>
-			<xsl:when test="preceding-sibling::tei:fw[1]"/>
-			<xsl:when test="parent::tei:p/parent::tei:quote">
-				<xsl:text disable-output-escaping="yes"><![CDATA[</p></blockquote>]]></xsl:text>
-				<table class="milestone">
-					<tr>
-						<td>
-							<xsl:value-of select="@n"/>
-						</td>
-					</tr>
-				</table>
-				<xsl:text disable-output-escaping="yes"><![CDATA[<blockquote><p class="pnoindent">]]></xsl:text>
-			</xsl:when>
-			<xsl:when test="parent::tei:p">
-				<xsl:text disable-output-escaping="yes"><![CDATA[</p>]]></xsl:text>
-				<table class="milestone">
-					<tr>
-						<td>
-							<xsl:value-of select="@n"/>
-						</td>
-					</tr>
-				</table>
-				<xsl:text disable-output-escaping="yes"><![CDATA[<p class="pnoindent">]]></xsl:text>
-			</xsl:when>
-			<xsl:when test="parent::tei:lg/parent::tei:quote">
-				<xsl:text disable-output-escaping="yes"><![CDATA[</table></blockquote>]]></xsl:text>
-				<table class="milestone">
-					<tr>
-						<td>
-							<xsl:value-of select="@n"/>
-						</td>
-					</tr>
-				</table>
-				<xsl:text disable-output-escaping="yes"><![CDATA[<blockquote><table>]]></xsl:text>
-			</xsl:when>
-			<xsl:when test="parent::tei:lg">
-				<xsl:text disable-output-escaping="yes"><![CDATA[</table>]]></xsl:text>
-				<table class="milestone">
-					<tr>
-						<td>
-							<xsl:value-of select="@n"/>
-						</td>
-					</tr>
-				</table>
-				<xsl:text disable-output-escaping="yes"><![CDATA[<table>]]></xsl:text>
-			</xsl:when>
-			<xsl:otherwise>
-				<table class="milestone">
-					<tr>
-						<td>
-							<xsl:value-of select="@n"/>
-						</td>
-					</tr>
-				</table>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-	<xsl:template match="tei:fw">
-		<xsl:choose>
-			<xsl:when test="parent::tei:quote">
-				<xsl:text disable-output-escaping="yes"><![CDATA[</blockquote>]]></xsl:text>
-				<xsl:call-template name="fwTable"/>
-				<xsl:text disable-output-escaping="yes"><![CDATA[<blockquote>]]></xsl:text>
-			</xsl:when>
-			<xsl:when test="parent::tei:p/parent::tei:quote">
-				<xsl:text disable-output-escaping="yes"><![CDATA[</p></blockquote>]]></xsl:text>
-				<xsl:call-template name="fwTable"/>
-				<xsl:text disable-output-escaping="yes"><![CDATA[<blockquote><p class="pnoindent">]]></xsl:text>
-			</xsl:when>
-			<xsl:when test="parent::tei:p">
-				<xsl:text disable-output-escaping="yes"><![CDATA[</p>]]></xsl:text>
-				<xsl:call-template name="fwTable"/>
-				<xsl:text disable-output-escaping="yes"><![CDATA[<p class="pnoindent">]]></xsl:text>
-			</xsl:when>
-			<xsl:when test="parent::tei:lg/parent::tei:quote">
-				<xsl:text disable-output-escaping="yes"><![CDATA[</table></blockquote>]]></xsl:text>
-				<xsl:call-template name="fwTable"/>
-				<xsl:text disable-output-escaping="yes"><![CDATA[<blockquote><table>]]></xsl:text>
-			</xsl:when>
-			<xsl:when test="parent::tei:lg">
-				<xsl:text disable-output-escaping="yes"><![CDATA[</table>]]></xsl:text>
-				<xsl:call-template name="fwTable"/>
-				<xsl:text disable-output-escaping="yes"><![CDATA[<table>]]></xsl:text>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:call-template name="fwTable"/>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-	<xsl:template name="fwTable">
-		<table style="width:100%" class="fw">
-			<xsl:choose>
-				<xsl:when test="following-sibling::tei:milestone[1]">
-					<tr>
-						<td class="mlst1">
-							<p>
-								<xsl:if test="@rendition">
-									<xsl:attribute name="class">
-										<xsl:apply-templates select="@rendition"/>
-									</xsl:attribute>
-								</xsl:if>
-								<xsl:apply-templates/>
-							</p>
-						</td>
-						<td class="mlst2">
-							<xsl:value-of select="following-sibling::tei:milestone[1]/@n"/>
-						</td>
-						<td class="mlst3">
-							<xsl:text> </xsl:text>
-						</td>
-					</tr>
 				</xsl:when>
 				<xsl:otherwise>
-					<tr>
-						<td>
-							<p>
-								<xsl:if test="@rendition">
-									<xsl:attribute name="class">
-										<xsl:apply-templates select="@rendition"/>
-									</xsl:attribute>
-								</xsl:if>
-								<xsl:apply-templates/>
-							</p>
-						</td>
-					</tr>
+					<xsl:text>[np]</xsl:text>
 				</xsl:otherwise>
 			</xsl:choose>
-		</table>
-	</xsl:template> -->
+		</span>
+		<xsl:choose>
+			<xsl:when test="parent::tei:div/@type = 'picture'"/>
+			<xsl:otherwise>
+				<span class="pageImage" id="{$imgNbr}">
+					<a href="{$URL}">
+						<img class="pageImage" alt="page image and link" src="http://iiif.dh.tamu.edu/iiif/2/poetess%2Fbijou%2F{$imgNbr}.tif/full/,70/0/default.jpg"/>
+					</a>
+				</span>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
 	<xsl:template match="tei:salute | tei:signed">
 		<p>

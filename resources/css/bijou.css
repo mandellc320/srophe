@@ -1,3 +1,4 @@
+/* reformed for srophe 11/03/19 */
 body {
 	background: #fff; 
 	font-family: "Cormorant+Garmond";
@@ -8,16 +9,58 @@ main {
     background-color:#ffffff;
     width:60em;
 }
-
 section {
-    clear:both;
-    text-align: left;
+    clear: both;
     margin-left: 0;
     background-color:#ffffff;
     border:solid 1px #666666;
     width:60em;
     padding: 20px;
-    
+}
+/* The following are section classes */
+section.titlePage {
+    margin-left: 10em;
+    display: block;
+    text-align: center;
+}
+section.preface {
+    margin-left: 10em;
+    display: block;
+    text-align: left;
+}
+section.illustrations {
+    margin-left: 10em;
+    display: block;
+    text-align: left;
+}
+section.contents {
+    margin-left: 10em;
+    display: block;
+    text-align: left;
+}
+section.poem {
+    margin-left: 10em;
+    display: block;
+            }
+section.essay {
+    margin-left: 10em;
+    display: block;
+    text-align: left;
+}
+section.story {
+    margin-left: 10em;
+    display: block;
+    text-align: left;
+}
+section.drama {
+    margin-left: 10em;
+    display: block;
+    text-align: left;
+}
+section.letter {
+    margin-left: 10em;
+    display: block;
+    text-align: left;
 }
 section.scene {
     clear:both;
@@ -27,9 +70,74 @@ section.scene {
     border: none;
     width:58em;
 }
+section.index {
+    clear:both;
+    margin-left: 10em;
+    display: block;
+}
+section.notes {
+    clear:both;
+    margin-left: 10em;
+    display: block;
+}
+/* The following are section classes for images */
+section.boards {
+    clear: both;
+    margin-left: 10em;
+    display: block;
+}
+section.frontispiece {
+    clear: both;
+    margin-left: 10em;
+}
+section.TP {
+    clear:both;
+    margin-left: 10em;
+    display: block;
+}
+section.dedication {
+    clear:both;
+    margin-left: 10em;
+    display: block;
+}
+section.printersMark {
+    clear:both;
+    margin-left: 10em;
+    display: block;
+}
+section.advertisement {
+    clear:both;
+    margin-left: 10em;
+    display: block;
+}
+.picture {
+    clear:both;
+    margin-left: 10em;
+    display: block;
+}
+img.partHead {
+    clear:both;
+    background-color:#ffffff;
+    border: solid 1px #666666;
+    margin-left: 10em;
+    width: 60em;
+    opacity: 0.7;
+}
+img.pageImage {
+    display: block;
+    margin-left: auto;
+    margin-right: auto }
+    
+/* Smaller blocks */
 p { font-size: 16px;
 	line-height: 30px;
 	text-indent: 45px;
+}
+.pnoindent {
+	font-size: 16px;
+	line-height: 30px;
+	text-indent: 0px;
+	letter-spacing: 0.3px;
 }
 header {
     text-align: center;
@@ -42,72 +150,90 @@ header {
 	font-size: 16px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
-}
-.indent {
-    margin-left: .5em;
-    font-size: 16px;
+} 
+.pageNumber {
+    border-top: 1.2px solid black;
+    display: block;
+    width: 100%;
+    margin-top: 1em;
+    margin-bottom: 1em;
+	font-size: 16px;
 	line-height: 30px;
+	text-indent: 0px;
 	letter-spacing: 0.3px;
+	text-align: center;
+	}
+.pageNoInside {
+    border-top: 1.2px solid black;
+    display: block;
+    width: 50em;
+    margin: 1em -1em 1em -10em;
+    margin-bottom: 1em;
+	font-size: 16px;
+	line-height: 30px;
+	text-indent: 0px;
+	letter-spacing: 0.3px;
+	text-align: center;
 }
 .indent1 {
-	margin-left: 1em;
+	padding-left: 1.5em;
 	font-size: 16px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 }
 .indent2 {
-	margin-left: 1.5em;
-	font-size: 16px;
-	line-height: 30px;
-	letter-spacing: 0.3px;
-}
-.indent3 {
-	margin-left: 2em;
-	font-size: 16px;
-	line-height: 30px;
-	letter-spacing: 0.3px;
-}
-.indent4 {
 	margin-left: 2.5em;
 	font-size: 16px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 }
-.indent5 {
-	margin-left: 3em;
-	font-size: 16px;
-	line-height: 30px;
-	letter-spacing: 0.3px;
-}
-.indent6 {
+.indent3 {
 	margin-left: 3.5em;
 	font-size: 16px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 }
-.indent7 {
-	margin-left: 4em;
-	font-size: 16px;
-	line-height: 30px;
-	letter-spacing: 0.3px;
-}
-.indent8 {
+.indent4 {
 	margin-left: 4.5em;
 	font-size: 16px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 }
+.indent5 {
+	margin-left: 5.5em;
+	font-size: 16px;
+	line-height: 30px;
+	letter-spacing: 0.3px;
+}
+.indent6 {
+	margin-left: 6.5em;
+	font-size: 16px;
+	line-height: 30px;
+	letter-spacing: 0.3px;
+}
+.indent7 {
+	margin-left: 7.5em;
+	font-size: 16px;
+	line-height: 30px;
+	letter-spacing: 0.3px;
+}
+.indent8 {
+	margin-left: 8.5em;
+	font-size: 16px;
+	line-height: 30px;
+	letter-spacing: 0.3px;
+}
 .indent9 {
-	margin-left: 5em;
+	margin-left: 9.5em;
 	font-size: 16px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 }
 .indent10 {
-	margin-left: 5.5em;
+	margin-left: 10.5em;
 }
 .indent11 {
-	margin-left: 6em;
+	margin-left: 11.5em;
 	font-size: 16px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
@@ -119,14 +245,7 @@ a {
 a:hover {
 	color: #9933CC;
 }
-a.green {
-    color: #576E31;
-    /*  color: #67803D; */
-    text-decoration: none;
-}
-a:hover.green {
-    color: #7A9846;
-}
+
 h1 {
 	color: #46597D;
 	font-size: 1.8em;
@@ -165,72 +284,44 @@ h6 {
 	font-size: 0.8em;
 	font-weight: bold;
 }
-
-.pnoindent {
-	font-size: 16px;
-	line-height: 30px;
-	text-indent: 0px;
-	letter-spacing: 0.3px;
-}
 .hang {
 	font-size: 16px;
 	text-indent: -30px;
 	margin-left: 30px;
 	line-height: 36px;
 }
-/* The following codes the indented quotations */
-p.quote {
-	line-height: 26px;
-	font-size: 14px;
-}
-
 blockquote {
      margin-left:10em;
   }
   
-img.pageImage {
-    float: right;
-    padding: 10px;
-}
-img.tei {
-    border: 1px;
-    width: 40px;
-    height: 40px;
-    }
-table.tei {
-    border: none;
-    width: 60em;
-}
-.titlePage {
-    background-color:#ffffff;
-    border:solid 1px #666666;
-    width:60em;
-    padding: 20px;
-    text-align: center;
-}
-.halfTitle {
-    text-align: center;
-}
-.tp {
-    /*  display: inline-block; */
-}
-img.partHead {
-    background-color:#ffffff;
-    border: solid 1px #666666;
-    width: 62.5em;
-    opacity: 0.7;
-}
-.essay {
-    background-color: #ffffff;
-    border: solid 1px #666666;
-    width: 60em;
-    padding: 20px;
-    text-align: left;
-}
+.blockquote {
+     margin-left:10em;
+     display: block;
+  }
 table.poem { 
     margin-left:auto; 
     margin-right:auto;
-    width: 60%;
+    width: 80%;
+}
+/* For poetry tables */
+td.a {
+    text-align: left;
+    width: 90em;
+}
+td.b {
+    text-align: right;
+    width: 10em;
+}
+tr.space {
+    height: 20px;
+}
+
+table.index {
+    border-collapse: collapse;
+}
+td.index, tr.index {
+    padding: 10px;
+    border: 1px solid black;
 }
 table.scene { 
     margin-left:auto; 
@@ -242,7 +333,6 @@ p.stage {
     font-size: 16px;
 	line-height: 18px;
 	letter-spacing: 0.1px;
-    
 }
 .setting {
     font-size: 16px;
@@ -266,26 +356,6 @@ p.stage {
 	line-height: 30px;
 	margin-left: 3em;;
 }
-table.pageNumber {
-	font-size: 16px;
-	line-height: 30px;
-	text-indent: 0px;
-	letter-spacing: 0.3px;
-	margin-left: 0;
-	clear: both;
-	width:100%;
-	}
-
-tr.space {
-    height: 20px;
-}
-.biography {
-     background-color:#ffffff;
-    border:solid 1px #666666;
-    width:60em;
-    padding: 20px;
-}
-
 dt {
     font-weight: bold;
     padding: 1em;
@@ -310,54 +380,6 @@ dd {
 	line-height: 32px;
 	font-size: 16px;
 }
-table.partHead {
-    border: none;
-    width: 100%;
-}
-table.index {
-    border-collapse: collapse;
-}
-td.index, tr.index {
-    padding: 10px;
-    border: 1px solid black;
-}
-/* For catchwords, signatures, and other formwork */
-table.milestone{
-    margin-left:auto; 
-    margin-right:auto;
-    font-size: 16px;
-	line-height: 30px;
-	text-indent: 0px;
-	letter-spacing: 0.3px;
-}
-table.fw {
-    margin-left:.2em;
-	font-size: 16px;
-	line-height: 30px;
-	text-indent: 0px;
-	letter-spacing: 0.3px;
-	width: 100%;
-}
-/* these td sizes put the formwork on the left and signature in the middle */
-td.mlst1 {
-    width: 45%;
-}
-td.mlst2 {
-    width: 10%;
-}
-td.mlst3 {
-    width: 45%;
-}
-/* For poetry tables */
-td.a {
-    width: 85%;
-}
-
-td.b {
-    text-align: right;
-    width: 15%;
-}
-
 .left {
     text-align:left;
 }
@@ -365,7 +387,11 @@ td.b {
     text-align: right;
 }
 .center {
-    text-align:center;
+    text-align: center;
+}
+p.center {
+    margin-left: auto;
+    margin-right: auto;
 }
 .headBibl {
     clear:both;
@@ -418,9 +444,7 @@ p.epigPara {
 br {
     line-height: 30px;
 }
-blockquote {
-    margin-left: 10em;
-}
+
 ul, ol {
 	list-style-type: none;
 }
