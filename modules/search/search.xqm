@@ -37,13 +37,27 @@ declare %templates:wrap function search:search-data($node as node(), $model as m
                       else search:query-string($collection)                 
     let $hits := if($queryExpr != '') then 
                      data:search($collection, $queryExpr, $sort-element)
-                 else data:search($collection, '', $sort-element)
+                 else data:search($collection, '', $sort-element)                 
     return
-        map {
+        if($collection = 'collections') then 
+                let $collectionTypes := distinct-values(collection($config:data-root)//tei:category[tei:catDesc[starts-with(.,'collection ')]]/@xml:id) 
+                let $collectionRefIDs := string-join(for $c in $collectionTypes return concat('#',$c),'|')
+                let $collectionHits :=  
+                                    for $ch in $hits[descendant::tei:catRef/@target[matches(.,concat('(',$collectionRefIDs,')(\W|$)'))]]                 
+                                    return $ch
+                return 
+                    map {
+                        "hits" := $collectionHits,                              
+                        "collectionTypes" :=  $collectionTypes,
+                        "query" := $queryExpr,
+                        "sort" := $sort-element
+                        } 
+        else 
+            map {
                 "hits" := $hits,
                 "query" := $queryExpr,
                 "sort" := $sort-element
-        } 
+            } 
 };
 
 declare %templates:wrap function search:group-by-author($node as node(), $model as map(*), $collection as xs:string?){
@@ -71,18 +85,6 @@ declare %templates:wrap function search:group-by-author($node as node(), $model 
    }    
 };
 
-declare %templates:wrap function search:group-by-collection($node as node(), $model as map(*), $collection as xs:string?){
-   map {"group-by-collection-type" := 
-        let $hits := $model("hits")                                       
-        for $collection in $hits/descendant::tei:taxonomy/tei:category[tei:catDesc[starts-with(.,'collection ')]]                
-        group by $collection-name := $collection/@xml:id
-        order by $collection[1] 
-        let $count-hits := count($hits/descendant::tei:catRef[@scheme="#g"][contains(@target, concat('#',$collection-name))])
-        return 
-            <browse xmlns="http://www.w3.org/1999/xhtml" collection="{$collection[1]//text()}" collection-type="{string($collection-name)}" count="{$count-hits}"/>
-   }    
-};
-
 (:~ 
  : Builds results output
  <div>debug {search:query-string($collection)}</div>
@@ -90,83 +92,68 @@ declare %templates:wrap function search:group-by-collection($node as node(), $mo
 declare 
     %templates:default("start", 1)
 function search:show-collections($node as node()*, $model as map(*), $collection as xs:string?, $kwic as xs:string?) {
-    let $collections := $model("group-by-collection-type")
+    let $collectionTypes := $model("collectionTypes")
+    let $collectionHits := $model("hits")
     return
-    (<div class="collections-jump" id="top">
-    {
-        for $collection at $p in $collections 
-        let $collection-title := normalize-space(replace(string($collection/@collection),'collection ',''))
+    <div xmlns="http://www.w3.org/1999/xhtml">
+       <div class="collections-jump" id="top">
+        {
+        for $type at $p in $collectionTypes 
+        let $collection-title := replace($collectionHits/descendant::tei:category[@xml:id = $type][1],'collection ','')
         order by $collection-title
-        where xs:integer($collection/@count) gt 0
+        where $collectionHits[descendant::tei:catRef/@target[matches(.,concat('(',$type,')','(\W|$)'))]]
         return 
             if(request:get-parameter('collection-id', '')) then
                 <a href="{request:get-url()}#{$collection/@collection-type}" class="btn btn-primary">{$collection-title}</a>
-            else <a href="#{$collection/@collection-type}" class="btn btn-primary">{$collection-title}</a>
-        }</div>,
-    <div class="indent" id="search-results" xmlns="http://www.w3.org/1999/xhtml">{
-        if(request:get-parameter('collection-id', '')) then
-            <div>{
-                let $collection-param := replace(request:get-parameter('collection-id', ''),'.xml','')
-                let $collection := $model("hits")/*[descendant::tei:publicationStmt/tei:idno[1][. = $collection-param]]
-                let $collection-id := $collection/descendant::tei:seriesStmt/tei:idno[1]
-                return
-                <div>
-                    <span class="collection-titles">{tei2html:summary-view($collection, '', $collection-id)}</span>
-                    <div class="toolbar">{page:pages($model("hits"), $collection, $search:start, $search:perpage,'', 'author,title,pubDate,pubPlace')}</div>
-                    {
-                    for $work at $p in subsequence($model("hits"),$search:start,$search:perpage) 
-                    let $work-id := replace($work/descendant::tei:publicationStmt/tei:idno[1],'/tei','')
-                    let $kwic := if($kwic = ('true','yes','true()','kwic')) then kwic:expand($work) else ()               
-                    return 
-                        <div class="indent result">{(
-                            tei2html:summary-view($work, '', $work-id),
-                            if($kwic//exist:match) then 
-                                tei2html:output-kwic($kwic, $work-id)
-                            else ()
-                        )}</div>
-                    }
-                </div>    
-            }</div>
-        else 
-            let $collections := $model("group-by-collection-type")
-            for $collection at $p in $collections 
-            let $collection-title := normalize-space(replace(string($collection/@collection),'collection ',''))
-            let $hits := $model("hits")/descendant::tei:catRef[@scheme="#g"][contains(@target, concat('#',$collection/@collection-type))]
-            order by $collection-title
-            where xs:integer($collection/@count) gt 0
-            return
-                <div id="{string($collection/@collection-type)}">{(
-                    <h3>{concat(upper-case(substring($collection-title,1,1)),substring($collection-title,2))}</h3>,<hr/>,
-                    <div class="indent">{
-                        for $hit at $p in $hits
-                        let $root := $hit/ancestor::tei:TEI
-                        let $id := replace($root/descendant::tei:publicationStmt/tei:idno[1],'/tei','')
-                        let $collection-id := $root/descendant::tei:seriesStmt/tei:idno[1]
-                        let $collection-works := for $r in $model("hits")
-                                                 order by global:build-sort-string(data:add-sort-options($r, 'author'),'')
-                                                 where $r/descendant::tei:seriesStmt/tei:idno[. = $collection-id]
-                                                 return $r
+            else <a href="#{$type}" class="btn btn-primary">{$collection-title}</a>
+        }</div>
+       <div class="indent" id="search-results">{
+            if(request:get-parameter('collection-id', '')) then
+                <div>{
+                    let $collection-param := replace(request:get-parameter('collection-id', ''),'.xml','')
+                    let $collection := $model("hits")/*[descendant::tei:publicationStmt/tei:idno[1][. = $collection-param]]
+                    let $collection-id := $collection/descendant::tei:seriesStmt/tei:idno[1]
+                    return
+                    <div>
+                        <span class="collection-titles">{tei2html:summary-view($collection, '', $collection-id)}</span>
+                        <div class="toolbar">{page:pages($model("hits"), $collection, $search:start, $search:perpage,'', 'author,title,pubDate,pubPlace')}</div>
+                        {
+                        for $work at $p in subsequence($model("hits"),$search:start,$search:perpage) 
+                        let $work-id := replace($work/descendant::tei:publicationStmt/tei:idno[1],'/tei','')
+                        let $kwic := if($kwic = ('true','yes','true()','kwic')) then kwic:expand($work) else ()               
+                        return 
+                            <div class="indent result">{(
+                                tei2html:summary-view($work, '', $work-id),
+                                if($kwic//exist:match) then 
+                                    tei2html:output-kwic($kwic, $work-id)
+                                else ()
+                            )}</div>
+                        }
+                    </div>    
+                }</div>
+            else 
+                for $type at $p in $collectionTypes 
+                let $collection-title := normalize-space(replace($collectionHits/descendant::tei:category[@xml:id = $type][1],'collection ',''))
+                order by $collection-title
+                let $typeHits := $collectionHits[descendant::tei:catRef/@target[matches(.,concat('(',$type,')','(\W|$)'))]]
+                where $typeHits
+                return 
+                   <div id="{$type}">{(
+                        <h3>{concat(upper-case(substring($collection-title,1,1)),substring($collection-title,2))}</h3>,<hr/>, 
+                        for $work in $typeHits
+                        let $name := if($work/descendant-or-self::tei:author) then $work/descendant-or-self::tei:author[1] 
+                                     else $work/descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:editor[1]
+                        let $name := if($name/tei:name/@reg) then $name/tei:name/@reg
+                                     else if($name/tei:name/tei:surname) then $name/tei:name/tei:surname
+                                     else if($name/tei:name) then $work/tei:name
+                                     else $name//text()
+                        let $id := replace($work/descendant::tei:idno[1],'/tei','')
+                        order by $name
                         return
-                            <div class="collection result">
-                                <span class="collection-titles">{tei2html:summary-view($root, '', $id)}</span>
-                                <div class="collection result works indent">
-                                {(
-                                    for $work at $p in subsequence($collection-works,1,5)
-                                    let $work-id := replace($work/descendant::tei:idno[1],'/tei','')
-                                    let $kwic := if($kwic = ('true','yes','true()','kwic')) then kwic:expand($root) else ()
-                                    return 
-                                    <div class="indent result">{(
-                                        tei2html:summary-view($work, '', $work-id),
-                                        if($kwic//exist:match) then 
-                                            tei2html:output-kwic($kwic, $work-id)
-                                        else ()
-                                    )}</div>,
-                                    <div class="clearfix"><a class="btn btn-primary pull-right" href="{request:get-uri()}?collection-id={string($collection-id)}">See all {count($collection-works)} works in this collection</a></div>
-                                )}</div>
-                            </div>
-                    }</div>
-                )}</div>
-    }</div>)
+                            tei2html:summary-view($work, '', $id)
+                    )}</div>                            
+        }</div>
+    </div>
 };
 
 (:~ 

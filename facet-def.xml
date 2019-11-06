@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <facets xmlns="http://expath.org/ns/facet">
     <!-- BIBLIOGRAPHY TYPE: 
     <facet-definition name="Bibliography Type">
@@ -10,21 +9,21 @@
     </facet-definition>
     -->
     <facet-definition name="Genre">
-        <group-by function="facet:group-by-array">
+        <group-by function="facet:group-by-array-poetess">
             <sub-path>descendant::tei:catRef[@scheme='#g']/@target</sub-path>
         </group-by>
         <max-values show="10">60</max-values>
         <order-by direction="ascending">value</order-by>
     </facet-definition>
     <facet-definition name="Primary or Secondary Source">
-        <group-by function="facet:group-by-array">
+        <group-by function="facet:group-by-array-poetess">
             <sub-path>descendant::tei:catRef[@scheme='#p']/@target</sub-path>
         </group-by>
         <max-values show="10">60</max-values>
         <order-by direction="ascending">value</order-by>
     </facet-definition>
     <facet-definition name="Format">
-        <group-by function="facet:group-by-array">
+        <group-by function="facet:group-by-array-poetess">
             <sub-path>descendant::tei:catRef[@scheme='#f']/@target</sub-path>
         </group-by>
         <max-values show="10">60</max-values>

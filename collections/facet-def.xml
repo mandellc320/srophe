@@ -6,13 +6,22 @@
         <max-values show="10">60</max-values>
         <order-by direction="ascending">value</order-by>
     </facet-definition>
-    <facet-definition name="Format">
-        <group-by function="facet:group-by-array">
-            <sub-path>descendant::tei:catRef[@scheme='#f']/@target</sub-path>
+    
+    <facet-definition name="Taxonomy">
+        <group-by function="facet:taxonomy">
+            <sub-path>descendant::tei:catRef/@target</sub-path>
         </group-by>
         <max-values show="10">60</max-values>
         <order-by direction="ascending">value</order-by>
     </facet-definition>
+    <!--
+    <facet-definition name="Format">
+        <group-by function="facet:group-by-array-poetess">
+            <sub-path>descendant::tei:catRef[@scheme='#f']/@target</sub-path>
+        </group-by>
+        <max-values show="10">60</max-values>
+        <order-by direction="ascending">value</order-by>
+    </facet-definition>-->
     <!-- TYPES OF WORKS -->
     <!-- BIBLIOGRAPHY TYPE -->
     <!-- SOURCE TYPE: -->
