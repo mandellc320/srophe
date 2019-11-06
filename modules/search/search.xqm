@@ -42,9 +42,10 @@ declare %templates:wrap function search:search-data($node as node(), $model as m
         if($collection = 'collections') then 
                 let $collectionTypes := distinct-values(collection($config:data-root)//tei:category[tei:catDesc[starts-with(.,'collection ')]]/@xml:id) 
                 let $collectionRefIDs := string-join(for $c in $collectionTypes return concat('#',$c),'|')
-                let $collectionHits :=  
-                                    for $ch in $hits[descendant::tei:catRef/@target[matches(.,concat('(',$collectionRefIDs,')(\W|$)'))]]                 
-                                    return $ch
+                let $collectionHits := 
+                                    if(request:get-parameter('collection-id', '') != '') then $hits
+                                    else for $ch in $hits[descendant::tei:catRef/@target[matches(.,concat('(',$collectionRefIDs,')(\W|$)'))]]                 
+                                         return $ch
                 return 
                     map {
                         "hits" := $collectionHits,                              
@@ -98,21 +99,24 @@ function search:show-collections($node as node()*, $model as map(*), $collection
     <div xmlns="http://www.w3.org/1999/xhtml">
        <div class="collections-jump" id="top">
         {
-        for $type at $p in $collectionTypes 
-        let $collection-title := replace($collectionHits/descendant::tei:category[@xml:id = $type][1],'collection ','')
-        order by $collection-title
-        where $collectionHits[descendant::tei:catRef/@target[matches(.,concat('(',$type,')','(\W|$)'))]]
-        return 
-            if(request:get-parameter('collection-id', '')) then
-                <a href="{request:get-url()}#{$collection/@collection-type}" class="btn btn-primary">{$collection-title}</a>
-            else <a href="#{$type}" class="btn btn-primary">{$collection-title}</a>
+        if(request:get-parameter('collection-id', '')) then
+            <a href="{request:get-url()}" class="btn btn-primary">Back to Collections</a>
+        else 
+            for $type at $p in $collectionTypes 
+            let $collection-title := replace($collectionHits/descendant::tei:category[@xml:id = $type][1],'collection ','')
+            order by $collection-title
+            where $collectionHits[descendant::tei:catRef/@target[matches(.,concat('(',$type,')','(\W|$)'))]]
+            return 
+                if(request:get-parameter('collection-id', '')) then
+                    <a href="{request:get-url()}#{$collection/@collection-type}" class="btn btn-primary">{$collection-title}</a>
+                else <a href="#{$type}" class="btn btn-primary">{$collection-title}</a>
         }</div>
        <div class="indent" id="search-results">{
             if(request:get-parameter('collection-id', '')) then
                 <div>{
-                    let $collection-param := replace(request:get-parameter('collection-id', ''),'.xml','')
-                    let $collection := $model("hits")/*[descendant::tei:publicationStmt/tei:idno[1][. = $collection-param]]
-                    let $collection-id := $collection/descendant::tei:seriesStmt/tei:idno[1]
+                    let $collectionRefIDs := string-join(for $c in $collectionTypes return concat('#',$c),'|')
+                    let $collection := $model("hits")[descendant::tei:catRef/@target[matches(.,concat('(',$collectionRefIDs,')(\W|$)'))]]
+                    let $collection-id := $collection/descendant::tei:publicationStmt/tei:idno
                     return
                     <div>
                         <span class="collection-titles">{tei2html:summary-view($collection, '', $collection-id)}</span>
@@ -121,6 +125,7 @@ function search:show-collections($node as node()*, $model as map(*), $collection
                         for $work at $p in subsequence($model("hits"),$search:start,$search:perpage) 
                         let $work-id := replace($work/descendant::tei:publicationStmt/tei:idno[1],'/tei','')
                         let $kwic := if($kwic = ('true','yes','true()','kwic')) then kwic:expand($work) else ()               
+                        where $work-id != $collection-id
                         return 
                             <div class="indent result">{(
                                 tei2html:summary-view($work, '', $work-id),
@@ -129,7 +134,7 @@ function search:show-collections($node as node()*, $model as map(*), $collection
                                 else ()
                             )}</div>
                         }
-                    </div>    
+                    </div>  
                 }</div>
             else 
                 for $type at $p in $collectionTypes 
@@ -141,6 +146,8 @@ function search:show-collections($node as node()*, $model as map(*), $collection
                    <div id="{$type}">{(
                         <h3>{concat(upper-case(substring($collection-title,1,1)),substring($collection-title,2))}</h3>,<hr/>, 
                         for $work in $typeHits
+                        let $seriesId := $work/descendant::tei:seriesStmt/tei:idno
+                        let $subsidiaryItems := count(collection($config:data-root)/tei:TEI[descendant::tei:seriesStmt/tei:idno = $seriesId])
                         let $name := if($work/descendant-or-self::tei:author) then $work/descendant-or-self::tei:author[1] 
                                      else $work/descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:editor[1]
                         let $name := if($name/tei:name/@reg) then $name/tei:name/@reg
@@ -150,7 +157,12 @@ function search:show-collections($node as node()*, $model as map(*), $collection
                         let $id := replace($work/descendant::tei:idno[1],'/tei','')
                         order by $name
                         return
-                            tei2html:summary-view($work, '', $id)
+                            <div>
+                                {tei2html:summary-view($work, '', $id)} 
+                                {if($subsidiaryItems gt 0) then
+                                    <span><a href="?collection-id={$seriesId}" class="btn btn-default pull-right">Seel all {$subsidiaryItems} collection items</a></span>
+                                else ()}
+                            </div>
                     )}</div>                            
         }</div>
     </div>
