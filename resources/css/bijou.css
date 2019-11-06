@@ -387,9 +387,11 @@ dd {
     text-align: right;
 }
 .center {
+    text-align: center;
+}
+p.center {
     margin-left: auto;
     margin-right: auto;
-    text-align:center;
 }
 .headBibl {
     clear:both;
