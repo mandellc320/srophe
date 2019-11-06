@@ -352,9 +352,11 @@ declare function facet:taxonomy($results as item()*, $facet-definition as elemen
         let $taxonomy := $taxonomies[@xml:id = $taxGrp][1]
         let $taxLabel := $taxonomy/tei:bibl/text()
         where $taxLabel != ''
+        order by 
+            if (matches($taxLabel,'^Full Text','i')) then (0) else (1), $taxLabel
         return 
-            <div class="subfield">
-                <h4>{$taxLabel}</h4>
+            <div class="subfacet">
+                <h5>{$taxLabel}</h5>
                 {
                 let $facets := 
                     for $f in $cat

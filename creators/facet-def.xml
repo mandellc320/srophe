@@ -6,9 +6,16 @@
         <max-values show="10">60</max-values>
         <order-by direction="ascending">value</order-by>
     </facet-definition>
-    <facet-definition name="Primary or Secondary Source">
-        <group-by function="facet:group-by-array-poetess">
-            <sub-path>descendant::tei:catRef[@scheme='#p']/@target</sub-path>
+    <facet-definition name="Taxonomy">
+        <group-by function="facet:taxonomy">
+            <sub-path>descendant::tei:catRef/@target</sub-path>
+        </group-by>
+        <max-values show="10">60</max-values>
+        <order-by direction="ascending">value</order-by>
+    </facet-definition>
+    <facet-definition name="Keywords">
+        <group-by>
+            <sub-path>descendant::tei:profileDesc/tei:textClass/tei:keywords/tei:list/tei:item</sub-path>
         </group-by>
         <max-values show="10">60</max-values>
         <order-by direction="ascending">value</order-by>

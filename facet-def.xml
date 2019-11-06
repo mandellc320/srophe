@@ -1,30 +1,7 @@
 <facets xmlns="http://expath.org/ns/facet">
-    <!-- BIBLIOGRAPHY TYPE: 
-    <facet-definition name="Bibliography Type">
-        <group-by function="facet:bibl-type">
-            <sub-path>descendant::tei:catRef[@scheme='#g']/@target</sub-path>
-        </group-by>
-        <max-values show="10">60</max-values>
-        <order-by direction="ascending">value</order-by>
-    </facet-definition>
-    -->
-    <facet-definition name="Genre">
-        <group-by function="facet:group-by-array-poetess">
-            <sub-path>descendant::tei:catRef[@scheme='#g']/@target</sub-path>
-        </group-by>
-        <max-values show="10">60</max-values>
-        <order-by direction="ascending">value</order-by>
-    </facet-definition>
-    <facet-definition name="Primary or Secondary Source">
-        <group-by function="facet:group-by-array-poetess">
-            <sub-path>descendant::tei:catRef[@scheme='#p']/@target</sub-path>
-        </group-by>
-        <max-values show="10">60</max-values>
-        <order-by direction="ascending">value</order-by>
-    </facet-definition>
-    <facet-definition name="Format">
-        <group-by function="facet:group-by-array-poetess">
-            <sub-path>descendant::tei:catRef[@scheme='#f']/@target</sub-path>
+    <facet-definition name="Taxonomy">
+        <group-by function="facet:taxonomy">
+            <sub-path>descendant::tei:catRef/@target</sub-path>
         </group-by>
         <max-values show="10">60</max-values>
         <order-by direction="ascending">value</order-by>
@@ -36,23 +13,11 @@
         <max-values show="10">60</max-values>
         <order-by direction="ascending">value</order-by>
     </facet-definition>
-    <!-- Primary or sec
-        ARC Format Categories
-    <facet-definition name="Genre">
-        <group-by function="facet:group-by-array">
-            <sub-path>descendant::tei:catRef[@scheme='#g']/@target</sub-path>
+    <facet-definition name="Keywords">
+        <group-by>
+            <sub-path>descendant::tei:profileDesc/tei:textClass/tei:keywords/tei:list/tei:item</sub-path>
         </group-by>
         <max-values show="10">60</max-values>
         <order-by direction="ascending">value</order-by>
     </facet-definition>
-    Primary or secondary
-     <catRef target="#ps1" scheme="#p"/>
-     Genre 
-            <catRef target="#g22 #g29" scheme="#g"/>
-    -->
-    <!-- TYPES OF WORKS -->
-    <!-- BIBLIOGRAPHY TYPE -->
-    <!-- SOURCE TYPE: -->
-    <!-- SORT RESULTS BY: -->
-    <!-- A simple facet for browsing by Syriaca.org place names (filtering on English) -->
 </facets>
