@@ -10,8 +10,7 @@ main {
     width:60em;
 }
 section {
-    clear:both;
-    text-align: left;
+    clear: both;
     margin-left: 0;
     background-color:#ffffff;
     border:solid 1px #666666;
@@ -19,57 +18,67 @@ section {
     padding: 20px;
 }
 /* The following are section classes */
-.titlePage {
+section.titlePage {
     margin-left: 10em;
     display: block;
     text-align: center;
 }
-.preface {
+section.preface {
     margin-left: 10em;
     display: block;
     text-align: left;
 }
-.illustrations {
+section.illustrations {
     margin-left: 10em;
     display: block;
     text-align: left;
 }
-.contents {
+section.contents {
     margin-left: 10em;
     display: block;
     text-align: left;
 }
-.poem {
+section.poem {
     margin-left: 10em;
     display: block;
             }
-.essay {
+section.essay {
     margin-left: 10em;
     display: block;
     text-align: left;
 }
-.story {
+section.story {
     margin-left: 10em;
     display: block;
     text-align: left;
 }
-.drama {
+section.drama {
     margin-left: 10em;
     display: block;
     text-align: left;
 }
-.letter {
+section.letter {
     margin-left: 10em;
     display: block;
     text-align: left;
 }
-.scene {
+section.scene {
     clear:both;
     text-align: left;
     margin-left: 0;
     background-color:#ffffff;
     border: none;
     width:58em;
+}
+section.index {
+    clear:both;
+    margin-left: 10em;
+    display: block;
+}
+section.notes {
+    clear:both;
+    margin-left: 10em;
+    display: block;
 }
 /* The following are section classes for images */
 section.boards {
@@ -91,12 +100,18 @@ section.dedication {
     margin-left: 10em;
     display: block;
 }
-section.index {
+section.printersMark {
+    clear:both;
+    margin-left: 10em;
+    display: block;
+}
+section.advertisement {
     clear:both;
     margin-left: 10em;
     display: block;
 }
 .picture {
+    clear:both;
     margin-left: 10em;
     display: block;
 }
@@ -105,7 +120,7 @@ img.partHead {
     background-color:#ffffff;
     border: solid 1px #666666;
     margin-left: 10em;
-    width: 62.5em;
+    width: 60em;
     opacity: 0.7;
 }
 img {
