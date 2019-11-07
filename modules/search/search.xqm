@@ -544,3 +544,6 @@ declare function search:author-menu($node as node(), $model as map(*), $sort-opt
         </ul>
     </div>
 };
+declare function search:collection-id-param($node as node(), $model as map(*), $sort-options){
+    <input xmlns="http://www.w3.org/1999/xhtml" type="hidden" name="collection-id" id="collection-id" value="{request:get-parameter('collection-id', '')}"/>
+};

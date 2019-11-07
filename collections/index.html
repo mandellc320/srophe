@@ -16,7 +16,7 @@
             <div class="col-md-9 right-menu">
                 <div class="introduction">
                     <h1>Collections</h1>
-                    <p>This site contains bibliographic data, full texts from, and material views of nineteenth-century literature collections. These are divided into 1) literary annuals, 2) anthologies, 3) miscellanies, and 4) beauties.</p>
+                    <p>This site contains bibliographic data, full texts from, and material views of nineteenth-century literature collections. These are divided into 1) literary annuals and 2) other collections (including anthologies, miscellanies, and beauties).</p>
                 </div>
                 <div class="browse-collection">
                     <div data-template="search:show-collections" data-template-kwic="yes"/>
@@ -39,6 +39,7 @@
                                     <span class="glyphicon glyphicon-search"/>
                                 </button>
                             </div>
+                            <input type="hidden" name="collection-id" id="collection-id" data-template="search:collection-id-param"/>
                         </div>
                         <div class="input-group">
                             <button class="btn btn-default" type="submit" data-toggle="tooltip" title="Enter a search term" placeholder="Enter a search term">
