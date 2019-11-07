@@ -44,8 +44,9 @@ declare %templates:wrap function search:search-data($node as node(), $model as m
                 let $collectionRefIDs := string-join(for $c in $collectionTypes return concat('#',$c),'|')
                 let $collectionHits := 
                                     if(request:get-parameter('collection-id', '') != '') then $hits
-                                    else for $ch in $hits[descendant::tei:catRef/@target[matches(.,concat('(',$collectionRefIDs,')(\W|$)'))]]                 
-                                         return $ch
+                                    else 
+                                        for $ch in $hits[descendant::tei:catRef/@target[matches(.,concat('(',$collectionRefIDs,')(\W|$)'))]]                 
+                                        return $ch
                 return 
                     map {
                         "hits" := $collectionHits,                              
@@ -115,17 +116,18 @@ function search:show-collections($node as node()*, $model as map(*), $collection
             if(request:get-parameter('collection-id', '')) then
                 <div>{
                     let $collectionRefIDs := string-join(for $c in $collectionTypes return concat('#',$c),'|')
-                    let $collection := $model("hits")[descendant::tei:catRef/@target[matches(.,concat('(',$collectionRefIDs,')(\W|$)'))]]
-                    let $collection-id := $collection/descendant::tei:publicationStmt/tei:idno
+                    let $collection := for $c in collection($config:data-root)//tei:TEI[descendant::tei:seriesStmt[tei:idno ='bijou1828-p5.xml']][descendant::tei:catRef/@target[matches(.,concat('(',$collectionRefIDs,')(\W|$)'))]]                 
+                                       return $c
+                    let $collection-id := request:get-parameter('collection-id', '')
                     return
                     <div>
                         <span class="collection-titles">{tei2html:summary-view($collection, '', $collection-id)}</span>
                         <div class="toolbar">{page:pages($model("hits"), $collection, $search:start, $search:perpage,'', 'author,title,pubDate,pubPlace')}</div>
                         {
-                        for $work at $p in subsequence($model("hits"),$search:start,$search:perpage) 
+                        for $work at $p in subsequence($collectionHits,$search:start,$search:perpage) 
                         let $work-id := replace($work/descendant::tei:publicationStmt/tei:idno[1],'/tei','')
                         let $kwic := if($kwic = ('true','yes','true()','kwic')) then kwic:expand($work) else ()               
-                        where $work-id != $collection-id
+                        (:where $work-id != $collection-id:)
                         return 
                             <div class="indent result">{(
                                 tei2html:summary-view($work, '', $work-id),
