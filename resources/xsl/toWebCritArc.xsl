@@ -16,6 +16,7 @@
 	<xsl:output method="html" doctype-system="about:legacy-compat"
 		omit-xml-declaration="yes" indent="yes" encoding="UTF-8"/>
 	<xsl:strip-space elements="*"/>
+	
 
 	<!--structuring the document-->
 
@@ -191,7 +192,7 @@
 				</xsl:choose>
 			</xsl:when>
 			<xsl:otherwise>
-				<p class="pnoindent">
+				<div class="blockquote">
 					<xsl:choose>
 						<xsl:when test="tei:p">
 							<xsl:apply-templates/>
@@ -203,7 +204,7 @@
 							<span class="blockquote"><xsl:apply-templates/></span>
 						</xsl:otherwise>
 					</xsl:choose>
-				</p>
+				</div>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -223,9 +224,21 @@
 	</xsl:template>
 
 	<xsl:template match="tei:l">
+		<xsl:variable name="rend" select="@rendition"/>
+		<xsl:variable name="class" select="substring-after($rend, '#')"/>
 		<xsl:choose>
-			<xsl:when test="parent::tei:lg/parent::tei:quote">
-				<span class="line"><xsl:apply-templates/></span>
+		<xsl:when test="parent::tei:lg/parent::tei:quote">
+			<span>
+					<xsl:choose>
+						<xsl:when test="@rendition">
+					<xsl:attribute name="class" select="$class"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:attribute name="class">l</xsl:attribute>
+						</xsl:otherwise>
+					</xsl:choose>
+					<xsl:apply-templates/>
+			</span>
 			</xsl:when>
 			<xsl:when test="parent::tei:lg/parent::tei:div[@type='poem']">
 		<tr>
@@ -235,7 +248,7 @@
 					<xsl:attribute name="class">
 						<xsl:choose>
 							<xsl:when test="@rendition">
-						<xsl:apply-templates select="@rendition"/>
+						<xsl:value-of select="$class"/>
 							</xsl:when>
 							<xsl:otherwise>
 								<xsl:text>l</xsl:text>
@@ -259,7 +272,7 @@
 							<xsl:attribute name="class">
 								<xsl:choose>
 									<xsl:when test="@rendition">
-										<xsl:apply-templates select="@rendition"/>
+										<xsl:value-of select="$class"/>
 									</xsl:when>
 									<xsl:otherwise>
 										<xsl:text>l</xsl:text>
@@ -271,11 +284,12 @@
 					</td>
 				</tr>
 			</xsl:when>
-			<xsl:otherwise><span>
+			<xsl:otherwise>
+				<span>
 				<xsl:attribute name="class">
 					<xsl:choose>
 						<xsl:when test="@rendition">
-							<xsl:apply-templates select="@rendition"/>
+							<xsl:value-of select="$class"/>
 						</xsl:when>
 						<xsl:otherwise>
 							<xsl:text>l</xsl:text>
@@ -289,11 +303,13 @@
 	</xsl:template>
 
 	<xsl:template match="tei:p">
+		<xsl:variable name="rend" select="@rendition"/>
+		<xsl:variable name="class" select="substring-after($rend, '#')"/>
 		<p>
 			<xsl:choose>
 				<xsl:when test="@rendition">
 			<xsl:attribute name="class">
-				<xsl:apply-templates select="@rendition"/>
+				<xsl:value-of select="$class"/>
 			</xsl:attribute>
 				</xsl:when>
 				<xsl:when test="@type">
@@ -315,9 +331,11 @@
 	</xsl:template>
 	
 	<xsl:template match="tei:hi">
+		<xsl:variable name="rend" select="@rendition"/>
+		<xsl:variable name="class" select="substring-after($rend, '#')"/>
 		<span>
 			<xsl:attribute name="class">
-				<xsl:apply-templates select="@rendition"/>
+				<xsl:value-of select="$class"/>
 			</xsl:attribute>
 			<xsl:apply-templates/>
 		</span>
@@ -372,7 +390,7 @@
 		<xsl:variable name="class">
 		<xsl:choose>
 			<xsl:when test="parent::tei:p/parent::tei:quote/parent::tei:div">
-				<xsl:text>pageNumber</xsl:text>
+				<xsl:text>pageNoInside</xsl:text>
 			</xsl:when>
 			<xsl:when test="parent::tei:p/parent::tei:quote">
 				<xsl:text>pageNoInside</xsl:text>
@@ -404,9 +422,9 @@
 					<xsl:when test="preceding-sibling::node()[1]/@place='bottom-left'">
 						<xsl:text>milesWithFW</xsl:text>
 					</xsl:when>
-					<xsl:when test="parent::tei:p/parent::tei:quote/parent::tei:div">
+					<!-- <xsl:when test="parent::tei:p/parent::tei:quote/parent::tei:div">
 						<xsl:text>milestone</xsl:text>
-					</xsl:when>
+					</xsl:when> -->
 					<xsl:when test="parent::tei:p/parent::tei:quote">
 						<xsl:text>milesNoInside</xsl:text>
 					</xsl:when>
@@ -434,11 +452,18 @@
 			<xsl:variable name="class">
 				<xsl:choose>
 					<xsl:when test="@place='bottom-left'">
-						<xsl:text>fwWithMiles</xsl:text>
+						<xsl:choose>
+							<xsl:when test="parent::*/parent::tei:quote">
+								<xsl:text>fwWithMilesQ</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:text>fwWithMiles</xsl:text>
+							</xsl:otherwise>
+						</xsl:choose>
 					</xsl:when>
-					<xsl:when test="parent::tei:p/parent::tei:quote/parent::tei:div">
+					<!-- <xsl:when test="parent::tei:p/parent::tei:quote/parent::tei:div">
 						<xsl:text>fw</xsl:text>
-					</xsl:when>
+					</xsl:when> -->
 					<xsl:when test="parent::tei:p/parent::tei:quote">
 						<xsl:text>fwNoInside</xsl:text>
 					</xsl:when>
