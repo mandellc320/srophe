@@ -166,7 +166,6 @@ a:hover {
     display: block;
     width: 61.5em;
     margin: 1em -1em 1em -10.5em;
-    margin-bottom: 1em;
 	font-size: 16px;
 	line-height: 30px;
 	text-indent: 0px;
@@ -208,7 +207,7 @@ main {
 .essay {
     background-color:#ffffff;
     border:solid 1px #666666;
-    width:60em;
+    width:75em;
     padding: 20px;
     text-align: left;
 }
