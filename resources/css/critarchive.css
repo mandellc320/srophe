@@ -18,6 +18,8 @@ header {
 }
  .poem {
                 margin-left: 10em;
+                margin-top: 32px;
+                margin-bottom: 32px;
                 display: block;
             }
 
@@ -29,84 +31,112 @@ header {
 	display: block;
 }
 .indent {
-    text-indent: 50px;
+    text-indent: 10px;
 	font-size: 16px;	
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent1 {
-	text-indent: 100px;
+	text-indent: 20px;
 	font-size: 16px;
     line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent2 {
-	text-indent: 150px;
+	text-indent: 30px;
 	font-size: 16px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent3 {
-	text-indent: 200px;
+	text-indent: 40px;
 	font-size: 16px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent4 {
-	text-indent: 250px;
+	text-indent: 50px;
 	font-size: 16px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent5 {
-	text-indent: 300px;
+	text-indent: 60px;
 	font-size: 16px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent6 {
-	text-indent: 350px;
+	text-indent: 70px;
 	font-size: 16px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent7 {
-	text-indent: 400px;
+	text-indent: 80px;
 	font-size: 16px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent8 {
-	text-indent: 450px;
+	text-indent: 90px;
 	font-size: 16px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent9 {
-	text-indent: 500px;
+	text-indent: 100px;
 	font-size: 16px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent10 {
-	text-indent: 550px;
+	text-indent: 110px;
 	font-size: 16px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent11 {
-	text-indent: 600px;
+	text-indent: 120px;
+	font-size: 16px;
+	line-height: 30px;
+	letter-spacing: 0.3px;
+	display: block;
+}
+.indent12 {
+	text-indent: 130px;
+	font-size: 16px;
+	line-height: 30px;
+	letter-spacing: 0.3px;
+	display: block;
+}
+.indent13 {
+	text-indent: 140px;
+	font-size: 16px;
+	line-height: 30px;
+	letter-spacing: 0.3px;
+	display: block;
+}
+.indent14 {
+	text-indent: 150px;
+	font-size: 16px;
+	line-height: 30px;
+	letter-spacing: 0.3px;
+	display: block;
+}
+.indent15 {
+	text-indent: 160px;
 	font-size: 16px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
@@ -334,7 +364,7 @@ li {
     font-size: 16pt;
 }
 .largest {
-    font-size: 18pt;
+    font-size: 20pt;
     }
 .smallest {
     font-size: 10pt;
@@ -352,4 +382,5 @@ figure {
 .sup {
     vertical-align: super;
     font-size: 70%;
+    line-height: 40%;
 }
