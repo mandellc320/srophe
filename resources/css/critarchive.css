@@ -164,8 +164,8 @@ a:hover {
 .pageNoInside {
     border-top: 1.2px solid black;
     display: block;
-    width: 61.5em;
-    margin: 1em -1em 1em -10.5em;
+    width: 63.5em;
+    margin: 1em -1em 1em -8.5em;
 	font-size: 16px;
 	line-height: 30px;
 	text-indent: 0px;
@@ -212,10 +212,10 @@ main {
     text-align: left;
 }
 .notes {
-    margin-left: 5em;
+    margin-left: 4.35em;
     margin-right: 20%;
     border:solid 1px #666666;
-    width:60em;
+    width:65.65em;
     padding: 20px;
 	line-height: 32px;
 	font-size: 16px;}
