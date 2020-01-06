@@ -262,6 +262,9 @@ dd {
 .noteSpace {
     height: 60em;
 }
+.note {
+    text-indent: 0;
+}
 	
 /* For catchwords, signatures, and other formwork */
 .milestone {
