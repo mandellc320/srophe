@@ -422,7 +422,7 @@ figure {
 }
 .sup {
     vertical-align: super;
-    font-size: 70%;
+    font-size: 12pt;
     line-height: 40%;
 }
 .flushRight {
