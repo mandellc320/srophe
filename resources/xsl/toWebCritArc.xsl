@@ -17,14 +17,42 @@
 		omit-xml-declaration="yes" indent="yes" encoding="UTF-8"/>
 	<xsl:strip-space elements="*"/>
 	
-
+	<!-- to run multiple files 
+	<xsl:template match="list">
+		<xsl:for-each select="item">
+			<xsl:apply-templates select="document(@code)/tei:TEI"/>
+		</xsl:for-each>
+	</xsl:template>  -->
+	
+	<!-- to run single files 
+	<xsl:template match="/">
+		<xsl:apply-templates/>
+	</xsl:template>  -->
+	
+	<!-- for Srophe
+	<xsl:template match="tei:TEI">
+		<body>
+			<xsl:apply-templates select="tei:text"/>
+			<section class="noteSpace"/>
+		</body>
+	</xsl:template> -->
+	
 	<!--structuring the document-->
 
 	<xsl:template match="tei:TEI">
+		<!-- comment out for Srophe everything besides body 
+		<xsl:variable name="filename" select="tei:teiHeader/tei:fileDesc/tei:publicationStmt/tei:idno"/>
+		<xsl:result-document href="../HTML/{$filename}.html">
+		<html>
+			<head><title><xsl:value-of select="tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:title[1]"/></title>
+				<link rel="stylesheet" type="text/css" href="critarchive.css"/>
+			</head> -->
 				<body>
 					<xsl:apply-templates select="tei:text"/>
 					<section class="noteSpace"/>
 				</body>
+		<!-- </html>
+		</xsl:result-document> -->
 	</xsl:template>
 	
 	<!-- =======================================================
@@ -154,7 +182,14 @@
 	</xsl:template>
 	
 	<xsl:template match="tei:lg" mode="inQuote">
-		<span class="poem"><xsl:apply-templates/></span>
+		<xsl:choose>
+			<xsl:when test="parent::tei:quote/parent::tei:note">
+				<xsl:apply-templates/>
+			</xsl:when>
+			<xsl:otherwise>
+				<span class="poem"><xsl:apply-templates/></span>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 	
 	<xsl:template match="tei:epigraph[@rend='poem']">
@@ -178,6 +213,9 @@
 	
 	<xsl:template match="tei:quote">
 		<xsl:choose>
+			<xsl:when test="parent::tei:note">
+				<xsl:apply-templates mode="inQuote"/>
+			</xsl:when>
 			<xsl:when test="parent::tei:p">
 					<xsl:choose>
 					<xsl:when test="tei:p">
@@ -307,10 +345,18 @@
 		<xsl:variable name="class" select="substring-after($rend, '#')"/>
 		<p>
 			<xsl:choose>
+				<xsl:when test="@rendition and parent::tei:quote">
+					<xsl:attribute name="id">
+						<xsl:text>resetMargin</xsl:text>
+					</xsl:attribute>
+					<xsl:attribute name="class">
+						<xsl:value-of select="$class"/>
+					</xsl:attribute>
+				</xsl:when>
 				<xsl:when test="@rendition">
-			<xsl:attribute name="class">
-				<xsl:value-of select="$class"/>
-			</xsl:attribute>
+					<xsl:attribute name="class">
+						<xsl:value-of select="$class"/>
+					</xsl:attribute>
 				</xsl:when>
 				<xsl:when test="@type">
 					<xsl:attribute name="class" select="@type"/>
@@ -538,7 +584,9 @@
 		<xsl:variable name="noteNBR">
 			<xsl:number select="." level="any"/>
 		</xsl:variable>
-		<p id="{$noteNBR}"><xsl:value-of select="$noteNBR"/>. <xsl:apply-templates/>
+		<p class="note" id="{$noteNBR}">
+			<sup><xsl:value-of select="$noteNBR"/></sup>
+			<xsl:apply-templates/>
 			<xsl:text> </xsl:text>
 			<a>
 				<xsl:attribute name="href"><xsl:text>#back</xsl:text><xsl:value-of select="$noteNBR"

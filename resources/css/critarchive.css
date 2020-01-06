@@ -3,9 +3,8 @@ body {
 	font-family: "Cormorant+Garmond";
 	}
 	
-
-	
-p {font-size: 16px;
+p { 
+    font-size: 16px;
 	line-height: 30px;
 	text-indent: 45px;
 	letter-spacing: 0.3px;
@@ -17,11 +16,11 @@ header {
 	letter-spacing: 0.6px;
 }
  .poem {
-                margin-left: 10em;
-                margin-top: 32px;
-                margin-bottom: 32px;
-                display: block;
-            }
+    margin-left: 10em;
+    margin-top: 32px;
+    margin-bottom: 32px;
+    display: block;
+}
 
 .l {
 	text-indent: 0px;
@@ -137,6 +136,27 @@ header {
 }
 .indent15 {
 	text-indent: 160px;
+	font-size: 16px;
+	line-height: 30px;
+	letter-spacing: 0.3px;
+	display: block;
+}
+.indent20 {
+	text-indent: 210px;
+	font-size: 16px;
+	line-height: 30px;
+	letter-spacing: 0.3px;
+	display: block;
+}
+.indent25 {
+	text-indent: 260px;
+	font-size: 16px;
+	line-height: 30px;
+	letter-spacing: 0.3px;
+	display: block;
+}
+.indent30 {
+	text-indent: 310px;
 	font-size: 16px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
@@ -401,4 +421,7 @@ figure {
     vertical-align: super;
     font-size: 70%;
     line-height: 40%;
+}
+.flushRight {
+    float: right;
 }
