@@ -53,7 +53,12 @@ declare function d3xquery:format-table($relationships as item()*){
 
 (: Output based on d3js requirements for producing a d3js tree format, single nested level, gives collection overview :)
 declare function d3xquery:format-tree-types($relationships){
-    <root>
+(: poetess 
+descendant::tei:catRef/@target
+
+:)
+if($relationships/@ref or $relationships/@name) then
+<root>
         <data>
             <children>
                 {
@@ -70,6 +75,31 @@ declare function d3xquery:format-tree-types($relationships){
             </children>
         </data>
     </root>
+else if($relationships/descendant::tei:catRef/@target) then
+  <root>
+        <data>
+            <children>
+                {
+                    for $cat in tokenize(string-join($relationships/descendant::tei:catRef/@target,' '),' ')
+                    let $catRef := substring-after($cat,'#')
+                    let $taxRef := replace($catRef,'\d*','')
+                    group by $taxGrp := $catRef
+                    let $categoryName := $relationships//tei:category[@xml:id = $catRef][1]
+                    let $catGrp := $categoryName[1]/parent::tei:taxonomy/tei:bibl/text()
+                    return 
+                        if($categoryName) then  
+                            <json:value>
+                                <name>{normalize-space(string($categoryName[1]))}</name>
+                                <id>{$cat[1]}</id>
+                                <group>{normalize-space($catGrp)}</group>
+                                <size>{count($cat)}</size>
+                             </json:value>  
+                        else ()      
+                 }
+            </children>
+        </data>
+    </root>  
+else <root>Data does not match expected patterns</root>  
 };
 
 (: output based on d3js requirements :)
@@ -165,8 +195,10 @@ declare function d3xquery:build-graph-type($records, $id as xs:string?, $relatio
             d3xquery:format-relationship-graph(d3xquery:get-relationship($records, $relationship, $id))
         else if($type = ('Table','table','Bundle')) then 
             d3xquery:format-table(d3xquery:get-relationship($records, $relationship, $id))
-        else if($type = ('Tree','Round Tree','Circle Pack','Bubble')) then 
-            d3xquery:format-tree-types(d3xquery:get-relationship($records, $relationship, $id))
+        else if($type = ('Tree','Round Tree','Circle Pack','Bubble','bubble')) then
+            if($relationship = 'taxonomy') then 
+                d3xquery:format-tree-types($records)
+            else d3xquery:format-tree-types(d3xquery:get-relationship($records, $relationship, $id))
         else if($type = ('Bar Chart','Pie Chart')) then
             d3xquery:format-tree-types(d3xquery:get-relationship($records, $relationship, $id))   
         else d3xquery:format-table(d3xquery:get-relationship($records, $relationship, $id)) 
