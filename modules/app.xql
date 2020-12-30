@@ -21,9 +21,10 @@ import module namespace slider = "http://syriaca.org/srophe/slider" at "lib/date
 import module namespace timeline = "http://syriaca.org/srophe/timeline" at "lib/timeline.xqm";
 import module namespace teiDocs="http://syriaca.org/srophe/teiDocs" at "teiDocs/teiDocs.xqm";
 import module namespace tei2html="http://syriaca.org/srophe/tei2html" at "content-negotiation/tei2html.xqm";
-
+import module namespace d3xquery="http://syriaca.org/srophe/d3xquery" at "../d3xquery/d3xquery.xqm";
 
 (: Namespaces :)
+declare namespace output = "http://www.w3.org/2010/xslt-xquery-serialization";
 declare namespace http="http://expath.org/ns/http-client";
 declare namespace tei="http://www.tei-c.org/ns/1.0";
 declare namespace html="http://www.w3.org/1999/xhtml";
@@ -269,9 +270,17 @@ declare function app:display-map($node as node(), $model as map(*)){
  : Display Dates using timelinejs
  :)                 
 declare function app:display-timeline($node as node(), $model as map(*)){
-    if($model("hits")/descendant::tei:body/descendant::*[@when or @notBefore or @notAfter]) then
+   if($model("hits")/descendant::tei:body/descendant::tei:date) then
         timeline:timeline($model("hits"), 'Timeline')
-     else ()
+   else ()
+};
+
+(:
+ : Display Timeline. Uses http://timeline.knightlab.com/
+:)
+declare function app:display-timeline-all($node as node(), $model as map(*)){
+let $data := collection($config:data-root)
+return timeline:timeline($data, 'Timeline')
 };
 
 (:~
@@ -604,4 +613,62 @@ declare function app:title-string($node as node(), $model as map(*)){
                 string-join($model("hits")/descendant::tei:biblStruct/descendant::tei:author,''))
         else $model("hits")/descendant::tei:titleStmt[1]/tei:title[1]
     return normalize-space(string-join($title,''))        
+};
+
+(: Net work visualizations:)
+(:~ 
+ : d3js visualization 
+ ?type=Bubble&relationship=taxonomy&format=json
+:)
+declare function app:data-visualization($node as node(), $model as map(*), $relationship as xs:string?, $type as xs:string?) {
+    let $record := request:get-parameter('recordID', '')
+    let $collectionPath := request:get-parameter('collection', '')
+    let $data := 
+            if($record != '') then
+            (: Return a single TEI record:)
+                collection($config:data-root)/tei:TEI[.//tei:idno[@type='URI'][. = concat($record,'/tei')]][1]
+            (: Return a collection:)
+            else if($collectionPath != '') then 
+                collection(string($collectionPath))
+            (: Return all TEI data:)     
+            else collection($config:data-root) 
+    (:let $reference-data := if(not(empty($model("data")))) then $model("data") else if(not(empty($model("hits")))) then $model("hits") else ():) 
+    let $type := if($type) then $type else if(request:get-parameter('type', '') != '') then request:get-parameter('type', '') else 'Force'
+    let $relationship := if($relationship) then $relationship else if(request:get-parameter('relationship', '') != '') then request:get-parameter('relationship', '') else ()
+    let $json := 
+            (serialize(d3xquery:build-graph-type($data, (), $relationship, $type), 
+               <output:serialization-parameters>
+                   <output:method>json</output:method>
+               </output:serialization-parameters>))
+    return 
+        if(not(empty($data))) then 
+            <div id="LODResults" xmlns="http://www.w3.org/1999/xhtml">
+                <script src="{$config:nav-base}/d3xquery/js/d3.v4.min.js" type="text/javascript"/>
+                <div id="graphVis" style="height:500px;"/>
+                <script><![CDATA[
+                        $(document).ready(function () {
+                            var rootURL = ']]>{$config:nav-base}<![CDATA[';
+                            var postData =]]>{$json}<![CDATA[;
+                            var id = ']]>{request:get-parameter('id', '')}<![CDATA[';
+                            var type = ']]>{$type}<![CDATA[';
+                            if($('#graphVis svg').length == 0){
+                               	selectGraphType(postData,rootURL,type);
+                               }
+                            jQuery(window).trigger('resize');
+                        
+                        });
+                ]]></script>
+                <style><![CDATA[
+                    .d3jstooltip {
+                      background-color:white;
+                      border: 1px solid #ccc;
+                      border-radius: 6px;
+                      padding:.5em;
+                      }
+                    }
+                    ]]>
+                </style>
+                <script src="{$config:nav-base}/d3xquery/js/vis.js" type="text/javascript"/>
+            </div>
+        else ()
 };
