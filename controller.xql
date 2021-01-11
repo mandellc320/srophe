@@ -176,7 +176,7 @@ $exist:collection-uris : {$exist:collection-uris}
 else if(replace($exist:path, $exist:resource,'') =  $exist:record-uris or 
     replace($exist:path, $exist:resource,'') = $exist:collection-uris 
     or replace(replace($exist:path, $exist:resource,''),'/','') = $exist:collection-names) then
-    if($exist:resource = ('index.html','search.html','browse.html','about.html')) then    
+    if($exist:resource = ('index.html', 'index2.html','search.html','browse.html','about.html')) then    
         <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
             <view>
                 <forward url="{$exist:controller}/modules/view.xql"/>
