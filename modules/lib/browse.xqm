@@ -41,7 +41,7 @@ declare function browse:get-all($node as node(), $model as map(*), $collection a
  : Main HTML display of browse results
  : @param $collection passed from html 
 :)
-declare function browse:show-hits($node as node(), $model as map(*), $collection, $sort-options as xs:string*, $facets as xs:string?){
+declare function browse:show-hits($node as node(), $model as map(*), $collection, $sort-options as xs:string*,$view-options as xs:string*, $facets as xs:string?){
   let $hits := $model("hits")
   return 
     (
@@ -54,7 +54,7 @@ declare function browse:show-hits($node as node(), $model as map(*), $collection
            {( if(($browse:lang = 'syr') or ($browse:lang = 'ar')) then (attribute dir {"rtl"}) else(),
                 <div class="float-container">
                     <div class="{if(($browse:lang = 'syr') or ($browse:lang = 'ar')) then "pull-left" else "pull-right paging"}">
-                         {page:pages($hits, $collection, $browse:start, $browse:perpage,'', $sort-options)}
+                         {page:pages($hits, $collection, $browse:start, $browse:perpage,'', $sort-options, $view-options)}
                     </div>
                     {
                     if($browse:view = 'type' or $browse:view = 'date' or $browse:view = 'facets') then ()
