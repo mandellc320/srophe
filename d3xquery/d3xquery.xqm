@@ -1,6 +1,7 @@
 xquery version "3.1";
 
 module namespace d3xquery="http://syriaca.org/srophe/d3xquery";
+import module namespace config="http://syriaca.org/srophe/config" at "../modules/config.xqm";
 import module namespace functx="http://www.functx.com";
 declare namespace tei="http://www.tei-c.org/ns/1.0";
 declare namespace json="http://www.json.org";
@@ -52,7 +53,7 @@ declare function d3xquery:format-table($relationships as item()*){
 };
 
 (: Output based on d3js requirements for producing a d3js tree format, single nested level, gives collection overview :)
-declare function d3xquery:format-tree-types($relationships){
+declare function d3xquery:format-tree-types($relationships,$relationshipType){
 (: poetess 
 descendant::tei:catRef/@target
 
@@ -75,7 +76,7 @@ if($relationships/@ref or $relationships/@name) then
             </children>
         </data>
     </root>
-else if($relationships/descendant::tei:catRef/@target) then
+else if($relationshipType = 'taxonomy') then
   <root>
         <data>
             <children>
@@ -99,6 +100,28 @@ else if($relationships/descendant::tei:catRef/@target) then
             </children>
         </data>
     </root>  
+else if($relationshipType = 'author') then
+  <root>
+        <data>
+            <children>
+                {
+                    for $author in $relationships/descendant::tei:author
+                    group by $authorGrp := normalize-space(string($author))
+                    let $authorType := string($author[1]/@type)
+                    return 
+                        if(count($author) gt 1) then  
+                            <json:value>
+                                <name>{$authorGrp[1]}</name>
+                                <id>{$authorGrp[1]}</id>
+                                <group>{normalize-space($authorType)}</group>
+                                <size>{count($author)}</size>
+                             </json:value>  
+                        else ()      
+                 }
+            </children>
+        </data>
+    </root>  
+
 else <root>Data does not match expected patterns</root>  
 };
 
@@ -189,18 +212,82 @@ declare function d3xquery:format-relationship-graph($relationships){
         </root>
 };
 
+
+(: output based on d3js requirements :)
+declare function d3xquery:format-relationship-graph-people($data){
+if($data/descendant::tei:name) then
+    <root>
+        <nodes>
+            {( (: Works :)
+              for $w in $data
+              let $uri := $w/descendant::tei:publicationStmt/tei:idno
+              let $title := $w/descendant::tei:title[1]
+              let $id := 
+                if(ends-with($uri,'/tei')) then replace($uri,'/tei','')
+                else $uri 
+              let $series := normalize-space(string($w/descendant-or-self::tei:seriesStmt/tei:title[@level="s"]))  
+              let $collection-path := string($config:get-config//repo:collection[@title=$series]/@app-root)  
+              let $link := concat($config:nav-base,$collection-path,'work/',replace($id,$config:base-uri,$config:nav-base))  
+              return 
+                <json:value>
+                    <id>{string($uri)}</id>
+                    <type>Work</type>
+                    <label>{normalize-space(string-join($title,' '))}</label>
+                    <link>{$link}</link>
+                </json:value>,
+              (: Names :)
+              for $name in $data/descendant::tei:sourceDesc/descendant-or-self::tei:name | $data/descendant::tei:body/descendant-or-self::tei:name
+              group by $facet-grp := normalize-space(string-join($name,' '))
+              return 
+                <json:value>
+                    <id>{$facet-grp}</id>
+                    <type>Person</type>
+                    {for $n in $name
+                     group by $n-grp := if(name($n/parent::*[1]) = 'ref') then name($n/parent::*[1]/parent::*[1]) else name($n/parent::*[1])
+                     return 
+                        <role json:array="true">{$n-grp}</role>
+                    }
+                    <label>{$facet-grp}</label>
+                    <link>{concat($config:nav-base,'/creators/index.html?author=',encode-for-uri($facet-grp))}</link>
+                </json:value>
+            )}
+        </nodes>
+        <links>
+            {
+                for $w in $data
+                let $workID := string($w/descendant::tei:publicationStmt/tei:idno)
+                for $n in $w/descendant::tei:sourceDesc/descendant-or-self::tei:name | $w/descendant::tei:body/descendant-or-self::tei:name
+                let $nameID := normalize-space(string-join($n,' '))
+                let $r := if(name($n/parent::*[1]) = 'ref') then name($n/parent::*[1]/parent::*[1]) else name($n/parent::*[1])
+                return 
+                    <json:value>
+                        <source>{$workID}</source>
+                        <target>{$nameID}</target>
+                        <relationship>{$r}</relationship>
+                        <value>0</value>
+                    </json:value>
+            }
+        </links>
+    </root>
+else () 
+};
+
 declare function d3xquery:build-graph-type($records, $id as xs:string?, $relationship as xs:string?, $type as xs:string?){
     let $data := 
         if($type = ('Force','Sankey')) then 
-            d3xquery:format-relationship-graph(d3xquery:get-relationship($records, $relationship, $id))
+            if($relationship = 'people') then
+                d3xquery:format-relationship-graph-people($records)
+            else d3xquery:format-relationship-graph(d3xquery:get-relationship($records, $relationship, $id))
         else if($type = ('Table','table','Bundle')) then 
             d3xquery:format-table(d3xquery:get-relationship($records, $relationship, $id))
         else if($type = ('Tree','Round Tree','Circle Pack','Bubble','bubble')) then
             if($relationship = 'taxonomy') then 
-                d3xquery:format-tree-types($records)
-            else d3xquery:format-tree-types(d3xquery:get-relationship($records, $relationship, $id))
+                d3xquery:format-tree-types($records,$relationship)
+            else if($relationship = 'author') then   
+                d3xquery:format-tree-types($records,$relationship)
+            else d3xquery:format-tree-types(d3xquery:get-relationship($records, $relationship, $id),$relationship)
         else if($type = ('Bar Chart','Pie Chart')) then
-            d3xquery:format-tree-types(d3xquery:get-relationship($records, $relationship, $id))   
+            d3xquery:format-tree-types(d3xquery:get-relationship($records, $relationship, $id),$relationship)   
         else d3xquery:format-table(d3xquery:get-relationship($records, $relationship, $id)) 
     return 
         if(request:get-parameter('format', '') = ('json','JSON')) then
@@ -211,3 +298,60 @@ declare function d3xquery:build-graph-type($records, $id as xs:string?, $relatio
                         response:set-header("Content-Type", "application/json"))        
         else $data
 };        
+
+(:
+ : Visualize data
+:)
+declare function d3xquery:html-display($data, $relationship as xs:string?, $type as xs:string?) {
+    let $record := request:get-parameter('recordID', '')
+    let $collectionPath := request:get-parameter('collection', '')
+    let $data := 
+            if($data/descendant::tei:title) then $data
+            else if($record != '') then
+            (: Return a single TEI record:)
+                collection($config:data-root)/tei:TEI[.//tei:idno[@type='URI'][. = concat($record,'/tei')]][1]
+            (: Return a collection:)
+            else if($collectionPath != '') then 
+                collection(string($collectionPath))
+            (: Return all TEI data:)     
+            else collection($config:data-root)  
+    let $type := if($type) then $type else if(request:get-parameter('type', '') != '') then request:get-parameter('type', '') else 'Force'
+    let $relationship := if($relationship) then $relationship else if(request:get-parameter('relationship', '') != '') then request:get-parameter('relationship', '') else ()
+    let $formatedData := d3xquery:build-graph-type($data, (), $relationship, $type)
+    let $json := 
+            (serialize($formatedData, 
+               <output:serialization-parameters>
+                   <output:method>json</output:method>
+               </output:serialization-parameters>))
+    return 
+        if(not(empty($data))) then 
+            <div id="LODResults" xmlns="http://www.w3.org/1999/xhtml">
+                <script src="{$config:nav-base}/d3xquery/js/d3.v4.min.js" type="text/javascript"/>
+                <div id="graphVis" style="height:500px;"/>
+                <script><![CDATA[
+                        $(document).ready(function () {
+                            var rootURL = ']]>{$config:nav-base}<![CDATA[';
+                            var postData =]]>{$json}<![CDATA[;
+                            var id = ']]>{request:get-parameter('id', '')}<![CDATA[';
+                            var type = ']]>{$type}<![CDATA[';
+                            if($('#graphVis svg').length == 0){
+                               	selectGraphType(postData,rootURL,type);
+                               }
+                            jQuery(window).trigger('resize');
+                        
+                        });
+                ]]></script>
+                <style><![CDATA[
+                    .d3jstooltip {
+                      background-color:white;
+                      border: 1px solid #ccc;
+                      border-radius: 6px;
+                      padding:.5em;
+                      }
+                    }
+                    ]]>
+                </style>
+                <script src="{$config:nav-base}/d3xquery/js/vis.js" type="text/javascript"/>
+            </div>
+        else ()
+};
