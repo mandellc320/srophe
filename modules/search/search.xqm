@@ -18,6 +18,8 @@ import module namespace facet="http://expath.org/ns/facet" at "facet.xqm";
 import module namespace page="http://syriaca.org/srophe/page" at "../lib/paging.xqm";
 import module namespace slider = "http://syriaca.org/srophe/slider" at "../lib/date-slider.xqm";
 import module namespace tei2html="http://syriaca.org/srophe/tei2html" at "../content-negotiation/tei2html.xqm";
+import module namespace d3xquery="http://syriaca.org/srophe/d3xquery" at "../../d3xquery/d3xquery.xqm";
+import module namespace timeline = "http://syriaca.org/srophe/timeline" at "../lib/timeline.xqm";
 
 (: Syriaca.org search modules :)
 import module namespace bibls="http://syriaca.org/srophe/bibls" at "bibl-search.xqm";
@@ -122,7 +124,7 @@ function search:show-collections($node as node()*, $model as map(*), $collection
                     return
                     <div>
                         <span class="collection-titles">{tei2html:summary-view($collection, '', $collection-id)}</span>
-                        <div class="toolbar">{page:pages($model("hits"), $collection, $search:start, $search:perpage,'', 'author,title,pubDate,pubPlace')}</div>
+                        <div class="toolbar">{page:pages($model("hits"), $collection, $search:start, $search:perpage,'', 'author,title,pubDate,pubPlace',())}</div>
                         {
                         for $work at $p in subsequence($collectionHits,$search:start,$search:perpage) 
                         let $work-id := replace($work/descendant::tei:publicationStmt/tei:idno[1],'/tei','')
@@ -225,23 +227,31 @@ function search:show-hits($node as node()*, $model as map(*), $collection as xs:
 <div class="indent" id="search-results" xmlns="http://www.w3.org/1999/xhtml">
     {
             let $hits := $model("hits")
-            for $hit at $p in subsequence($hits, $search:start, $search:perpage)
-            let $id := replace($hit/descendant::tei:idno[1],'/tei','')
-            let $kwic := if($kwic = ('true','yes','true()','kwic')) then kwic:expand($hit) else ()
             return 
-             <div class="row result" xmlns="http://www.w3.org/1999/xhtml">
-                 <div class="col-md-1" style="margin-right:-1em; padding-top:.25em;">        
-                     <span class="badge" style="margin-right:1em;">{$search:start + $p - 1}</span>
-                 </div>
-                 <div class="col-md-11" style="margin-right:-1em; padding-top:.25em;">
-                     {tei2html:summary-view($hit, '', $id)}
-                     {
-                        if($kwic//exist:match) then 
-                            tei2html:output-kwic($kwic, $id)
-                        else ()
-                     }
-                 </div>
-             </div>   
+                if(request:get-parameter('view', '') = 'timeline') then 
+                    timeline:timeline($hits, 'Timeline')
+                else if(request:get-parameter('view', '') = 'dataVis') then 
+                    let $type := if(request:get-parameter('type', '') != '') then request:get-parameter('type', '') else 'Force'
+                    let $relationship := if(request:get-parameter('relationship', '') != '') then request:get-parameter('relationship', '') else 'people'
+                    return d3xquery:html-display($hits, $relationship, $type)
+                else 
+                    for $hit at $p in subsequence($hits, $search:start, $search:perpage)
+                    let $id := replace($hit/descendant::tei:idno[1],'/tei','')
+                    let $kwic := if($kwic = ('true','yes','true()','kwic')) then kwic:expand($hit) else ()
+                    return 
+                     <div class="row result" xmlns="http://www.w3.org/1999/xhtml">
+                         <div class="col-md-1" style="margin-right:-1em; padding-top:.25em;">        
+                             <span class="badge" style="margin-right:1em;">{$search:start + $p - 1}</span>
+                         </div>
+                         <div class="col-md-11" style="margin-right:-1em; padding-top:.25em;">
+                             {tei2html:summary-view($hit, '', $id)}
+                             {
+                                if($kwic//exist:match) then 
+                                    tei2html:output-kwic($kwic, $id)
+                                else ()
+                             }
+                         </div>
+                     </div>   
    }  
 </div>
 };

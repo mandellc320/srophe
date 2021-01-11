@@ -217,8 +217,8 @@ return
  : Display paging functions in html templates
  : Used by browse and search pages. 
 :)
-declare %templates:wrap function app:pageination($node as node()*, $model as map(*), $collection as xs:string?, $sort-options as xs:string*, $search-string as xs:string?){
-   page:pages($model("hits"), $collection, $app:start, $app:perpage,$search-string, $sort-options)
+declare %templates:wrap function app:pageination($node as node()*, $model as map(*), $collection as xs:string?, $sort-options as xs:string*, $search-string as xs:string?, $view-options as xs:string?){
+   page:pages($model("hits"), $collection, $app:start, $app:perpage,$search-string, $sort-options, $view-options)
 };
 
 (:~
@@ -270,7 +270,7 @@ declare function app:display-map($node as node(), $model as map(*)){
  : Display Dates using timelinejs
  :)                 
 declare function app:display-timeline($node as node(), $model as map(*)){
-   if($model("hits")/descendant::tei:body/descendant::tei:date) then
+   if($model("hits")/descendant::tei:date) then
         timeline:timeline($model("hits"), 'Timeline')
    else ()
 };
@@ -624,7 +624,8 @@ declare function app:data-visualization($node as node(), $model as map(*), $rela
     let $record := request:get-parameter('recordID', '')
     let $collectionPath := request:get-parameter('collection', '')
     let $data := 
-            if($record != '') then
+            if($model("hits")/descendant::tei:title) then $model("hits") 
+            else if($record != '') then
             (: Return a single TEI record:)
                 collection($config:data-root)/tei:TEI[.//tei:idno[@type='URI'][. = concat($record,'/tei')]][1]
             (: Return a collection:)
@@ -635,40 +636,5 @@ declare function app:data-visualization($node as node(), $model as map(*), $rela
     (:let $reference-data := if(not(empty($model("data")))) then $model("data") else if(not(empty($model("hits")))) then $model("hits") else ():) 
     let $type := if($type) then $type else if(request:get-parameter('type', '') != '') then request:get-parameter('type', '') else 'Force'
     let $relationship := if($relationship) then $relationship else if(request:get-parameter('relationship', '') != '') then request:get-parameter('relationship', '') else ()
-    let $json := 
-            (serialize(d3xquery:build-graph-type($data, (), $relationship, $type), 
-               <output:serialization-parameters>
-                   <output:method>json</output:method>
-               </output:serialization-parameters>))
-    return 
-        if(not(empty($data))) then 
-            <div id="LODResults" xmlns="http://www.w3.org/1999/xhtml">
-                <script src="{$config:nav-base}/d3xquery/js/d3.v4.min.js" type="text/javascript"/>
-                <div id="graphVis" style="height:500px;"/>
-                <script><![CDATA[
-                        $(document).ready(function () {
-                            var rootURL = ']]>{$config:nav-base}<![CDATA[';
-                            var postData =]]>{$json}<![CDATA[;
-                            var id = ']]>{request:get-parameter('id', '')}<![CDATA[';
-                            var type = ']]>{$type}<![CDATA[';
-                            if($('#graphVis svg').length == 0){
-                               	selectGraphType(postData,rootURL,type);
-                               }
-                            jQuery(window).trigger('resize');
-                        
-                        });
-                ]]></script>
-                <style><![CDATA[
-                    .d3jstooltip {
-                      background-color:white;
-                      border: 1px solid #ccc;
-                      border-radius: 6px;
-                      padding:.5em;
-                      }
-                    }
-                    ]]>
-                </style>
-                <script src="{$config:nav-base}/d3xquery/js/vis.js" type="text/javascript"/>
-            </div>
-        else ()
+    return d3xquery:html-display($data, $relationship, $type)
 };

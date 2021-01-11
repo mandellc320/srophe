@@ -26,7 +26,8 @@ declare function page:pages(
     $start as xs:integer?, 
     $perpage as xs:integer?, 
     $search-string as xs:string*,
-    $sort-options as xs:string*){
+    $sort-options as xs:string*,
+    $view-options as xs:string*){
 let $perpage := if($perpage) then xs:integer($perpage) else 20
 let $start := if($start) then $start else 1
 let $total-result-count := count($hits)
@@ -48,22 +49,6 @@ let $pagination-links :=
                 <div class="col-sm-5 search-string">
                     <!--<h3 class="hit-count paging">Search results: </h3>-->
                     <h4 class="col-md-offset-1 hit-count" style="padding-top:.75em;">{$total-result-count} results for {page:display-search-params($collection)} </h4>
-                    <!--
-                    <p class="col-md-offset-1 hit-count note small">
-                        You may wish to expand your search by using wildcard characters to increase results. See  
-                        <a href="#" data-toggle="collapse" data-target="#searchTips">search tips</a> for more details.
-                    </p> 
-                    <div id="searchTips" class="panel panel-default collapse">
-                        {
-                        let $search-config := 
-                            if($collection != '') then concat($config:app-root, '/', string(config:collection-vars($collection)/@app-root),'/','search-config.xml')
-                            else concat($config:app-root, '/','search-config.xml')
-                        return 
-                            if(doc-available($search-config)) then 
-                                doc($search-config)//*:search-tips
-                            else ()
-                        }
-                    </div>-->
                  </div>
                 else <div class="col-sm-5 search-string"><h4 class="col-md-offset-1 hit-count" style="padding-top:.75em;">Results {$total-result-count}</h4></div>
              else ()
@@ -71,7 +56,17 @@ let $pagination-links :=
             <div>
                 {if($search-string = ('yes','Yes')) then attribute class { "col-md-7" } else attribute class { "col-md-12" } }
                 {
-                if($total-result-count gt $perpage) then 
+                if(request:get-parameter('view', '') = 'timeline' or request:get-parameter('view', '') = 'dataVis') then 
+                   <ul class="pagination pull-right">
+                        {(
+                            if($view-options != '') then page:view-options($param-string, $start, $view-options)
+                            else(),
+                            if($search-string = ('yes','Yes')) then   
+                                <li class="pull-right"><a href="{request:get-uri()}" class="clear-search"><span class="glyphicon glyphicon-search"/> New</a></li>
+                            else() 
+                            )}
+                        </ul> 
+                else if($total-result-count gt $perpage) then 
                 <ul class="pagination pull-right">
                     {((: Show 'Previous' for all but the 1st page of results :)
                         if ($current-page = 1) then ()
@@ -99,6 +94,8 @@ let $pagination-links :=
                         else <li><a href="{concat($param-string, $start + $perpage)}">Next</a></li>,
                         if($sort-options != '') then page:sort($param-string, $start, $sort-options)
                         else(),
+                        if($view-options != '') then page:view-options($param-string, $start, $view-options)
+                        else(),
                         <li><a href="{concat($param-string,'1&amp;perpage=',$total-result-count)}">All</a></li>,
                         if($search-string != '') then
                             <li class="pull-right search-new"><a href="{request:get-uri()}"><span class="glyphicon glyphicon-search"/> New</a></li>
@@ -109,6 +106,8 @@ let $pagination-links :=
                 <ul class="pagination pull-right">
                 {(
                     if($sort-options != '') then page:sort($param-string, $start, $sort-options)
+                    else(),
+                    if($view-options != '') then page:view-options($param-string, $start, $view-options)
                     else(),
                     if($search-string = ('yes','Yes')) then   
                         <li class="pull-right"><a href="{request:get-uri()}" class="clear-search"><span class="glyphicon glyphicon-search"/> New</a></li>
@@ -131,8 +130,8 @@ return $pagination-links
 declare function page:sort($param-string as xs:string?, $start as xs:integer?, $options as xs:string*){
 <li xmlns="http://www.w3.org/1999/xhtml">
     <div class="btn-group">
-        <div class="dropdown"><button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">Sort <span class="caret"/></button>
-            <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="dropdownMenu1">
+        <div class="dropdown"><button class="btn btn-default dropdown-toggle" type="button" id="dropdownSort" data-toggle="dropdown" aria-expanded="true">Sort <span class="caret"/></button>
+            <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="dropdownSort">
                 {
                     for $option in tokenize($options,',')
                     return 
@@ -154,6 +153,36 @@ declare function page:sort($param-string as xs:string?, $start as xs:integer?, $
 };
 
 (:~
+ : Build sort options menu for search/browse results
+ : $param @param-string search parameters passed from URL, empty for browse
+ : $param @start start number passed from url 
+ : $param @options include search options a comma separated list
+:)
+declare function page:view-options($param-string as xs:string?, $start as xs:integer?, $options as xs:string*){
+<li xmlns="http://www.w3.org/1999/xhtml">
+    <div class="btn-group">
+        <div class="dropdown"><button class="btn btn-default dropdown-toggle" type="button" id="dropdownView" data-toggle="dropdown" aria-expanded="true">View <span class="caret"/></button>
+            <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="dropdownView">
+                {
+                    for $option in tokenize($options,',')
+                    return 
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" href="{concat(replace($param-string,'&amp;view=(\w+)', ''),$start,'&amp;view=',$option)}" id="view">
+                            {
+                                if($option = 'dataVis') then 'Data Visualization'
+                                else functx:capitalize-first($option)
+                            }
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</li>
+};
+
+
+(:~
  : User friendly display of search parameters for HTML pages
  : Filters out $start, $sort-element and $perpage parameters. 
 :)
@@ -164,7 +193,7 @@ declare function page:display-search-params($collection as xs:string?){
     for  $parameter in $parameters
     return 
         if(request:get-parameter($parameter, '') != '') then
-            if($parameter = 'start' or $parameter = 'sort-element' or $parameter = 'fq') then ()
+            if($parameter = 'start' or $parameter = 'sort-element' or $parameter = 'fq' or $parameter = 'view') then ()
             else if(starts-with($parameter,'feature-num:')) then request:get-parameter($parameter, '')
             else if(starts-with($parameter,'feature:')) then global:get-label(substring-after($parameter,'feature:'))
             else if($parameter = ('q','keyword')) then 
