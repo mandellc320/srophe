@@ -35,6 +35,10 @@
     background-image:url('../images/search-slide2.jpg');     
     background-size:cover;
 }
+.about-slide {
+    background-image:url('../images/about-slide.jpg');     
+    background-size:cover;
+}
 /* styles for index4 */
 a.gradient{color:white; text-decoration:none;}
 .gradient{  
