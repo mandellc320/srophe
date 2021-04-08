@@ -1,6 +1,16 @@
 <div xmlns="http://www.w3.org/1999/xhtml" xmlns:xi="http://www.w3.org/2001/XInclude" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
     <div data-template="search:search-data" data-template-collection="critarchive">
-        <br/><br/><br/>
+        <div class="poetess-banner">
+            <span class="img-credit">
+                <label>Photo Credit</label>  
+                <button class="btn btn-link white-link" data-toggle="collapse" data-target="#img-rights">
+                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"/>
+                </button>
+                <div id="img-rights" class="collapse">
+                    Place Holder
+                </div>
+            </span>
+        </div>
         <div class="search-banner">
             <div class="row">
                 <div class="col-lg-3">
@@ -12,6 +22,9 @@
                             <input type="text" class="form-control keyboard" placeholder="Search for ..." name="keyword" id="keyword"/>
                             <span class="input-group-btn">
                                 <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"/></button>
+                            </span>
+                            <span class="input-group-btn">
+                                <a href="search.html" class="btn btn-default"><span class="glyphicon glyphicon-search"/> Advanced Search</a>
                             </span>
                             <span class="input-group-btn">
                                 <a href="search.html" class="btn btn-default"><span class="glyphicon glyphicon-th-list"/> Browse the Archive</a>
