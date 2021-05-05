@@ -1,60 +1,58 @@
 <div xmlns="http://www.w3.org/1999/xhtml" xmlns:xi="http://www.w3.org/2001/XInclude" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
-    <div class="image-banner">
-    <span class="img-credit">
-        <label>Photo Credit</label>  
-        <button class="btn btn-link white-link" data-toggle="collapse" data-target="#img-rights">
-            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"/>
-        </button>
-        <div id="img-rights" class="collapse">
-            Hosoda Eisui, <em>Poetess</em>. circa 1800. Los Angeles County Museum of Art [Public domain] see <a href="https://commons.wikimedia.org/wiki/File:Poetess_LACMA_M.2006.136.76_(1_of_2).jpg">https://commons.wikimedia.org/wiki/File:Poetess_LACMA_M.2006.136.76_(1_of_2).jpg</a>
+    <div data-template="search:search-data" data-template-collection="collections">
+        <div class="poetess-banner">
+            <span class="img-credit">
+                <label>Photo Credit</label>  
+                <button class="btn btn-link white-link" data-toggle="collapse" data-target="#img-rights">
+                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"/>
+                </button>
+                <div id="img-rights" class="collapse">
+                    John Brett. Portrait of Christina Rossetti. 1857.
+                </div>
+            </span>
         </div>
-    </span>
-</div>
-    <div>
-        <div data-template="search:search-data" data-template-collection="collections" data-template-sort-element="author">
-        <div class="row">
-            <div class="col-md-9 right-menu">
-                <div class="introduction">
-                    <h1>Collections</h1>
-                    <p>This site contains bibliographic data, full texts from, and material views of nineteenth-century literature collections. These are divided into 1) literary annuals and 2) other collections (including anthologies, miscellanies, and beauties).</p>
-                </div>
-                <div class="browse-collection">
-                    <div data-template="search:show-collections" data-template-kwic="yes"/>
-                    <!--
-                    <div data-template="search:group-by-collection">
-                        <div data-template="search:show-collections" data-template-kwic="yes"/>    
-                    </div>
-                    -->
-                </div>
-            </div>
-            <div class="col-md-3">
-                <h2>Search Options</h2>
-                <div class="indent">
-                    <form action="" method="get" title="Limit Search Results">
-                        <label for="keyword" class="control-label">Keyword Search: </label>
+        <div class="search-banner">
+            <div class="row">
+                <div class="col-lg-3">
+                    <label for="keyword" class="control-label pull-right">Search Collections: </label><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+                <div class="col-lg-9">
+                    <form action="search.html" method="get" title="Limit Search Results">
                         <div class="input-group">
-                            <input type="text" class="form-control keyboard" placeholder="search" name="keyword" id="keyword"/>
-                            <div class="input-group-btn">
-                                <button class="btn btn-default" type="submit" data-toggle="tooltip" title="Enter a search term" placeholder="Enter a search term">
-                                    <span class="glyphicon glyphicon-search"/>
-                                </button>
-                            </div>
-                            <input type="hidden" name="collection-id" id="collection-id" data-template="search:collection-id-param"/>
-                        </div>
-                        <div class="input-group">
-                            <button class="btn btn-default" type="submit" data-toggle="tooltip" title="Enter a search term" placeholder="Enter a search term">
-                                <span class="glyphicon glyphicon-search"/> Search
-                            </button>
-                            <a href="index.html" class="btn btn-default">Reset</a>
-                        </div>
+                            <input type="text" class="form-control keyboard" placeholder="Search for ..." name="keyword" id="keyword"/>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"/></button>
+                            </span>
+                            <span class="input-group-btn">
+                                <a href="search.html" class="btn btn-default"><span class="glyphicon glyphicon-search"/> Advanced Search</a>
+                            </span>
+                            <span class="input-group-btn">
+                                <a href="browse.html" class="btn btn-default"><span class="glyphicon glyphicon-th-list"/> Browse the Collections</a>
+                            </span>
+                        </div><!-- /input-group -->
                     </form>
-                    <h3>Limit results:</h3>  
-                    <div class="indent">
-                     <div data-template="app:display-facets" data-template-collection="collections"/>
-                    </div>
-                </div>    
+                </div><!-- /.col-lg-6 -->
             </div>
         </div>
+        <div>
+            <div class="row">
+                <div class="col-md-7">
+                    <div data-template="app:d3-timeline" data-template-collection="collections" data-template-json-file="d3xquery/allPublications.json"/>
+                </div>
+                <div class="col-md-5">
+                    <div class="well-dark">
+                        <h1>Collections</h1>
+                        <p>This site contains bibliographic data, full texts from, and material views of nineteenth-century literature collections. These are divided into 1) literary annuals and 2) other collections (including anthologies, miscellanies, and beauties).</p>
+                        
+                    </div>
+                    <div class="poetess-well">
+                        <div class="browse-collection">
+                            <div data-template="search:show-collections" data-template-kwic="yes"/>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
         </div>
     </div>
 </div>

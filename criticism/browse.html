@@ -11,18 +11,15 @@
         </span>
     </div>
     <div>
-        <div data-template="search:search-data" data-template-collection="bijou">
+        <div data-template="search:search-data" data-template-collection="critarchive">
             <div class="row">
                 <div class="col-md-9 right-menu">
                     <div class="introduction">
-                        <h1>The Bijou Literary Annual</h1>
-                        <div style="margin:0 2em;">
-                            <!-- Place holder for description -->    
-                        </div>                
+                        <h1>Criticism</h1>                
                         <hr/>
-                        <div data-template="app:pageination" data-template-collection="bijou" data-template-search-string="yes" data-template-sort-options="author,title,pubDate,pubPlace,relevance"/>
-                        <div data-template="search:show-hits" data-template-collection="bijou" data-template-kwic="yes"/>
-                        <div data-template="app:pageination" data-template-collection="bijou"/>
+                        <div data-template="app:pageination" data-template-search-string="yes" data-template-sort-options="author,title,pubDate,pubPlace,relevance" data-template-view-options="list,timeline,dataVis"/>
+                        <div data-template="search:show-hits" data-template-kwic="yes"/>
+                        <div data-template="app:pageination"/>
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -31,7 +28,7 @@
                         <form action="" method="get" title="Limit Search Results">
                             <label for="keyword" class="control-label">Keyword Search: </label>
                             <div class="input-group">
-                                <input type="text" class="form-control keyboard" placeholder="search" name="keyword" id="keyword"/>
+                                <input type="text" class="form-control" placeholder="search" name="keyword" id="keyword"/>
                                 <div class="input-group-btn">
                                     <button class="btn btn-default" type="submit" data-toggle="tooltip" title="Enter a search term" placeholder="Enter a search term">
                                         <span class="glyphicon glyphicon-search"/>
@@ -41,7 +38,7 @@
                         </form>
                         <h3>Limit results:</h3>  
                         <div class="indent">
-                            <div data-template="app:display-facets" data-template-collection="bijou"/>
+                            <div data-template="app:display-facets" data-template-collection="critarchive"/>
                         </div>
                     </div>    
                 </div>
