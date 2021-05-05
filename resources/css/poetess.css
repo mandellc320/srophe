@@ -43,13 +43,14 @@ h4 {color: #46597D; font-size:inherit; line-height:inherit;}
     color: white; 
     padding: 2.75em 2em 2em;
     display:block;
-    min-height:510px;
+    min-height:310px;
     border: 1px solid #739CC0;
     border-radius: 6px;
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
+    margin-bottom: 1em;
 }
-.home-page-text a, .well-dark a {
+.home-page-text a, .well-dark a, .well-dark h4 {
     color: white; 
 }
 
@@ -180,7 +181,7 @@ h4 {color: #46597D; font-size:inherit; line-height:inherit;}
 /*.search {margin:0; padding:.5em 2em; background-color: #4D5C6C; color: white;}*/
 /*h1.search-header {margin-left: 2em; font-size:1.5em; color: white; font-weight:200 !important;}*/
 h1.search-header {margin-left: 3em; font-size:1.75em;padding-top:1em;}
-.search .results {margin-top:0;}
+.search .results {margin-top:1.5em;}
 .search .list-results {margin:0 3em;}
 
 /* T */

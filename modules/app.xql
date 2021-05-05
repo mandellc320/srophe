@@ -717,3 +717,11 @@ declare function app:timeline-vertical($node as node(), $model as map(*)){
         </section>
    else ()
 };
+
+declare function app:d3-timeline($node as node(), $model as map(*), $json-file as xs:string?, $collection as xs:string?){
+   if($model("hits")/descendant::tei:imprint) then
+        <div>
+            {d3xquery:timeline-display((), $json-file, $collection, 'Timeline')}
+        </div>
+   else ()
+};

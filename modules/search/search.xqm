@@ -164,7 +164,7 @@ function search:show-collections($node as node()*, $model as map(*), $collection
                             <div>
                                 {tei2html:summary-view($work, '', $id)} 
                                 {if($subsidiaryItems gt 0) then
-                                    <span><a href="?collection-id={$seriesId}" class="btn btn-default pull-right">Seel all {$subsidiaryItems} collection items</a></span>
+                                    <span><a href="search.html?collection-id={$seriesId}" class="btn btn-default pull-right">Seel all {$subsidiaryItems} collection items</a></span>
                                 else ()}
                             </div>
                     )}</div>                            
@@ -229,7 +229,8 @@ function search:show-hits($node as node()*, $model as map(*), $collection as xs:
             let $hits := $model("hits")
             return 
                 if(request:get-parameter('view', '') = 'timeline') then 
-                    timeline:timeline($hits, 'Timeline')
+                    (:timeline:timeline($hits, 'Timeline'):)
+                    d3xquery:timeline-display($hits, (), $collection, 'Timeline')
                 else if(request:get-parameter('view', '') = 'dataVis') then 
                     let $type := if(request:get-parameter('type', '') != '') then request:get-parameter('type', '') else 'Force'
                     let $relationship := if(request:get-parameter('relationship', '') != '') then request:get-parameter('relationship', '') else 'people'

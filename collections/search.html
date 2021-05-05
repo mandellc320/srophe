@@ -17,16 +17,17 @@
                     <form data-template="search:search-form"/>            
                 </div>
                 <div class="results">
-                    <div data-template="search:search-data" data-template-collection="critarchive">
+                    <div data-template="search:search-data" data-template-collection="collections" data-template-sort-element="author">
                         <div class="row list-results">
                             <div class="col-md-9 right-menu">
                                 <div class="toolbar">
                                     <div data-template="app:pageination" data-template-search-string="yes" data-template-sort-options="author,title,pubDate,pubPlace,relevance" data-template-view-options="list,timeline,dataVis"/>
                                 </div>
+                                
                                 <div data-template="app:display-map"/>
                                 <hr/>
-                                <div data-template="search:show-hits" data-template-collection="critarchive" data-template-kwic="yes"/>
-                                <div data-template="app:pageination" data-template-collection="critarchive"/>
+                                <div data-template="search:show-hits" data-template-collection="collections" data-template-kwic="yes"/>
+                                <div data-template="app:pageination" data-template-collection="collections"/>
                             </div>
                             <div class="col-md-3">
                                 <h2>Search Options</h2>
@@ -46,7 +47,7 @@
                                             <button class="btn btn-default" type="submit" data-toggle="tooltip" title="Enter a search term" placeholder="Enter a search term">
                                                 <span class="glyphicon glyphicon-search"/> Search
                                             </button>
-                                            <a href="search.html" class="btn btn-default">Reset</a>
+                                            <a href="index.html" class="btn btn-default">Reset</a>
                                         </div>
                                     </form>
                                     <h3>Limit results:</h3>  
