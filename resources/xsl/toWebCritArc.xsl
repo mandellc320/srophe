@@ -8,14 +8,16 @@
 	00-began with fork from /xslt/masters/HTMLtransform.xsl
 	01-filled master with needed code
 	02-revised plays, simplified by eliminating TOC
-	03-created for CritArchive
--->
+	03-created for CritArchive 
+	04-changes 09/20/2021 -->
 
 	<!-- Here is the document declaration necessary for an HTML5 (web) page -->
 
-	<xsl:output method="html" doctype-system="about:legacy-compat"
+	<xsl:output method="html" doctype-system="about:legacy-compact"
 		omit-xml-declaration="yes" indent="yes" encoding="UTF-8"/>
 	<xsl:strip-space elements="*"/>
+	
+	<xsl:param name="nbrPoetryLines"/>
 	
 	<!-- to run multiple files 
 	<xsl:template match="list">
@@ -27,33 +29,33 @@
 	<!-- to run single files 
 	<xsl:template match="/">
 		<xsl:apply-templates/>
-	</xsl:template>  -->
+	</xsl:template> --> 
+
 	
-	<!-- for Srophe
+	<!-- for Srophe -->
 	<xsl:template match="tei:TEI">
 		<body>
 			<xsl:apply-templates select="tei:text"/>
 			<section class="noteSpace"/>
 		</body>
-	</xsl:template> -->
+	</xsl:template>
 	
-	<!--structuring the document-->
+	<!--structuring the document 
 
 	<xsl:template match="tei:TEI">
-		<!-- comment out for Srophe everything besides body 
 		<xsl:variable name="filename" select="tei:teiHeader/tei:fileDesc/tei:publicationStmt/tei:idno"/>
 		<xsl:result-document href="../HTML/{$filename}.html">
 		<html>
 			<head><title><xsl:value-of select="tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:title[1]"/></title>
 				<link rel="stylesheet" type="text/css" href="critarchive.css"/>
-			</head> -->
+			</head>
 				<body>
 					<xsl:apply-templates select="tei:text"/>
 					<section class="noteSpace"/>
 				</body>
-		<!-- </html>
-		</xsl:result-document> -->
-	</xsl:template>
+		</html>
+		</xsl:result-document>
+	</xsl:template> -->
 	
 	<!-- =======================================================
 	   front templates -->
@@ -83,7 +85,7 @@
 	</xsl:template>
 	
 	<xsl:template match="tei:docImprint">
-		<p class="pnoindent">
+		<p class="noindent">
 			<xsl:apply-templates select="tei:publisher"/>
 			<xsl:if test="tei:date">
 				<xsl:text>, </xsl:text>
@@ -122,28 +124,28 @@
 	</xsl:template>
 	
 	<xsl:template match="tei:div">
-		<xsl:choose>
-			<xsl:when test="@type='essay'">
-				<main>
-					<xsl:attribute name="class" select="@type"/>
-					<xsl:apply-templates/>
-				</main>
-			</xsl:when>
-			<xsl:when test="@type = 'poem'">
-				<main>
-					<xsl:attribute name="class" select="@type"/>
-					<table>
-						<xsl:apply-templates select="tei:lg"/>
-					</table>
-				</main>
-			</xsl:when>
-			<xsl:otherwise>
-				<section>
-					<xsl:attribute name="class" select="@type"/>
-					<xsl:apply-templates/>
-				</section>
-			</xsl:otherwise>
-		</xsl:choose>
+			<xsl:choose>
+				<xsl:when test="@type='essay'">
+					<main>
+						<xsl:attribute name="class" select="@type"/>
+						<xsl:apply-templates/>
+					</main>
+				</xsl:when>
+				<xsl:when test="@type = 'poem'">
+					<main>
+						<xsl:attribute name="class" select="@type"/>
+						<div class="poem">
+							<xsl:apply-templates/>
+						</div>
+					</main>
+				</xsl:when>
+				<xsl:otherwise>
+					<section>
+						<xsl:attribute name="class" select="@type"/>
+						<xsl:apply-templates/>
+					</section>
+				</xsl:otherwise>
+			</xsl:choose>
 	</xsl:template>
 
 	<xsl:template match="tei:head">
@@ -158,48 +160,39 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-
-	<xsl:template match="@rendition">
-		<xsl:value-of select="substring-after(., '#')"/>
-	</xsl:template>
-
-	<xsl:template match="tei:lg">
+	
+	<xsl:template match="tei:bibl">
 		<xsl:choose>
-			<xsl:when test="parent::tei:div[@type='poem']">
-		<xsl:apply-templates/>
-		<tr>
-			<td>
-				<br/>
-			</td>
-		</tr>
-			</xsl:when>
-			<xsl:otherwise>
-				<table>
+			<xsl:when test="parent::tei:head/parent::tei:div[@type = 'essay']"> <!-- why not for poem? because the poem div starts after header info.-->
+				<header class="headBibl">
 					<xsl:apply-templates/>
-				</table>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-	
-	<xsl:template match="tei:lg" mode="inQuote">
-		<xsl:choose>
-			<xsl:when test="parent::tei:quote/parent::tei:note">
-				<xsl:apply-templates/>
+				</header>
 			</xsl:when>
-			<xsl:otherwise>
-				<span class="poem"><xsl:apply-templates/></span>
-			</xsl:otherwise>
+			<xsl:when test="tei:bibl[@type = 'epigraph']">
+				<p class="epigCite">
+					<xsl:apply-templates/>
+				</p>
+			</xsl:when>
+			<xsl:otherwise><xsl:apply-templates/></xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
 	
-	<xsl:template match="tei:epigraph[@rend='poem']">
+	<xsl:template match="tei:div/tei:head/tei:bibl/tei:author">
+		<span class="author"><xsl:apply-templates/></span>
+	</xsl:template>
+	
+	<xsl:template match="tei:div/tei:head/tei:bibl/tei:title">
+		<span class="title"><xsl:apply-templates/></span>
+	</xsl:template>
+
+	<xsl:template match="tei:epigraph[@rendition='#poem']">
 		<table class="epigraph">
 			<xsl:apply-templates/>
 		</table>
 	</xsl:template>
 	
 
-	<xsl:template match="tei:epigraph[@rend='prose']">
+	<xsl:template match="tei:epigraph[@rendition='#prose']">
 		<p class="epigraph">
 			<xsl:apply-templates/>
 		</p>
@@ -211,169 +204,88 @@
 		<xsl:text>&quot;</xsl:text>
 	</xsl:template>
 	
-	<xsl:template match="tei:quote">
+	<xsl:template match="tei:quote"> <!-- still need to fix offsetting, but works in Srophe -->
 		<xsl:choose>
-			<xsl:when test="parent::tei:note">
-				<xsl:apply-templates mode="inQuote"/>
+			<xsl:when test="parent::tei:div">
+				<div class="blockquote">
+					<xsl:apply-templates/>
+				</div>
 			</xsl:when>
 			<xsl:when test="parent::tei:p">
-					<xsl:choose>
-					<xsl:when test="tei:p">
-						<xsl:apply-templates mode="inQuote"/>
-					</xsl:when>
-					<xsl:when test="tei:lg">
-						<xsl:apply-templates mode="inQuote"/>
-					</xsl:when>
-					<xsl:otherwise>
-						<span class="blockquote"><xsl:apply-templates/></span>
-					</xsl:otherwise>
-				</xsl:choose>
+				<span class="blockquote">
+					<xsl:apply-templates/>
+				</span>
 			</xsl:when>
-			<xsl:otherwise>
-				<div class="blockquote">
-					<xsl:choose>
-						<xsl:when test="tei:p">
-							<xsl:apply-templates/>
-						</xsl:when>
-						<xsl:when test="tei:lg">
-							<xsl:apply-templates/>
-						</xsl:when>
-						<xsl:otherwise>
-							<span class="blockquote"><xsl:apply-templates/></span>
-						</xsl:otherwise>
-					</xsl:choose>
-				</div>
-			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
 	
-	<xsl:template match="tei:bibl">
-		<xsl:choose>
-			<xsl:when test="parent::tei:head/parent::tei:div[@type = 'essay']">
-				<header class="headBibl"><xsl:apply-templates select="tei:author"/></header>
-				<header class="headBibl"><xsl:apply-templates select="tei:title"/></header>
-			</xsl:when>
-			<xsl:when test="tei:bibl[@type = 'epigraph']">
-				<p class="epigCite">
-					<xsl:apply-templates/>
-				</p>
-			</xsl:when>
-		</xsl:choose>
+	<xsl:template match="tei:lg">
+		<span class="stanza"><xsl:apply-templates/></span>
+		<span class="stanzaSpace"><xsl:text> </xsl:text></span>
 	</xsl:template>
 
 	<xsl:template match="tei:l">
 		<xsl:variable name="rend" select="@rendition"/>
 		<xsl:variable name="class" select="substring-after($rend, '#')"/>
-		<xsl:choose>
-		<xsl:when test="parent::tei:lg/parent::tei:quote">
-			<span>
-					<xsl:choose>
-						<xsl:when test="@rendition">
-					<xsl:attribute name="class" select="$class"/>
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:attribute name="class">l</xsl:attribute>
-						</xsl:otherwise>
-					</xsl:choose>
-					<xsl:apply-templates/>
-			</span>
-			</xsl:when>
-			<xsl:when test="parent::tei:lg/parent::tei:div[@type='poem']">
-		<tr>
-			<td>
-				<xsl:attribute name="class">a</xsl:attribute>
-				<span>
-					<xsl:attribute name="class">
-						<xsl:choose>
-							<xsl:when test="@rendition">
-						<xsl:value-of select="$class"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<xsl:text>l</xsl:text>
-							</xsl:otherwise>
-						</xsl:choose>
-					</xsl:attribute>
-				<xsl:apply-templates/>
-				</span>
-			</td>
-			<td>
-				<xsl:attribute name="class">b</xsl:attribute>
-				<xsl:attribute name="align">right</xsl:attribute>
-				<xsl:number from="tei:div" level="any"/>
-			</td>
-		</tr>
-			</xsl:when>
-			<xsl:when test="parent::tei:lg">
-				<tr>
-					<td>
-						<span>
-							<xsl:attribute name="class">
-								<xsl:choose>
-									<xsl:when test="@rendition">
-										<xsl:value-of select="$class"/>
-									</xsl:when>
-									<xsl:otherwise>
-										<xsl:text>l</xsl:text>
-									</xsl:otherwise>
-								</xsl:choose>
-							</xsl:attribute>
+		<span class="l">
+			<xsl:choose>
+				<xsl:when test="@rendition">
+						<span class="{$class}">
 							<xsl:apply-templates/>
 						</span>
-					</td>
-				</tr>
-			</xsl:when>
-			<xsl:otherwise>
-				<span>
-				<xsl:attribute name="class">
-					<xsl:choose>
-						<xsl:when test="@rendition">
-							<xsl:value-of select="$class"/>
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:text>l</xsl:text>
-						</xsl:otherwise>
-					</xsl:choose>
-				</xsl:attribute>
-				<xsl:apply-templates/>
+				</xsl:when>
+				<xsl:otherwise>
+						<xsl:apply-templates/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</span>
+		<xsl:if test="$nbrPoetryLines = 'yes'">
+			<span class="lno">
+				<xsl:number from="tei:div" level="any"/>
 			</span>
-			</xsl:otherwise>
-		</xsl:choose>
+		</xsl:if>
 	</xsl:template>
 
 	<xsl:template match="tei:p">
 		<xsl:variable name="rend" select="@rendition"/>
 		<xsl:variable name="class" select="substring-after($rend, '#')"/>
-		<p>
-			<xsl:choose>
-				<xsl:when test="@rendition and parent::tei:quote">
-					<xsl:attribute name="id">
-						<xsl:text>resetMargin</xsl:text>
-					</xsl:attribute>
-					<xsl:attribute name="class">
-						<xsl:value-of select="$class"/>
-					</xsl:attribute>
+		<xsl:choose>
+			<xsl:when test="parent::tei:quote/parent::tei:p">
+					<xsl:choose>
+						<xsl:when test="@rendition = '#noindent'">
+							<span class="noIndentP">
+								<xsl:apply-templates/>
+							</span>
+						</xsl:when>
+						<xsl:otherwise>
+							<span class='indentP'>
+								<xsl:apply-templates/>
+							</span>
+						</xsl:otherwise>
+					</xsl:choose>
 				</xsl:when>
-				<xsl:when test="@rendition">
-					<xsl:attribute name="class">
-						<xsl:value-of select="$class"/>
-					</xsl:attribute>
-				</xsl:when>
-				<xsl:when test="@type">
-					<xsl:attribute name="class" select="@type"/>
-				</xsl:when>
-			</xsl:choose>
-			<xsl:apply-templates/>
-		</p>
+			<xsl:otherwise>
+				<p>
+					<xsl:choose>
+						<xsl:when test="@rendition">
+							<xsl:attribute name="class">
+								<xsl:value-of select="$class"/>
+							</xsl:attribute>
+						</xsl:when>
+						<xsl:when test="@type">
+							<xsl:attribute name="class" select="@type"/>
+						</xsl:when>
+					</xsl:choose>
+				<xsl:apply-templates/>
+			</p>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 	
-	<xsl:template match="tei:p" mode="inQuote">
-		<span class="blockquote">
-			<xsl:apply-templates/>
-		</span>
-	</xsl:template>
+
 	
 	<xsl:template match="tei:lb">
-		<br />
+		<br/>
 	</xsl:template>
 	
 	<xsl:template match="tei:hi">
@@ -434,21 +346,27 @@
 
 	<xsl:template match="tei:pb">
 		<xsl:variable name="class">
-		<xsl:choose>
+		<xsl:choose><!-- could this just be, "when ancester is quote?" -->
+			<xsl:when test="parent::tei:quote/parent::tei:div">
+				<xsl:text>pageInside</xsl:text>
+			</xsl:when>
+			<xsl:when test="parent::tei:quote/parent::tei:p">
+				<xsl:text>pageInside</xsl:text>
+			</xsl:when>
 			<xsl:when test="parent::tei:p/parent::tei:quote/parent::tei:div">
-				<xsl:text>pageNoInside</xsl:text>
+				<xsl:text>pageInside</xsl:text>
 			</xsl:when>
 			<xsl:when test="parent::tei:p/parent::tei:quote">
-				<xsl:text>pageNoInside</xsl:text>
+				<xsl:text>pageInside</xsl:text>
 			</xsl:when>
 			<xsl:when test="parent::tei:note/parent::tei:quote">
-				<xsl:text>pageNoInside</xsl:text>
+				<xsl:text>pageInside</xsl:text>
 			</xsl:when>
 			<xsl:when test="parent::tei:lg/parent::tei:quote">
-				<xsl:text>pageNoInside</xsl:text>
+				<xsl:text>pageInside</xsl:text>
 			</xsl:when>
 			<xsl:when test="parent::tei:l/parent::tei:lg/parent::tei:quote">
-				<xsl:text>pageNoInside</xsl:text>
+				<xsl:text>pageInside</xsl:text>
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:text>pageNumber</xsl:text>
@@ -462,76 +380,113 @@
 		</span>
 	</xsl:template>
 	
-		<xsl:template match="tei:milestone">
+	<!-- <xsl:template match="tei:p[descendant::tei:fw[@type='vol']]">
+		<xsl:choose>
+			<xsl:when test="descendant::tei:fw[@type='sig']">
+				<span class="both">
+					<xsl:apply-templates/>
+				</span>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:apply-templates/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template> -->
+	
+	<xsl:template match="tei:fw">
 			<xsl:variable name="class">
 				<xsl:choose>
-					<xsl:when test="preceding-sibling::node()[1]/@place='bottom-left'">
-						<xsl:text>milesWithFW</xsl:text>
-					</xsl:when>
-					<!-- <xsl:when test="parent::tei:p/parent::tei:quote/parent::tei:div">
-						<xsl:text>milestone</xsl:text>
-					</xsl:when> -->
-					<xsl:when test="parent::tei:p/parent::tei:quote">
-						<xsl:text>milesNoInside</xsl:text>
-					</xsl:when>
-					<xsl:when test="parent::tei:note/parent::tei:quote">
-						<xsl:text>milesNoInside</xsl:text>
-					</xsl:when>
-					<xsl:when test="parent::tei:lg/parent::tei:quote">
-						<xsl:text>milesNoInside</xsl:text>
-					</xsl:when>
-					<xsl:when test="parent::tei:l/parent::tei:lg/parent::tei:quote">
-						<xsl:text>milesNoInside</xsl:text>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:text>milestone</xsl:text>
-					</xsl:otherwise>
-				</xsl:choose>
-			</xsl:variable>
-					<span>
-						<xsl:attribute name="class" select="$class"/>
-						<xsl:value-of select="@n"/>
-					</span>
-		</xsl:template>
-		
-		<xsl:template match="tei:fw">
-			<xsl:variable name="class">
-				<xsl:choose>
-					<xsl:when test="@place='bottom-left'">
+					<xsl:when test="@type='vol'">
 						<xsl:choose>
-							<xsl:when test="parent::*/parent::tei:quote">
-								<xsl:text>fwWithMilesQ</xsl:text>
+							<xsl:when test="following-sibling::tei:fw[1][@type='sig']">
+								<xsl:choose>
+									<xsl:when test="parent::tei:quote">
+										<xsl:text>volWithSigInside</xsl:text>
+									</xsl:when>
+									<xsl:when test="parent::tei:p/parent::tei:quote/parent::tei:div"> <!-- I think this is unnecessary, given the next one -->
+										<xsl:text>volWithSigInside</xsl:text>
+									</xsl:when>
+									<xsl:when test="parent::tei:p/parent::tei:quote">
+										<xsl:text>volWithSigInside</xsl:text>
+									</xsl:when>
+									<xsl:when test="parent::tei:lg/parent::tei:quote">
+										<xsl:text>volWithSigInside</xsl:text>
+									</xsl:when>
+									<xsl:when test="parent::tei:l/parent::tei:lg/parent::tei:quote">
+										<xsl:text>volWithSigInside</xsl:text>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:text>volWithSig</xsl:text></xsl:otherwise>
+								</xsl:choose>
+							</xsl:when>
+							<xsl:when test="parent::tei:quote">
+								<xsl:text>volInside</xsl:text>
+							</xsl:when>
+							<xsl:when test="parent::tei:p/parent::tei:quote/parent::tei:div"> <!-- I think this is unnecessary, given the next one -->
+								<xsl:text>volInside</xsl:text>
+							</xsl:when> 
+							<xsl:when test="parent::tei:p/parent::tei:quote">
+								<xsl:text>volInside</xsl:text>
+							</xsl:when>
+							<xsl:when test="parent::tei:lg/parent::tei:quote">
+								<xsl:text>volInside</xsl:text>
+							</xsl:when>
+							<xsl:when test="parent::tei:l/parent::tei:lg/parent::tei:quote">
+								<xsl:text>volInside</xsl:text>
 							</xsl:when>
 							<xsl:otherwise>
-								<xsl:text>fwWithMiles</xsl:text>
+								<xsl:text>vol</xsl:text>
 							</xsl:otherwise>
 						</xsl:choose>
 					</xsl:when>
-					<!-- <xsl:when test="parent::tei:p/parent::tei:quote/parent::tei:div">
-						<xsl:text>fw</xsl:text>
-					</xsl:when> -->
-					<xsl:when test="parent::tei:p/parent::tei:quote">
-						<xsl:text>fwNoInside</xsl:text>
+					<xsl:when test="@type='sig'">
+						<xsl:choose>
+							<xsl:when test="preceding-sibling::tei:fw[1][@type='vol']">
+								<xsl:choose>
+									<xsl:when test="parent::tei:quote">
+										<xsl:text>sigWithVolInside</xsl:text>
+									</xsl:when>
+									<xsl:when test="parent::tei:p/parent::tei:quote/parent::tei:div"> <!-- I think this is unnecessary, given the next one -->
+										<xsl:text>sigWithVolInside</xsl:text>
+									</xsl:when> 
+									<xsl:when test="parent::tei:p/parent::tei:quote">
+										<xsl:text>sigWithVolInside</xsl:text>
+									</xsl:when>
+									<xsl:when test="parent::tei:lg/parent::tei:quote">
+										<xsl:text>sigWithVolInside</xsl:text>
+									</xsl:when>
+									<xsl:when test="parent::tei:l/parent::tei:lg/parent::tei:quote">
+										<xsl:text>sigWithVolInside</xsl:text>
+									</xsl:when>
+									<xsl:otherwise><xsl:text>sigWithVol</xsl:text></xsl:otherwise>
+								</xsl:choose>
+							</xsl:when>
+							<xsl:when test="parent::tei:quote">
+								<xsl:text>sigInside</xsl:text>
+							</xsl:when>
+							<xsl:when test="parent::tei:p/parent::tei:quote/parent::tei:div"> <!-- I think this is unnecessary, given the next one -->
+								<xsl:text>sigInside</xsl:text>
+							</xsl:when> 
+							<xsl:when test="parent::tei:p/parent::tei:quote">
+								<xsl:text>sigInside</xsl:text>
+							</xsl:when>
+							<xsl:when test="parent::tei:lg/parent::tei:quote">
+								<xsl:text>sigInside</xsl:text>
+							</xsl:when>
+							<xsl:when test="parent::tei:l/parent::tei:lg/parent::tei:quote">
+								<xsl:text>sigInside</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:text>sig</xsl:text>
+							</xsl:otherwise>
+						</xsl:choose>
 					</xsl:when>
-					<xsl:when test="parent::tei:note/parent::tei:quote">
-						<xsl:text>fwNoInside</xsl:text>
-					</xsl:when>
-					<xsl:when test="parent::tei:lg/parent::tei:quote">
-						<xsl:text>fwNoInside</xsl:text>
-					</xsl:when>
-					<xsl:when test="parent::tei:l/parent::tei:lg/parent::tei:quote">
-						<xsl:text>fwNoInside</xsl:text>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:text>fw</xsl:text>
-					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:variable>
-			<br />
-					<span>
-						<xsl:attribute name="class" select="$class"/>
-						<xsl:apply-templates/>
-					</span>
+			<span>
+				<xsl:attribute name="class" select="$class"/>
+				<xsl:apply-templates/>
+			</span>
 		</xsl:template>
 	
 	<xsl:template match="tei:salute | tei:signed">
@@ -585,7 +540,7 @@
 			<xsl:number select="." level="any"/>
 		</xsl:variable>
 		<p class="note" id="{$noteNBR}">
-			<sup><xsl:value-of select="$noteNBR"/></sup>
+			<xsl:value-of select="$noteNBR"/><xsl:text>.&#160;&#160;</xsl:text>
 			<xsl:apply-templates/>
 			<xsl:text> </xsl:text>
 			<a>
