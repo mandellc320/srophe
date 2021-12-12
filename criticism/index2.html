@@ -1,0 +1,69 @@
+<div xmlns="http://www.w3.org/1999/xhtml" xmlns:xi="http://www.w3.org/2001/XInclude" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
+    <div data-template="search:search-data" data-template-collection="critarchive">
+        <div class="poetess-banner">
+            <span class="img-credit">
+                <label>Photo Credit</label>  
+                <button class="btn btn-link white-link" data-toggle="collapse" data-target="#img-rights">
+                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"/>
+                </button>
+                <div id="img-rights" class="collapse">
+                    Place Holder
+                </div>
+            </span>
+        </div>
+        <div class="search-banner">
+            <div class="row">
+                <div class="col-lg-3">
+                    <label for="keyword" class="control-label pull-right">Search Criticism Archive: </label><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+                <div class="col-lg-9">
+                    <form action="search.html" method="get" title="Limit Search Results">
+                        <div class="input-group">
+                            <input type="text" class="form-control keyboard" placeholder="Search for ..." name="keyword" id="keyword"/>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"/></button>
+                            </span>
+                            <span class="input-group-btn">
+                                <a href="search.html" class="btn btn-default"><span class="glyphicon glyphicon-search"/> Advanced Search</a>
+                            </span>
+                            <span class="input-group-btn">
+                                <a href="search.html" class="btn btn-default"><span class="glyphicon glyphicon-th-list"/> Browse the Archive</a>
+                            </span>
+                        </div><!-- /input-group -->
+                    </form>
+                </div><!-- /.col-lg-6 -->
+            </div>
+        </div>
+        <div data-template="search:search-data" data-template-collection="critarchive">
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="well-dark">
+                        <h2>Criticism Archive Editor</h2>
+                        <h3>Ed. Mary A. Waters</h3>
+                        <p>Mary A. Waters, editor of the Criticism Archive, is Associate Professor of English at Wichita State University. Specializing in literary criticism by eighteenth- and nineteenth-century British women writers, Dr. Waters is author of British Women Writers and the Profession of Literary Criticism, 1789-1832 and the editor of British Women Writers of the Romantic Period: An Anthology of their Literary Criticism. Her essays have appeared in or are forthcoming in venues such as Eighteenth-Century Studies, Nineteenth-Century Prose, Women's Writing, and a collection on abolition and affect forthcoming from Ashgate.</p>                        
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div data-template="app:display-timeline"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <h2>Data</h2>
+                    <!-- Metadata CSV  -->
+                    <p>Critisicsm archive of 100 TEI encoded Texts</p>
+                    <a href="#">RDF XML</a>
+                </div>
+                <div class="col-md-7">
+                    <div class="poetess-well">
+                        <h2>About the Criticism Archive</h2>
+                        <p>The Criticism portion of the Poetess Archive provides a searchable database of criticism and biography by and about eighteenth- and nineteenth-century women writers published from the eighteenth-century up to our own time. While many results, especially of more recent materials, will offer bibliographic information only, search criteria can be narrowed to include only full-text results, and soon, all of these will have been critically edited as well as digitized.</p>
+                        <h4>Editing Decisions</h4>
+                        <h4>Encoding Decisions</h4>
+                        <h4>Criticism Archive: An Introduction</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

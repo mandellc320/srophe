@@ -20,10 +20,12 @@ import module namespace rel="http://syriaca.org/srophe/related" at "lib/get-rela
 import module namespace slider = "http://syriaca.org/srophe/slider" at "lib/date-slider.xqm";
 import module namespace timeline = "http://syriaca.org/srophe/timeline" at "lib/timeline.xqm";
 import module namespace teiDocs="http://syriaca.org/srophe/teiDocs" at "teiDocs/teiDocs.xqm";
+import module namespace bibl2html="http://syriaca.org/srophe/bibl2html" at "content-negotiation/bibl2html.xqm";
 import module namespace tei2html="http://syriaca.org/srophe/tei2html" at "content-negotiation/tei2html.xqm";
-
+import module namespace d3xquery="http://syriaca.org/srophe/d3xquery" at "../d3xquery/d3xquery.xqm";
 
 (: Namespaces :)
+declare namespace output = "http://www.w3.org/2010/xslt-xquery-serialization";
 declare namespace http="http://expath.org/ns/http-client";
 declare namespace tei="http://www.tei-c.org/ns/1.0";
 declare namespace html="http://www.w3.org/1999/xhtml";
@@ -216,8 +218,8 @@ return
  : Display paging functions in html templates
  : Used by browse and search pages. 
 :)
-declare %templates:wrap function app:pageination($node as node()*, $model as map(*), $collection as xs:string?, $sort-options as xs:string*, $search-string as xs:string?){
-   page:pages($model("hits"), $collection, $app:start, $app:perpage,$search-string, $sort-options)
+declare %templates:wrap function app:pageination($node as node()*, $model as map(*), $collection as xs:string?, $sort-options as xs:string*, $search-string as xs:string?, $view-options as xs:string?){
+   page:pages($model("hits"), $collection, $app:start, $app:perpage,$search-string, $sort-options, $view-options)
 };
 
 (:~
@@ -269,9 +271,17 @@ declare function app:display-map($node as node(), $model as map(*)){
  : Display Dates using timelinejs
  :)                 
 declare function app:display-timeline($node as node(), $model as map(*)){
-    if($model("hits")/descendant::tei:body/descendant::*[@when or @notBefore or @notAfter]) then
+   if($model("hits")/descendant::tei:date) then
         timeline:timeline($model("hits"), 'Timeline')
-     else ()
+   else ()
+};
+
+(:
+ : Display Timeline. Uses http://timeline.knightlab.com/
+:)
+declare function app:display-timeline-all($node as node(), $model as map(*)){
+let $data := collection($config:data-root)
+return timeline:timeline($data, 'Timeline')
 };
 
 (:~
@@ -604,4 +614,114 @@ declare function app:title-string($node as node(), $model as map(*)){
                 string-join($model("hits")/descendant::tei:biblStruct/descendant::tei:author,''))
         else $model("hits")/descendant::tei:titleStmt[1]/tei:title[1]
     return normalize-space(string-join($title,''))        
+};
+
+(: Net work visualizations:)
+(:~ 
+ : d3js visualization 
+ ?type=Bubble&relationship=taxonomy&format=json
+:)
+declare function app:data-visualization($node as node(), $model as map(*), $relationship as xs:string?, $type as xs:string?) {
+    let $record := request:get-parameter('recordID', '')
+    let $collectionPath := request:get-parameter('collection', '')
+    let $data := 
+            if($model("hits")/descendant::tei:title) then $model("hits") 
+            else if($record != '') then
+            (: Return a single TEI record:)
+                collection($config:data-root)/tei:TEI[.//tei:idno[@type='URI'][. = concat($record,'/tei')]][1]
+            (: Return a collection:)
+            else if($collectionPath != '') then 
+                collection(string($collectionPath))
+            (: Return all TEI data:)     
+            else collection($config:data-root) 
+    (:let $reference-data := if(not(empty($model("data")))) then $model("data") else if(not(empty($model("hits")))) then $model("hits") else ():) 
+    let $type := if($type) then $type else if(request:get-parameter('type', '') != '') then request:get-parameter('type', '') else 'Force'
+    let $relationship := if($relationship) then $relationship else if(request:get-parameter('relationship', '') != '') then request:get-parameter('relationship', '') else ()
+    return d3xquery:html-display($data, $relationship, $type)
+};
+
+declare function app:formatDate($date){
+let $formatDate := 
+    if($date castable as xs:date) then xs:date($date)
+    else if(matches($date,'^\d{4}$')) then 
+        let $newDate :=  concat($date,'-01-01')
+        return 
+            if($newDate castable as xs:date) then xs:date($newDate)
+            else $newDate
+    else if(matches($date,'^\d{4}-\d{2}')) then 
+        let $newDate :=  concat($date,'-01')
+        return 
+            if($newDate castable as xs:date) then xs:date($newDate)
+            else $newDate            
+    else () 
+return 
+    if(not(empty($formatDate))) then 
+        try {format-date(xs:date($formatDate), "[M]-[D]-[Y]")} catch * {concat('ERROR: invalid date.' ,$formatDate)}
+    else ()    
+};
+
+(:~
+ : Display Dates using vertical timeline
+ :)                 
+declare function app:timeline-vertical($node as node(), $model as map(*)){
+   if($model("hits")/descendant::tei:imprint) then
+        <section class="cd-timeline js-cd-timeline">
+            <div class="container max-width-lg cd-timeline__container">
+            <link rel="stylesheet" href="{$config:nav-base}/resources/vertical-timeline/assets/css/style.css"/>
+            {
+                for $r in subsequence($model("hits"), 1, 10)
+                let $title := $r/descendant::tei:title[1]
+                let $citation := bibl2html:citation($r)
+                let $date := $r/descendant::tei:imprint/tei:date
+                let $date := if($date[@type = 'circa'] or contains($date,'circa')) then 
+                    if($date[@notBefore] and $date[@notAfter]) then 
+                        app:formatDate($date/@notBefore)
+                    else 'Possible error'    
+                    else if($date[@when]) then
+                        app:formatDate($date/@when)
+                    else if($date[@from] and $date[@to]) then
+                        app:formatDate($date/@from)
+                    else if($date[@notBefore] and $date[@notAfter]) then   
+                        app:formatDate($date/@notBefore)
+                    else if($date[@notBefore] and $date[@to]) then     
+                        app:formatDate($date/@notBefore)
+                    else if($date[@from] and $date[@notAfter]) then  
+                        app:formatDate($date/@from)
+                    else if($date[@notAfter]) then ()    
+                    else if($date[@notBefore]) then 
+                        app:formatDate($date/@notBefore)
+                    else if($date[@to]) then ()    
+                    else if($date[@from]) then 
+                        app:formatDate($date/@from)
+                    else ()
+                order by $date    
+                return 
+                    <div class="cd-timeline__block">
+                        <div class="cd-timeline__img cd-timeline__img--picture">
+                          <img src="{$config:nav-base}/resources/vertical-timeline/assets/img/cd-icon-picture.svg" alt="Picture"/>
+                        </div>
+                        <div class="cd-timeline__content text-component">
+                          <h2>{$title}</h2>
+                          <p>{$citation}</p>
+                          <p class="color-contrast-medium">Place Holder</p>
+                
+                          <div class="flex justify-between items-center">
+                            <span class="cd-timeline__date">{tokenize($date,'-')[last()]}</span>
+                            <a href="#0" class="btn btn--subtle">Read more</a>
+                          </div>
+                        </div> 
+                    </div>
+            }
+            </div>
+            <script src="{$config:nav-base}/resources/vertical-timeline/assets/js/main.js"></script>
+        </section>
+   else ()
+};
+
+declare function app:d3-timeline($node as node(), $model as map(*), $json-file as xs:string?, $collection as xs:string?){
+   if($model("hits")/descendant::tei:imprint) then
+        <div>
+            {d3xquery:timeline-display((), $json-file, $collection, 'Timeline')}
+        </div>
+   else ()
 };

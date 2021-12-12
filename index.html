@@ -1,30 +1,119 @@
 <div xmlns="http://www.w3.org/1999/xhtml" xmlns:xi="http://www.w3.org/2001/XInclude" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">    
-    <div class="container home-page">
-        <div class="row">
-            <div class="col-md-5 col-md-offset-7 home-page-text">
-                <br/>
-                <h2>Introduction to the Poetess Archive</h2>
-                <p> This archive constitutes a resource for studying the literary history of popular British and American poetry. 
-                    Much of it composed during what can be called the "bull market" of poetry's popularity(<a href="about.html#note1" style="color:white;">1</a>)
-                    <a name="back1" id="back1"/>,  late eighteenth- and nineteenth-century popular poetry was often written in what came to 
-                    be designated an "effeminate" style, whether written by men or women. Writings in the poetess tradition were 
-                    disseminated in myriad collections: miscellanies, beauties, literary annuals, gift books. They achieved a place of 
-                    prominence in virtually every middle-class household. The Poetess Archive Database now contains a bibliography of over 
-                    4,000 entries for works by and about writers working in and against the "poetess tradition," the 
-                    extraordinarily popular, but much criticized, flowery poetry written in Britain and America between 1750 and 1900. </p>
-                <span>
-                    <a href="about.html" class="btn btn-default">Read more </a>
-                </span>
-            </div>
-            <span class="img-credit">
-                <label>Image Credit:</label> Poetess LACMA M.2006.136.76 (1 of 2) 
-                <button class="btn btn-link white-link" data-toggle="collapse" data-target="#img-rights">
-                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"/>
-                </button>
-                <div id="img-rights" class="collapse">
-                    Los Angeles County Museum of Art [Public domain] see <a href="https://commons.wikimedia.org/wiki/File:Poetess_LACMA_M.2006.136.76_(1_of_2).jpg">https://commons.wikimedia.org/wiki/File:Poetess_LACMA_M.2006.136.76_(1_of_2).jpg</a>
-                </div>
-            </span>
+    <script type="text/javascript">
+        $(document).ready(function () {
+        $(".slide .more-info").click(function() {
+        window.location = $(this).find("a").attr("href"); 
+        return false;
+        });
+        });
+    </script>
+    <div data-template="search:search-data">
+        <div class="full-page hide-search" style="background-color:#666; border-bottom:4px solid #456889;margin:0 0 1em 0; padding:1em 0;">
+            <ul id="lightSlider">
+                <li class="slide top-button authors-slide overlay">
+                    <a href="creators/index.html" class="gradient">Authors</a>
+                    <div class="more-info">
+                        <a href="creators/index.html"/>
+                        <br/>
+                        <p> Search authors of texts (criticism, poetry, essays, books), editors, publishers, painters, engravers, and even architects.</p>
+                    </div>
+                    <div class="slide-credit">
+                        <button class="btn btn-link white-link" data-toggle="collapse" data-target="#auth-img-rights">
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"/>
+                        </button>
+                        <div id="auth-img-rights" class="collapse">
+                            'Woman with wax tablets and stylus (so-called "Sappho")' National Archaeological Museum of Naples (inventory no. 9084). Roman fresco of about 50, from Pompeii (VI, Insula Occidentalis). PD-US
+                        </div>
+                    </div>
+                </li>
+                <li class="slide top-button collections-slide overlay">
+                    <a href="collections/index.html" class="gradient">Collections</a>
+                    <div class="more-info">
+                        <a href="collections/index.html"/>
+                        <br/>
+                        <p>
+                            Bibliographic data, full texts from, and material views of nineteenth-century literature collections. 
+                        </p>
+                    </div>
+                    <div class="slide-credit">
+                        <button class="btn btn-link white-link" data-toggle="collapse" data-target="#collection-img-rights">
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"/>
+                        </button>
+                        <div id="collection-img-rights" class="collapse">
+                            'Picture of old books. Basking Ridge Historical Society' by William Hoiles from Basking Ridge, NJ, USA, distributed under a Creative Commons Attribution 2.0 Generic license.
+                        </div>
+                    </div>
+                </li>
+                <li class="slide top-button criticism-slide overlay">
+                    <a href="criticism/index.html" class="gradient">Criticism</a>
+                    <div class="more-info">
+                        <br/>
+                        <p>A searchable database of criticism and biography by and about eighteenth- and nineteenth-century women writers published from the eighteenth-century up to our own time</p>
+                    </div> 
+                    <div class="slide-credit">
+                        <button class="btn btn-link white-link" data-toggle="collapse" data-target="#criticism-img-rights">
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"/>
+                        </button>
+                        <div id="criticism-img-rights" class="collapse">
+                            Credit?
+                        </div>
+                    </div>
+                </li>
+                <li class="slide top-button about-slide overlay">
+                    <a href="about.html" class="gradient">
+                        About
+                    </a>
+                    <div class="more-info">
+                        <a href="about.html"/>
+                        <br/>
+                        <p>This archive constitutes a resource for studying the literary history of popular British and American poetry. </p>
+                    </div>
+                    <div class="slide-credit">
+                        <button class="btn btn-link white-link" data-toggle="collapse" data-target="#about-img-rights">
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"/>
+                        </button>
+                        <div id="about-img-rights" class="collapse">
+                            'Alte Bücher' by Ch. Maderthoner, distributed under a Creative Commons CC0 1.0 Universal Public Domain Dedication.
+                        </div>
+                    </div>
+                </li>  
+            </ul>
         </div>
+        <div class="row">
+            <div class="col-md-7">
+                <div>
+                    <div data-template="app:d3-timeline" data-template-collection="collections" data-template-json-file="d3xquery/allPublications.json"/>  
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="well-dark">
+                    <h2>Introduction to the Poetess Archive</h2>
+                    <p> This archive constitutes a resource for studying the literary history of popular British and American poetry. 
+                        Much of it composed during what can be called the "bull market" of poetry's popularity(<a href="about.html#note1" style="color:white;">1</a>)
+                        <a name="back1" id="back1"/>,  late eighteenth- and nineteenth-century popular poetry was often written in what came to 
+                        be designated an "effeminate" style, whether written by men or women. Writings in the poetess tradition were 
+                        disseminated in myriad collections: miscellanies, beauties, literary annuals, gift books. They achieved a place of 
+                        prominence in virtually every middle-class household. The Poetess Archive Database now contains a bibliography of over 
+                        4,000 entries for works by and about writers working in and against the "poetess tradition," the 
+                        extraordinarily popular, but much criticized, flowery poetry written in Britain and America between 1750 and 1900. </p>
+                    <span>
+                        <!--                    <a href="#" class="btn btn-info">Read more </a>-->
+                    </span>
+                </div>
+                <br/>
+                <div class="well">
+                    <h2>About the Database</h2>
+                    <p>The Poetess Archive Database is a bibliography that you can organize in any way you wish, searching by author, by collection, and by criticism (tabs above), and then limit by using the side-menu of constraints found with each search. But the Poetess Archive Database is more: it is also a full-text resource. At the present time (19 February 2007), not many texts are available. Our one full-text literary annual, the <a href="../bijou/Bijou1828.html">Bijou of 1828</a>, including engravings, transcriptions, and page images, serves as a model for the literary annuals that we will acquire. The scholarly apparatus and editing of texts is also in process. In addition, the Poetess Archive Database provides images of material books: book boards and slip cases, as in the<a href="../ForgetMeNot/FMN1823.html"> Forget Me Not of 1823</a>, for instance. All literary annuals and collections of poetry in the database display, minimally, their tables of contents. For many of our literary annuals -- and soon, for all annuals and collections -- the tables of contents have been entered into the database as well: shortly, you will be able to search this site by typing in an author and know all the works that he or she published in annuals and collections produced between 1750 and 1900. The database presents poems, such as Anne Yearsley's <a href="../works/yearsley1788.html">The Slave Trade</a> or Felicia Hemans's <a href="../works/hemans1829.html">The Sculptured Children</a>. It presents criticism from the era such as John Wilson's <a href="../works/wilson1829.html">Monologue on the Annuals</a>, as well as criticism written by our contemporaries, sometimes even providing small, edited portions, such as Paula Bennett's <a href="../works/bennett1995.html">"Women's Poetry in American Victorian Periodicals 1860-1900,"</a> or full texts, as in Rene Anderson's <a href="../works/anderson2004.html">essay about Susannah Hawkins</a>. </p>
+                    <br/>
+                    <span>
+                        <a href="about.html" class="btn btn-info">Read more </a>
+                    </span>
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        
     </div>
 </div>

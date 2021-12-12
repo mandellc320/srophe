@@ -1,0 +1,64 @@
+<div xmlns="http://www.w3.org/1999/xhtml" xmlns:xi="http://www.w3.org/2001/XInclude" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
+    <div class="poetess-banner">
+        <span class="img-credit">
+            <label>Photo Credit</label>  
+            <button class="btn btn-link white-link" data-toggle="collapse" data-target="#img-rights">
+                <span class="glyphicon glyphicon-info-sign" aria-hidden="true"/>
+            </button>
+            <div id="img-rights" class="collapse">
+                John Brett. Portrait of Christina Rossetti. 1857.
+            </div>
+        </span>
+    </div>
+    <div>
+        <div>
+            <div class="search">
+                <div class="search-form">
+                    <form data-template="search:search-form"/>            
+                </div>
+                <div class="results">
+                    <div data-template="search:search-data" data-template-collection="critarchive">
+                        <div class="row list-results">
+                            <div class="col-md-9 right-menu">
+                                <div class="toolbar">
+                                    <div data-template="app:pageination" data-template-search-string="yes" data-template-sort-options="author,title,pubDate,pubPlace,relevance" data-template-view-options="list,timeline,dataVis"/>
+                                </div>
+                                <div data-template="app:display-map"/>
+                                <hr/>
+                                <div data-template="search:show-hits" data-template-collection="critarchive" data-template-kwic="yes"/>
+                                <div data-template="app:pageination" data-template-collection="critarchive"/>
+                            </div>
+                            <div class="col-md-3">
+                                <h2>Search Options</h2>
+                                <div class="indent">
+                                    <form action="" method="get" title="Limit Search Results">
+                                        <label for="keyword" class="control-label">Keyword Search: </label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" placeholder="search" name="keyword" id="keyword"/>
+                                            <div class="input-group-btn">
+                                                <button class="btn btn-default" type="submit" data-toggle="tooltip" title="Enter a search term" placeholder="Enter a search term">
+                                                    <span class="glyphicon glyphicon-search"/>
+                                                </button>
+                                            </div>
+                                            <input type="hidden" name="collection-id" id="collection-id" data-template="search:collection-id-param"/>
+                                        </div>
+                                        <div class="input-group">
+                                            <button class="btn btn-default" type="submit" data-toggle="tooltip" title="Enter a search term" placeholder="Enter a search term">
+                                                <span class="glyphicon glyphicon-search"/> Search
+                                            </button>
+                                            <a href="search.html" class="btn btn-default">Reset</a>
+                                        </div>
+                                    </form>
+                                    <h3>Limit results:</h3>  
+                                    <div class="indent">
+                                        <div data-template="app:display-facets" data-template-collection="collections"/>
+                                    </div>
+                                </div>    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

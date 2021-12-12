@@ -15,6 +15,8 @@
         <!--<link rel="stylesheet" type="text/css" href="$nav-base/resources/css/critarchive.css"/>-->
         <link rel="stylesheet" type="text/css" href="$nav-base/resources/css/style.css"/>
         <link rel="stylesheet" type="text/css" href="$nav-base/resources/css/poetess.css"/>
+        <link rel="stylesheet" type="text/css" href="$nav-base/resources/css/lightslider.css"/>
+        <link rel="stylesheet" type="text/css" href="$nav-base/resources/css/slider.css"/>
         <link rel="stylesheet" type="text/css" media="print" href="$nav-base/resources/css/print.css"/>
         <!-- Leaflet 
         <link rel="stylesheet" href="$nav-base/resources/leaflet/leaflet.css"/>
@@ -44,7 +46,7 @@
         <script type="text/javascript" src="$nav-base/resources/keyboard/layouts/ms-Russian.min.js"/>
         <script type="text/javascript" src="$nav-base/resources/keyboard/layouts/ms-Arabic.min.js"/>
         -->
-        <script xmlns="" src="https://hypothes.is/embed.js" async="async"></script>
+        <script xmlns="" src="https://hypothes.is/embed.js" async="async"/>
         <script type="text/javascript">
             $(document).ready(function () {
                 $('[data-toggle="tooltip"]').tooltip({ container: 'body' })
@@ -101,28 +103,33 @@
             <div class="navbar-collapse collapse pull-right" id="navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li>
+                        <a href="$nav-base/index.html" style="margin-top:.5em;">
+                            <span class="icon-text">Home</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="$nav-base/creators/index.html" style="margin-top:.5em;">
-                            <span class="icon-text">Search Authors</span>
+                            <span class="icon-text">Authors</span>
                         </a>
                     </li>
                     <li>
                         <a href="$nav-base/collections/index.html" style="margin-top:.5em;">
-                            <span class="icon-text">Search Collections</span>
+                            <span class="icon-text">Collections</span>
                         </a>
                     </li>
                     <li>
                         <a href="$nav-base/criticism/index.html" style="margin-top:.5em;">
-                            <span class="icon-text">Search  Criticism</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="$nav-base/search.html" style="margin-top:.5em;">
-                            <span class="icon-text">Advanced Search</span>
+                            <span class="icon-text">Criticism</span>
                         </a>
                     </li>
                     <li>
                         <a href="$nav-base/about.html" style="margin-top:.5em;">
                             <span class="icon-text">About</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="$nav-base/search.html" style="margin-top:.5em;">
+                            <span class="icon-text">Search</span>
                         </a>
                     </li>
                 </ul>
@@ -149,4 +156,6 @@
     <!-- Additional Javascript -->
     <script type="text/javascript" src="$nav-base/resources/js/jquery.validate.min.js"/>
     <script type="text/javascript" src="$nav-base/resources/js/srophe.js"/>
+    <script type="text/javascript" src="$nav-base/resources/js/lightslider.min.js"/>
+    <script type="text/javascript" src="$nav-base/resources/js/lightslider-functions.js"/>
 </html>
