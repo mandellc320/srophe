@@ -2,162 +2,243 @@ body {
 	background: #fff; 
 	font-family: "Cormorant+Garmond";
 	}
-	
+main {
+    margin-left: 10em;
+    margin-right:20%;
+    width: 65em;
+}
+section {
+    margin: inherit;
+}
+/* section types (in TEI, main div types, except notes -- see below.)  */
+.essay {
+    background-color:#ffffff;
+    border:solid 1px #666666;
+    width:65em;
+    padding: 20px;
+    text-align: left;
+}
+.biography {
+    background-color:#ffffff;
+    border:solid 1px #666666;
+    width:65em;
+    padding: 20px;
+}
 p { 
-    font-size: 16px;
+    font-size: 20px;
 	line-height: 30px;
 	text-indent: 45px;
+	letter-spacing: 0.3px;
+}
+.noindent {
+	font-size: 20px;
+	line-height: 30px;
+	text-indent: 0px;
+	letter-spacing: 0.3px;
+}
+/* These next two classes are for paragraphis inside span blockquote only (are these being used) */
+.indentP {
+    display: block;
+    padding-top: 1em;
+    font-size: 20px;
+	line-height: 30px;
+	text-indent: 45px;
+	letter-spacing: 0.3px;
+}
+.noIndentP {
+    display: block;
+    font-size: 20px;
+	line-height: 30px;
+	text-indent: 0;   
 	letter-spacing: 0.3px;
 }
 header {
     text-align: center;
     font-size: 20px;
-	line-height: 34px;
+	line-height: 30px;
 	letter-spacing: 0.6px;
 }
+.headBibl {
+    clear:both;
+    text-align: center;
+    font-size: 20px;
+	line-height: 30px;
+	letter-spacing: 0.6px;
+	margin: 5em 0 2em 0;
+	padding: 0;
+	}
+.author {
+    display: block;
+}
+.title {
+    display: block;
+}
+/* poems */
  .poem {
+    width: 100%;
     margin-left: 10em;
     margin-top: 32px;
     margin-bottom: 32px;
-    display: block;
+    display: table;
 }
 
-.l {
-	text-indent: 0px;
-	font-size: 16px;
+/* When the poem is quoted inside the paragraph, there doesn't seem to be enough of a margin on the bottom, */
+/* also, not enough visuble space between stanzas. Adding stanzaSpace gives u 1 em or nothing */
+ /* but margins and paddings don't change anything (https://www.w3.org/TR/CSS2/tables.html) */
+.stanzaSpace {
+    margin: 30px; /* it's 1em or nothing, no matter what number I put in here, and specifying "bottom" */
+                 /* just turns the whole thing off, back to nothing. */
+}
+.stanza { 
+    width: 100%;
+    display: table-row-group;
+    text-indent: 0px;
+	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
-	display: block;
 }
+.l {
+    width: 100%;
+	display: table-row;
+}
+.ltext {
+    width: 93%;
+    display: table-cell;  
+}
+.lno {
+    width: 7%;
+    display: table-cell;
+}
+/* indentations can be used in poems, divs, paragraphs, etc. */
 .indent {
     text-indent: 10px;
-	font-size: 16px;	
+	font-size: 20px;	
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent1 {
 	text-indent: 20px;
-	font-size: 16px;
+	font-size: 20px;
     line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent2 {
 	text-indent: 30px;
-	font-size: 16px;
+	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent3 {
 	text-indent: 40px;
-	font-size: 16px;
+	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent4 {
 	text-indent: 50px;
-	font-size: 16px;
+	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent5 {
 	text-indent: 60px;
-	font-size: 16px;
+	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent6 {
 	text-indent: 70px;
-	font-size: 16px;
+	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent7 {
 	text-indent: 80px;
-	font-size: 16px;
+	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent8 {
 	text-indent: 90px;
-	font-size: 16px;
+	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent9 {
 	text-indent: 100px;
-	font-size: 16px;
+	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent10 {
 	text-indent: 110px;
-	font-size: 16px;
+	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent11 {
 	text-indent: 120px;
-	font-size: 16px;
+	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent12 {
 	text-indent: 130px;
-	font-size: 16px;
+	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent13 {
 	text-indent: 140px;
-	font-size: 16px;
+	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent14 {
 	text-indent: 150px;
-	font-size: 16px;
+	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent15 {
 	text-indent: 160px;
-	font-size: 16px;
+	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent20 {
 	text-indent: 210px;
-	font-size: 16px;
+	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent25 {
 	text-indent: 260px;
-	font-size: 16px;
+	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
 }
 .indent30 {
 	text-indent: 310px;
-	font-size: 16px;
+	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	display: block;
@@ -173,92 +254,81 @@ a:hover {
     border-top: 1.2px solid black;
     display: block;
     width: 100%;
-    margin-top: 1em;
-    margin-bottom: 1em;
-	font-size: 16px;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+	font-size: 20px;
 	line-height: 30px;
 	text-indent: 0px;
 	letter-spacing: 0.3px;
 	text-align: center;
+	clear: both;
 	}
-.pageNoInside {
+.pageInside {
     border-top: 1.2px solid black;
     display: block;
-    width: 63.5em;
-    margin: 1em -1em 1em -8.8em;
-	font-size: 16px;
+    width: 52.5em;
+    margin: 2em -1em 2em -7em;
+	font-size: 20px;
 	line-height: 30px;
 	text-indent: 0px;
 	letter-spacing: 0.3px;
 	text-align: center;
+	clear: both;
 }
-.pnoindent {
-	font-size: 16px;
-	line-height: 30px;
-	text-indent: 0px;
-	letter-spacing: 0.3px;
+
+/* the next two rules are required for page numbers inside quotations to be properly aligned, even if their parent is a 
+ * p tag, whether indented or not. I cannot change p and p.noindent themselves because they are working everywhere.
+ * It might have worked to take out "text-align: left" from div blockquote, but I don't want to try that because who
+ * knows what else that would break . . . . */
+div.blockquote > p.noindent > span.pageInside {
+    margin-left: -6.2em;
+}
+div.blockquote > p > span.pageInside {
+    margin-left: -6.2em;
 }
 .hang {
-	font-size: 16px;
+	font-size: 20px;
 	text-indent: -30px;
 	margin-left: 30px;
-	line-height: 36px;
+	line-height: 30px;
+	
+	/* The blockquote element is not used, only div and span class "blockquote" */
 }
-.blockquote {
-     margin-left:10em;
+div.blockquote {
+    margin-left: 8em;
      display: block;
-  }
-main {
-    margin-left:5em;
-    margin-right:20%;
+     text-align: left;
 }
+span.blockquote {
+     padding-top: .75em;
+     margin-left: 7em;
+     display: block;
+     text-align: left;
+  }
 .titlePage {
     background-color:#ffffff;
     border:solid 1px #666666;
     width:60em;
     padding: 20px;
 }
+/* deprecated: find no such class anywhere 
 .halfTitle {
     background-color:#ffffff;
     border:solid 1px #666666;
     width:60em;
     padding: 20px;
-}
-.essay {
-    background-color:#ffffff;
-    border:solid 1px #666666;
-    width:75em;
-    padding: 20px;
-    text-align: left;
-}
-.biography {
-    background-color:#ffffff;
-    border:solid 1px #666666;
-    width:75em;
-    padding: 20px;
-}
+}*/
 
-dt {
-    font-weight: bold;
-    padding: 1em;
-}
-
-dd {
-    font-family: "Cormorant+Garmond";
-    font-size: 16px;
-	line-height: 30px;
-	text-indent: 0px;
-	letter-spacing: 0.3px;
-}
+/* notes section when plural, the class note without 's' is textual style. */
 .notes {
-    margin-left: 4.35em;
+    margin-left: 8em;
     margin-right: 20%;
     border:solid 1px #666666;
-    width:65.65em;
+    width: 52em;
     padding: 20px;
-	line-height: 32px;
-	font-size: 16px;}
-	
+	line-height: 30px;
+	font-size: 20px;}
+/* makes the screen go to the top and/or bottom in note scrolling */	
 .noteSpace {
     height: 60em;
 }
@@ -266,83 +336,164 @@ dd {
     text-indent: 0;
 }
 	
-/* For catchwords, signatures, and other formwork */
-.milestone {
+/* For fw volumes and signatures */
+.sig {
     display: block;
     text-align: center;
-    font-size: 16px;
+    font-size: 20px;
 	line-height: 30px;
 	text-indent: 0px;
 	letter-spacing: 0.3px;
-}
-.milesNoInside {
-    display: block;
-    text-align: center;
-    font-size: 16px;
-	line-height: 30px;
-	text-indent: 0px;
-	letter-spacing: 0.3px;
-	width: 45em;
-	margin: 1em -1em 1em -2em;
-}
-.milesWithFW {
-   /* margin-left: auto;
-    margin-right: auto; */
-    display: block;
-    font-size: 16px;
-	line-height: 30px;
-	text-indent: 0px;
-	letter-spacing: 0.3px;
-	margin-top: 1em;
 	margin-bottom: 1em;
+	padding-top: .5em;
+	padding-bottom: .25em;
 }
-.fw {
+.sigInside {
     display: block;
     text-align: center;
-	font-size: 16px;
+    font-size: 20px;
+	line-height: 30px;
+	text-indent: 0px;
+	letter-spacing: 0.3px;
+	width: 50em;
+	margin: 0 -1em 1em -5.75em;
+	padding-top: .5em;
+	padding-bottom: .25em;
+	
+}
+.vol {
+    display: block;
+    text-align: left;
+	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
 	width: 100%;
+	margin: 0 -1em 1em -2.25em;
+	padding-top: 2em;
+	padding-bottom: 2em;
 }
-.fwNoInside {
+.volInside {
     display: block;
-    text-align: center;
-	font-size: 16px;
+    text-align: left;
+	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
-	width: 60em;
-	margin: 1em -1em 1em -7em;
+	width: 50em;
+	margin: 0 -1em 1em -5em;
+	padding-top: .5em;
+	padding-bottom: .25em;
 }
-.fwWithMiles {
+.volWithSig {
     display: block;
     text-align:left;
-    font-size: 16px;
+    font-size: 20px;
 	line-height: 30px;
-	text-indent: 0px;
+	text-indent: 5em;
 	letter-spacing: 0.3px;
     width: 31em;
-	margin: 1em -1em 1em 0em;
-	float: left; 
+    float: left;
+    margin: 0 -1em 1em -5em;
+	padding-top: .5em;
+	padding-bottom: .25em;
 }
-.fwWithMilesQ {
+.sigWithVol {
     display: block;
     text-align:left;
-    font-size: 16px;
+    font-size: 20px;
 	line-height: 30px;
-	text-indent: 0px;
+	text-indent: 1em;
 	letter-spacing: 0.3px;
-    width: 21em;
-	margin: 1em -1em 1em 0em;
-	float: left; 
+    width: 31em;
+    margin: 0 -1em 1em 0;
+	padding-top: .5em;
+	padding-bottom: .25em;
+}
+.volWithSigInside {
+    display: block;
+    text-align:left;
+    font-size: 20px;
+	line-height: 30px;
+	text-indent: -1.5em;
+	letter-spacing: 0.3px;
+    width: 31em;
+    float: left;
+    margin: 0 -1em 1em -5em;
+	padding-top: .5em;
+	padding-bottom: .25em;
+}
+.sigWithVolInside {
+    display: block;
+    text-align:left;
+    font-size: 20px;
+	line-height: 30px;
+	text-indent: -5em;
+	letter-spacing: 0.3px;
+    width: 31em;
+    margin: 0 -1em 1em 0;
+	padding-top: .5em;
+	padding-bottom: .25em;
 }
 
-/* For poetry tables */
+/* For poetry tables deprecated
 td.a {
     width: 93%;
 }
 
 td.b {
     width: 7%;
+}*/
+.epigCite {
+	margin-left: 30%;
+}
+
+.epigraph {
+    width: 30%;
+    margin-left: 15%;
+}
+.pagehead {
+	font-size: 24px;
+	line-height: 40px;
+	text-indent: 40px;
+	letter-spacing: 0.5px;
+	color: #3333CC;
+	text-align: center;
+	font-weight: bold;
+}
+
+/* lists */
+dt {
+    font-family: "Cormorant+Garmond";
+    font-size: 20px;
+	line-height: 30px;
+	text-indent: 0px;
+	letter-spacing: 0.3px;
+    font-weight: bold;
+    padding: 1em;
+}
+dd {
+    font-family: "Cormorant+Garmond";
+    font-size: 20px;
+	line-height: 30px;
+	text-indent: 0px;
+	letter-spacing: 0.3px;
+}
+ul, ol {
+	list-style-type: none;
+}
+li {
+	list-style-type: none;
+	font-size: 20px;
+	line-height: 30px;
+	text-indent: 0px;
+	letter-spacing: 0.3px;
+	margin-bottom: 1em;
+}
+#resetMargin {
+      margin-left:-10em;
+      clear: both;
+  }
+.mouseover {
+	color: #0000CC
 }
 
 .left {
@@ -352,63 +503,29 @@ td.b {
     text-align: right;
 }
 .center {
-    text-align:center;
-}
-.headBibl {
-    clear:both;
     text-align: center;
-    text-align: center;
-    font-size: 20px;
-	line-height: 34px;
-	letter-spacing: 0.6px;
-	margin: 0;
-	padding: 0;
 }
-.epigCite {
-	margin-left: 30%;
+.flushRight {
+    float: right;
 }
-
-.epigraph {
-    width: 30%;
-    margin-left: 15%;
-}
-#resetMargin {
-      margin-left:-10em;
-  }
-.pagehead {
-	font-size: 24px;
-	line-height: 40px;
-	text-indent:40px;
-	letter-spacing: 0.5px;
-	color: #3333CC;
-	text-align: center;
-	font-weight: bold;
-}
-.mouseover {
-	color: #0000CC
-}
-ul, ol {
-	list-style-type: none;
-}
-li {
-	list-style-type: none;
-	font-size: 16px;
-	line-height: 30px;
-	text-indent: 0px;
-	letter-spacing: 0.3px;
-	margin-bottom: 1em;
+.flushLeft {
+    float: left;
 }
 .small {
     font-size: 12pt;
+    line-height: 19px;
 }
+.smallest {
+    font-size: 10pt;
+    line-height: 17px;
+    }
 .large {
     font-size: 16pt;
+    line-height: 23px;
 }
 .largest {
     font-size: 20pt;
-    }
-.smallest {
-    font-size: 10pt;
+    line-height: 27px;
     }
 .italics {
     font-style: italic;
@@ -424,7 +541,4 @@ figure {
     vertical-align: super;
     font-size: 12pt;
     line-height: 40%;
-}
-.flushRight {
-    float: right;
 }
