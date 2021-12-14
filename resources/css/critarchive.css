@@ -64,7 +64,7 @@ header {
     font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.6px;
-	margin: 5em 0 2em 0;
+	margin: 5em 1em 2em 0;
 	padding: 0;
 	}
 .author {
@@ -83,7 +83,7 @@ header {
 }
 
 /* When the poem is quoted inside the paragraph, there doesn't seem to be enough of a margin on the bottom, */
-/* also, not enough visuble space between stanzas. Adding stanzaSpace gives u 1 em or nothing */
+/* also, not enough visible space between stanzas. Adding stanzaSpace gives u 1 em or nothing */
  /* but margins and paddings don't change anything (https://www.w3.org/TR/CSS2/tables.html) */
 .stanzaSpace {
     margin: 30px; /* it's 1em or nothing, no matter what number I put in here, and specifying "bottom" */
@@ -434,7 +434,15 @@ span.blockquote {
 	padding-bottom: .25em;
 }
 
-/* For poetry tables deprecated
+/* For poetry tables */
+table.poem {
+    font-family: "Cormorant+Garmond";
+    font-size: 20px;
+	line-height: 30px;
+	text-indent: 0px;
+	letter-spacing: 0.3px;
+	width: 100%;
+}
 td.a {
     width: 93%;
 }
@@ -501,6 +509,7 @@ li {
 }
 .right {
     text-align: right;
+    margin-right: 2em;
 }
 .center {
     text-align: center;
