@@ -73,7 +73,7 @@ header {
 }
 .title {
     display: block !important;
-    margin-bottom: 1em !important;
+    padding-bottom: 1em !important;
 }
 table {
     width: 100%;
