@@ -69,9 +69,32 @@ header {
 	}
 .author {
     display: block;
+    margin-bottom: 1.5em;
 }
 .title {
     display: block;
+    margin-bottom: 1em;
+}
+table {
+    width: 100%;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+  tr.xxx:hover {background-color: yellow;}
+
+table.deLaunai {
+    margin-left: 12em;
+    width: 50%;
+    font-size: 18px;
+	line-height: 26px;
+	letter-spacing: 0.3px;
+	border: none;
+}
+tr.deLaunai {
+    padding: 0;
+}
+td.deLaunai {
+    padding: 0 .5em 0 .5em;
 }
 /* poems */
  .poem {
@@ -81,14 +104,6 @@ header {
     margin-bottom: 32px;
     display: table;
 }
-
-/* When the poem is quoted inside the paragraph, there doesn't seem to be enough of a margin on the bottom, */
-/* also, not enough visible space between stanzas. Adding stanzaSpace gives u 1 em or nothing */
- /* but margins and paddings don't change anything (https://www.w3.org/TR/CSS2/tables.html) */
-.stanzaSpace {
-    margin: 30px; /* it's 1em or nothing, no matter what number I put in here, and specifying "bottom" */
-                 /* just turns the whole thing off, back to nothing. */
-}
 .stanza { 
     width: 100%;
     display: table-row-group;
@@ -96,6 +111,11 @@ header {
 	font-size: 20px;
 	line-height: 30px;
 	letter-spacing: 0.3px;
+}
+.stanzaSpace {
+    display: table-row;
+    color: #FFFFFF;
+    /* adding an invisible line of text so I can get a blank row between stanzas */
 }
 .l {
     width: 100%;
@@ -434,15 +454,7 @@ span.blockquote {
 	padding-bottom: .25em;
 }
 
-/* For poetry tables */
-table.poem {
-    font-family: "Cormorant+Garmond";
-    font-size: 20px;
-	line-height: 30px;
-	text-indent: 0px;
-	letter-spacing: 0.3px;
-	width: 100%;
-}
+/* For poetry tables deprecated
 td.a {
     width: 93%;
 }
@@ -549,5 +561,5 @@ figure {
 .sup {
     vertical-align: super;
     font-size: 12pt;
-    line-height: 40%;
+    line-height: 30%;
 }

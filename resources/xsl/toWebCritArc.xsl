@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	xmlns="http://www.w3.org/1999/xhtml" exclude-result-prefixes="xs tei" version="2.0">
+	exclude-result-prefixes="xs tei" version="2.0">
 	
 	<!-- script for converting XML-TEI to HTML. 		
 	Laura Mandell on 05/27/18 
@@ -19,20 +19,20 @@
 	
 	<xsl:param name="nbrPoetryLines"/>
 	
-	<!-- to run multiple files 
+	<!-- to run multiple files   
 	<xsl:template match="list">
 		<xsl:for-each select="item">
 			<xsl:apply-templates select="document(@code)/tei:TEI"/>
 		</xsl:for-each>
-	</xsl:template>  -->
+	</xsl:template> --> 
 	
-	<!-- to run single files 
+	<!-- to run single files  
 	<xsl:template match="/">
 		<xsl:apply-templates/>
-	</xsl:template> --> 
+	</xsl:template>  -->
 
 	
-	<!-- for Srophe -->
+	<!-- for Srophe, and comment out the first tei:TEI template below.  -->
 	<xsl:template match="tei:TEI">
 		<body>
 			<xsl:apply-templates select="tei:text"/>
@@ -43,7 +43,7 @@
 	<!--structuring the document 
 
 	<xsl:template match="tei:TEI">
-		<xsl:variable name="filename" select="tei:teiHeader/tei:fileDesc/tei:publicationStmt/tei:idno"/>
+	<xsl:variable name="filename" select="tei:teiHeader/tei:fileDesc/tei:publicationStmt/tei:idno"/>
 		<xsl:result-document href="../HTML/{$filename}.html">
 		<html>
 			<head><title><xsl:value-of select="tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:title[1]"/></title>
@@ -221,7 +221,9 @@
 	
 	<xsl:template match="tei:lg">
 		<span class="stanza"><xsl:apply-templates/></span>
-		<span class="stanzaSpace"><xsl:text> </xsl:text></span>
+		<xsl:if test="tei:l[last()]">
+			<span class="stanzaSpace"><xsl:text>space between stanzas</xsl:text></span>
+		</xsl:if>
 	</xsl:template>
 
 	<xsl:template match="tei:l">
@@ -282,7 +284,34 @@
 		</xsl:choose>
 	</xsl:template>
 	
-
+	<xsl:template match="tei:table">
+		<table>
+		<xsl:if test="@rendition">
+			<xsl:attribute name="class">
+				<xsl:value-of select="substring-after(@rendition, '#')"/>
+		</xsl:attribute>
+		</xsl:if>
+			<xsl:apply-templates/>
+		</table>
+	</xsl:template>
+	
+	<xsl:template match="tei:row">
+		<tr>
+		<xsl:if test="parent::tei:table[@rendition]">
+			<xsl:attribute name="class" select="substring-after(parent::tei:table/@rendition, '#')"/>
+		</xsl:if>
+		<xsl:apply-templates/>
+		</tr>
+	</xsl:template>
+	
+	<xsl:template match="tei:cell">
+		<td>
+		<xsl:if test="parent::tei:row/parent::tei:table[@rendition]">
+			<xsl:attribute name="class" select="substring-after(parent::tei:row/parent::tei:table/@rendition, '#')"/>
+		</xsl:if>
+		<xsl:apply-templates/>
+		</td>
+	</xsl:template>
 	
 	<xsl:template match="tei:lb">
 		<br/>
@@ -379,19 +408,6 @@
 			<xsl:text>]</xsl:text>
 		</span>
 	</xsl:template>
-	
-	<!-- <xsl:template match="tei:p[descendant::tei:fw[@type='vol']]">
-		<xsl:choose>
-			<xsl:when test="descendant::tei:fw[@type='sig']">
-				<span class="both">
-					<xsl:apply-templates/>
-				</span>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:apply-templates/>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template> -->
 	
 	<xsl:template match="tei:fw">
 			<xsl:variable name="class">
