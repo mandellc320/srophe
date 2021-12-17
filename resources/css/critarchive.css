@@ -72,8 +72,8 @@ header {
     margin-bottom: 1.5em;
 }
 .title {
-    display: block;
-    margin-bottom: 1em;
+    display: block !important;
+    margin-bottom: 1em !important;
 }
 table {
     width: 100%;
