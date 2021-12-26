@@ -71,6 +71,7 @@ header {
     display: block;
     margin-bottom: 1.5em;
 }
+/* Srophe */
 .title {
     display: block !important;
     padding-bottom: 1em !important;
@@ -269,13 +270,12 @@ a {
 a:hover {
 	color: #9933CC;
 }
-
+/* Srophe */
 .pageNumber {
     border-top: 1.2px solid black;
     display: block;
     width: 100%;
-    margin-top: 1.5em;
-    margin-bottom: 1.5em;
+    margin: 1.5em .5em 1.5em -.5em !important; 
 	font-size: 20px;
 	line-height: 30px;
 	text-indent: 0px;
