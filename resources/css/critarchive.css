@@ -14,7 +14,7 @@ section {
 .essay {
     background-color:#ffffff;
     border:solid 1px #666666;
-    width:65em;
+    width:68.5em;
     padding: 20px;
     text-align: left;
 }
@@ -344,7 +344,7 @@ span.blockquote {
     margin-left: 8em;
     margin-right: 20%;
     border:solid 1px #666666;
-    width: 52em;
+    width: 48em;
     padding: 20px;
 	line-height: 30px;
 	font-size: 20px;}
