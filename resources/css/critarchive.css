@@ -286,7 +286,7 @@ a:hover {
 .pageInside {
     border-top: 1.2px solid black;
     display: block;
-    width: 52.5em;
+    width: 47em;
     margin: 2em -1em 2em -7em;
 	font-size: 20px;
 	line-height: 30px;
@@ -370,13 +370,12 @@ span.blockquote {
 }
 .sigInside {
     display: block;
-    text-align: center;
     font-size: 20px;
 	line-height: 30px;
 	text-indent: 0px;
 	letter-spacing: 0.3px;
 	width: 50em;
-	margin: 0 -1em 1em -5.75em;
+	margin: 0 -1em 1em 40%;
 	padding-top: .5em;
 	padding-bottom: .25em;
 	
@@ -421,7 +420,7 @@ span.blockquote {
     text-align:left;
     font-size: 20px;
 	line-height: 30px;
-	text-indent: 1em;
+	text-indent: -3em;
 	letter-spacing: 0.3px;
     width: 31em;
     margin: 0 -1em 1em 0;
