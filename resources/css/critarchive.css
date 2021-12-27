@@ -432,7 +432,7 @@ span.blockquote {
     text-align:left;
     font-size: 20px;
 	line-height: 30px;
-	text-indent: -1.5em;
+	text-indent: -1em;
 	letter-spacing: 0.3px;
     width: 31em;
     float: left;
@@ -445,7 +445,7 @@ span.blockquote {
     text-align:left;
     font-size: 20px;
 	line-height: 30px;
-	text-indent: -5em;
+	text-indent: -8em;
 	letter-spacing: 0.3px;
     width: 31em;
     margin: 0 -1em 1em 0;
