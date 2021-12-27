@@ -123,15 +123,16 @@ else if (contains($exist:path,'/api/')) then
         <forward url="{concat('/restxq/',$exist:app-location, $exist:path)}" absolute="yes"/>
     </dispatch>
 
-(: Passes data to content negotiation module:)
-else if(request:get-parameter('format', '') != '' and request:get-parameter('format', '') != 'html') then
-    local:content-negotiation($exist:path, $exist:resource)
-else if(ends-with($exist:path,('/tei','/xml','/txt','/pdf','/json','/geojson','/kml','/jsonld','/rdf','/ttl','/atom'))) then
-    local:content-negotiation($exist:path, $exist:resource)
-else if(ends-with($exist:resource,('.tei','.xml','.txt','.pdf','.json','.geojson','.kml','.jsonld','.rdf','.ttl','.atom'))) then
-    local:content-negotiation($exist:path, $exist:resource)
 (: For poetess records :)    
 else if(contains($exist:path, '/work/')) then
+    (: Passes data to content negotiation module:)
+    if(request:get-parameter('format', '') != '' and request:get-parameter('format', '') != 'html') then
+        local:content-negotiation($exist:path, $exist:resource)
+    else if(ends-with($exist:path,('/tei','/xml','/txt','/pdf','/json','/geojson','/kml','/jsonld','/rdf','/ttl','/atom'))) then
+        local:content-negotiation($exist:path, $exist:resource)
+    else if(ends-with($exist:resource,('.tei','.xml','.txt','.pdf','.json','.geojson','.kml','.jsonld','.rdf','.ttl','.atom'))) then
+        local:content-negotiation($exist:path, $exist:resource)
+    else    
         let $path := substring-before($exist:path,'/work/')
         let $document := substring-after($exist:path,'/work/')
         let $id := if(ends-with($document,('.html','/html'))) then
@@ -172,7 +173,8 @@ $exist:collection-names : {$exist:collection-names}<br/>
 $exist:collection-uris : {$exist:collection-uris}
 </div>
 :)
-(: Checks for any record uri patterns as defined in repo.xml :)    
+(: Checks for any record uri patterns as defined in repo.xml 
+ : Syriaca.org pattern, use the above 'work' pattern for poetess   
 else if(replace($exist:path, $exist:resource,'') =  $exist:record-uris or 
     replace($exist:path, $exist:resource,'') = $exist:collection-uris 
     or replace(replace($exist:path, $exist:resource,''),'/','') = $exist:collection-names) then
@@ -234,7 +236,7 @@ else if(replace($exist:path, $exist:resource,'') =  $exist:record-uris or
                     <forward url="{$exist:controller}/modules/view.xql"/>
                 </error-handler>
             </dispatch> 
-
+:)
 else if (ends-with($exist:resource, ".html")) then
     (: the html page is run through view.xql to expand templates :)
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
