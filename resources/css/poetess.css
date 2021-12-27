@@ -188,4 +188,5 @@ h1.search-header {margin-left: 3em; font-size:1.75em;padding-top:1em;}
 .text-block {margin: 0 4em; max-width: 70%;}
 .search .toolbar {margin-top:1.5em; border:none;} 
 .toolbar {border-top: 1px solid #739CC0; border-bottom: 1px solid #739CC0;}
+.toolbar-min {border: none;}
 .toolbar .alpha-pages {margin:0;}

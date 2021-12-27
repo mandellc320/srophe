@@ -193,6 +193,9 @@ function search:show-authors($node as node()*, $model as map(*), $collection as 
                     for $a in $hit
                     return 
                     <div class="result authors" xmlns="http://www.w3.org/1999/xhtml"> 
+                        {if((count($model("hits")) gt $search:perpage) and request:get-parameter('author-exact', '') != '') then
+                            <div class="toolbar-min">{page:pages($model("hits"), $collection, $search:start, $search:perpage,'', 'author,title,pubDate,pubPlace',())}</div>
+                        else ()}
                          <a href="{request:get-uri()}?author-exact={string($a/@author)}">{string($a/@author)}</a>
                          {
                             if(request:get-parameter('author-exact', '') or request:get-parameter('details', '') = 'true') then 
