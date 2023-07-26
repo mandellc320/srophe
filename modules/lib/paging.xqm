@@ -3,9 +3,9 @@ xquery version "3.0";
  : Paging module for reuse by search and browse pages
  : Adds page numbers and sort options to HTML output.  
  :) 
-module namespace page="http://syriaca.org/srophe/page";
-import module namespace config="http://syriaca.org/srophe/config" at "../config.xqm";
-import module namespace global="http://syriaca.org/srophe/global" at "global.xqm";
+module namespace page="http://srophe.org/srophe/page";
+import module namespace config="http://srophe.org/srophe/config" at "../config.xqm";
+import module namespace global="http://srophe.org/srophe/global" at "global.xqm";
 
 import module namespace functx="http://www.functx.com";
 declare namespace tei="http://www.tei-c.org/ns/1.0";
@@ -193,7 +193,7 @@ declare function page:display-search-params($collection as xs:string?){
     for  $parameter in $parameters
     return 
         if(request:get-parameter($parameter, '') != '') then
-            if($parameter = 'start' or $parameter = 'sort-element' or $parameter = 'fq' or $parameter = 'view') then ()
+            if($parameter = 'start' or $parameter = 'sort-element' or $parameter = 'fq') then ()
             else if(starts-with($parameter,'feature-num:')) then request:get-parameter($parameter, '')
             else if(starts-with($parameter,'feature:')) then global:get-label(substring-after($parameter,'feature:'))
             else if($parameter = ('q','keyword')) then 

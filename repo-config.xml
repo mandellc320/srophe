@@ -47,14 +47,14 @@
             If adding additional keyboards you will need to make sure to add the link to the 
             keyboard javascript file in the HTML header of templates/page.html
             See resources/keyboard/layouts for more options. 
-        
+        -->
         <keyboard-options>
             <option id="syriac-phonetic">Syriac Phonetic</option>
             <option id="syriac-standard">Syriac Standard</option>
             <option id="ms-Arabic (101)">Arabic Mod. Standard</option>
             <option id="qwerty">English QWERTY</option>
         </keyboard-options>
-        -->
+        
         <!-- Configure Collections. Optional -->
         <collections>
             <!--<collection name="Short-name used in html pages to reference collection, module name" 

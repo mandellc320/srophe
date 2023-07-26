@@ -1,11 +1,11 @@
 xquery version "3.1";
-
+(: @depreciated, not reliable. see content-negotiation/content-negotiation.xql, paths are established by controller.xql :)
 (: Syriaca.org restxq file. :)
-module namespace api="http://syriaca.org/srophe/api";
+module namespace api="http://srophe.org/srophe/api";
 
 (: Syriaca.org modules :)
-import module namespace data="http://syriaca.org/srophe/data" at "lib/data.xqm";
-import module namespace cntneg="http://syriaca.org/srophe/cntneg" at "content-negotiation/content-negotiation.xqm"; 
+import module namespace data="http://srophe.org/srophe/data" at "lib/data.xqm";
+import module namespace cntneg="http://srophe.org/srophe/cntneg" at "content-negotiation/content-negotiation.xqm"; 
 
 (: Namespaces :)
 declare namespace json="http://www.json.org";
@@ -27,7 +27,7 @@ declare
     %rest:query-param("type", "{$type}", "")
     %rest:query-param("collection", "{$collection}", "")
 function api:coordinates($type as xs:string*, $collection as xs:string*) {
-  api:get-records-with-coordinates($type, $collection)
+  cntneg:content-negotiation-restxq(api:get-records-with-coordinates($type, $collection),'geojson',())
 };
 
 (:
@@ -42,7 +42,7 @@ declare
     %rest:query-param("type", "{$type}", "")
     %rest:query-param("collection", "{$collection}", "")
 function api:kml-coordinates($type as xs:string*, $collection as xs:string*) {
-    api:get-records-with-coordinates($type, $collection)
+    cntneg:content-negotiation-restxq(api:get-records-with-coordinates($type, $collection),'kml',())
 };
 
 (:~

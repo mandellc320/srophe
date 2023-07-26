@@ -223,7 +223,6 @@
         </xsl:choose>
     </xsl:function>
     
-    
     <!-- 
      Function to output dates in correct formats passes whole element to function, 
      function also uses trim-date to strip leading 0
@@ -379,7 +378,7 @@
                 </xsl:choose>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:value-of select="concat(upper-case(substring($label,1,1)),substring($label,2))"/>
+               <xsl:value-of select="concat(upper-case(substring($label,1,1)),substring($label,2))"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
@@ -433,7 +432,7 @@
         <xsl:variable name="file">
             <xsl:choose>
                 <xsl:when test="contains($file-name,$base-uri)">
-                    <xsl:value-of select="replace($file-name,$base-uri,concat('xmldb:exist://',$app-root))"/>
+                    <xsl:value-of select="replace($file-name,$base-uri,concat('xmldb:exist://',$nav-base))"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:value-of select="doc($ref)"/>
@@ -502,12 +501,15 @@
                 </xsl:choose>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:call-template name="ref"/>
+                <xsl:call-template name="ref"/> 
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
     <xsl:template name="ref">
         <xsl:choose>
+            <xsl:when test="parent::t:ref or parent::t:ptr or parent::*[1]/@ref">
+                <xsl:apply-templates/>
+            </xsl:when>
             <xsl:when test="@ref">
                 <a href="{@ref}">
                     <xsl:apply-templates/>

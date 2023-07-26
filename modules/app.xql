@@ -4,31 +4,31 @@ xquery version "3.1";
  : Output TEI to HTML via eXist-db templating system. 
  : Add your own custom modules at the end of the file. 
 :)
-module namespace app="http://syriaca.org/srophe/templates";
+module namespace app="http://srophe.org/srophe/templates";
 
 (:eXist templating module:)
 import module namespace templates="http://exist-db.org/xquery/templates" ;
 
 (: Import Srophe application modules. :)
-import module namespace config="http://syriaca.org/srophe/config" at "config.xqm";
-import module namespace data="http://syriaca.org/srophe/data" at "lib/data.xqm";
+import module namespace config="http://srophe.org/srophe/config" at "config.xqm";
+import module namespace data="http://srophe.org/srophe/data" at "lib/data.xqm";
 import module namespace facet="http://expath.org/ns/facet" at "lib/facet.xqm";
-import module namespace global="http://syriaca.org/srophe/global" at "lib/global.xqm";
-import module namespace maps="http://syriaca.org/srophe/maps" at "lib/maps.xqm";
-import module namespace page="http://syriaca.org/srophe/page" at "lib/paging.xqm";
-import module namespace rel="http://syriaca.org/srophe/related" at "lib/get-related.xqm";
-import module namespace slider = "http://syriaca.org/srophe/slider" at "lib/date-slider.xqm";
-import module namespace timeline = "http://syriaca.org/srophe/timeline" at "lib/timeline.xqm";
-import module namespace teiDocs="http://syriaca.org/srophe/teiDocs" at "teiDocs/teiDocs.xqm";
-import module namespace bibl2html="http://syriaca.org/srophe/bibl2html" at "content-negotiation/bibl2html.xqm";
-import module namespace tei2html="http://syriaca.org/srophe/tei2html" at "content-negotiation/tei2html.xqm";
-import module namespace d3xquery="http://syriaca.org/srophe/d3xquery" at "../d3xquery/d3xquery.xqm";
+import module namespace global="http://srophe.org/srophe/global" at "lib/global.xqm";
+import module namespace maps="http://srophe.org/srophe/maps" at "lib/maps.xqm";
+import module namespace page="http://srophe.org/srophe/page" at "lib/paging.xqm";
+import module namespace rel="http://srophe.org/srophe/related" at "lib/get-related.xqm";
+import module namespace slider = "http://srophe.org/srophe/slider" at "lib/date-slider.xqm";
+import module namespace timeline = "http://srophe.org/srophe/timeline" at "lib/timeline.xqm";
+import module namespace teiDocs="http://srophe.org/srophe/teiDocs" at "teiDocs/teiDocs.xqm";
+import module namespace tei2html="http://srophe.org/srophe/tei2html" at "content-negotiation/tei2html.xqm";
+
 
 (: Namespaces :)
 declare namespace output = "http://www.w3.org/2010/xslt-xquery-serialization";
 declare namespace http="http://expath.org/ns/http-client";
 declare namespace tei="http://www.tei-c.org/ns/1.0";
 declare namespace html="http://www.w3.org/1999/xhtml";
+declare namespace srophe="https://srophe.app";
 
 (: Global Variables:)
 declare variable $app:start {request:get-parameter('start', 1) cast as xs:integer};
@@ -62,8 +62,8 @@ declare %templates:wrap function app:get-work($node as node(), $model as map(*))
                     else concat('Document url: ',request:get-parameter('doc', '')))
                 (: Debugging ('No record found. ',xmldb:encode-uri($config:data-root || "/" || request:get-parameter('doc', '') || '.xml')):)
                (:response:redirect-to(xs:anyURI(concat($config:nav-base, '/404.html'))):)
-            else map {"hits" := $rec }
-    else map {"hits" := 'Output plain HTML page'}
+            else map {"hits" : $rec }
+    else map {"hits" : 'Output plain HTML page'}
 };
 
 (:~
@@ -138,14 +138,12 @@ declare function app:display-nodes($node as node(), $model as map(*), $paths as 
  : Used by templating module, not needed if full record is being displayed 
 :)
 declare function app:h1($node as node(), $model as map(*)){
- global:tei2html(
- <srophe-title xmlns="http://www.tei-c.org/ns/1.0">{(
-    if($model("hits")/descendant::*[@syriaca-tags='#syriaca-headword']) then
-        $model("hits")/descendant::*[@syriaca-tags='#syriaca-headword']
-    else $model("hits")/descendant::tei:titleStmt[1]/tei:title[1], 
-    $model("hits")/descendant::tei:idno[1]
-    )}
- </srophe-title>)
+    (<div class="title">
+        <h1><span id="title">{tei2html:tei2html($model("hits")/descendant::tei:titleStmt[1]/tei:title[1])}</span></h1>
+    </div>,
+    if($model("hits")/descendant::tei:publicationStmt/tei:idno[@type='URI']) then
+       tei2html:idno-title-display(replace($model("hits")/descendant::tei:publicationStmt/tei:idno[@type='URI'],'/tei',''))
+    else ())
 }; 
   
 (:~ 
@@ -196,7 +194,15 @@ return
                         (<a href="{concat(replace($id,$config:base-uri,$config:nav-base),'.ttl')}" class="btn btn-default btn-xs" id="teiBtn" data-toggle="tooltip" title="Click to view the RDF-Turtle data for this record." >
                              <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> RDF/TTL
                         </a>, '&#160;')
-                   else () 
+                   else if($f = 'citations') then
+                        let $zotero-group := $config:get-config//*:zotero/@group
+                        return 
+                            if($zotero-group != '') then 
+                                (<a href="{concat('https://api.zotero.org/groups/',$zotero-group,'/items/',tokenize($id,'/')[last()])}" class="btn btn-default btn-xs" id="citationsBtn" data-toggle="tooltip" title="Click for additional Citation Styles." >
+                                    <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> Cite
+                                </a>, '&#160;')
+                            else ()
+ else () 
             }
             <br/>
         </div>
@@ -218,16 +224,20 @@ return
  : Display paging functions in html templates
  : Used by browse and search pages. 
 :)
-declare %templates:wrap function app:pageination($node as node()*, $model as map(*), $collection as xs:string?, $sort-options as xs:string*, $search-string as xs:string?, $view-options as xs:string?){
-   page:pages($model("hits"), $collection, $app:start, $app:perpage,$search-string, $sort-options, $view-options)
+declare %templates:wrap function app:pageination($node as node()*, $model as map(*), $collection as xs:string?, $sort-options as xs:string*, $search-string as xs:string?){
+   page:pages($model("hits"), $collection, $app:start, $app:perpage,$search-string, $sort-options)
 };
 
 (:~
  : Builds list of related records based on tei:relation  
 :)                   
-declare function app:internal-relationships($node as node(), $model as map(*), $display as xs:string?, $map as xs:string?){
+declare function app:internal-relationships($node as node(), $model as map(*), $relationship-type as xs:string?, $display as xs:string?, $map as xs:string?,$label as xs:string?){
     if($model("hits")//tei:relation) then 
-        rel:build-relationships($model("hits")//tei:relation,request:get-parameter('id', ''), $display, $map)
+        <div id="internalRelationships">
+           <h3>{if($label != '') then $label else 'Internal Relationships' }</h3> 
+           {relations:display-internal-relatiobships($model("hits"), replace($model("hits")//tei:idno[@type='URI'][1],'/tei',''), $relationship-type)}
+           
+        </div>
     else ()
 };
 
@@ -236,13 +246,13 @@ declare function app:internal-relationships($node as node(), $model as map(*), $
  : Used by NHSL for displaying child works
  : @param $relType name/ref of relation to be displayed in HTML page
 :)                   
-declare function app:external-relationships($node as node(), $model as map(*), $relationship-type as xs:string?, $sort as xs:string?, $count as xs:string?){
+declare function app:external-relationships($node as node(), $model as map(*), $relationship-type as xs:string?, $sort as xs:string?, $count as xs:string?, $label as xs:string?){
     let $rec := $model("hits")
     let $recid := replace($rec/descendant::tei:idno[@type='URI'][starts-with(.,$config:base-uri)][1],'/tei','')
     let $title := if(contains($rec/descendant::tei:title[1]/text(),' — ')) then 
                         substring-before($rec/descendant::tei:title[1],' — ') 
                    else $rec/descendant::tei:title[1]/text()
-    return rel:external-relationships($recid, $title, $relationship-type, $sort, $count)
+    return <div class="dynamicContent" data-url="{concat($config:nav-base,'/modules/data.xql?currentID=',$recid,'&amp;relationship=external&amp;relationshipType=',$relationship-type,'&amp;label=',$label)}"></div>
 };
 
 (:~
@@ -269,6 +279,7 @@ declare function app:display-map($node as node(), $model as map(*)){
 
 (:~
  : Display Dates using timelinejs
+ : @depreciataed: timeline functions are depreciated. 
  :)                 
 declare function app:display-timeline($node as node(), $model as map(*)){
    if($model("hits")/descendant::tei:date) then
@@ -303,7 +314,8 @@ declare function app:display-facets($node as node(), $model as map(*), $collecti
     let $facet-config := global:facet-definition-file($collection)
     return 
         if(not(empty($facet-config))) then 
-            (facet:selected-facets-display($hits, $facet-config/descendant::facet:facets/facet:facet-definition), facet:output-html-facets($hits, $facet-config/descendant::facet:facets/facet:facet-definition))
+            sf:display($model("hits"),$facet-config)
+           (:(facet:output-html-facets($hits, $facet-config/descendant::facet:facets/facet:facet-definition)):)
         else ()
 };
 
@@ -312,12 +324,10 @@ declare function app:display-slider($node as node(), $model as map(*), $collecti
     slider:browse-date-slider($model("hits"),$date-element)
 };
 
-
 (:~
  : bibl module relationships
 :)                   
 declare function app:cited($node as node(), $model as map(*)){
-    (:rel:cited($model("data")//tei:idno[@type='URI'][ends-with(.,'/tei')], request:get-parameter('start', 1),request:get-parameter('perpage', 5)):)
     if($model("hits")//tei:relation[@ref='dcterms:references']) then
         <div class="panel panel-default">
             <div class="panel-heading"><h3 class="panel-title">Cited Manuscripts</h3></div>
@@ -333,6 +343,7 @@ declare function app:cited($node as node(), $model as map(*)){
         </div>
   else ()
 };
+
 (:~
  : Generic contact form can be added to any page by calling:
  : <div data-template="app:contact-form"/>
@@ -383,6 +394,7 @@ declare %templates:wrap function app:contact-form($node as node(), $model as map
    </div>
 };
 
+
 (:~
  : Select page view, record or html content
  : If no record is found redirect to 404
@@ -401,7 +413,7 @@ declare function app:get-wiki($node as node(), $model as map(*), $wiki-uri as xs
             concat($wiki-uri, request:get-parameter('wiki-page', ''))
         else $wiki-uri
     let $wiki-data := app:wiki-rest-request($uri)
-    return map {"hits" := $wiki-data}
+    return map {"hits" : $wiki-data}
 };
 
 (:~
@@ -419,16 +431,31 @@ declare function app:wiki-rest-request($wiki-uri as xs:string?){
  : Pulls github wiki data H1.  
 :)
 declare function app:wiki-page-title($node, $model){
-    let $content := $model("hits")//html:div[@id='wiki-body']
-    return $content/descendant::html:h1[1]
+    $model("hits")//html:h1[contains(@class,'gh-header-title')]
 };
-
 (:~
  : Pulls github wiki content.  
 :)
 declare function app:wiki-page-content($node, $model){
     let $wiki-data := $model("hits")
-    return $wiki-data//html:div[@id='wiki-body'] 
+    return 
+        app:wiki-data($wiki-data//html:div[@id='wiki-body']) 
+};
+
+(:~
+ : Typeswitch to processes wiki anchors links for use with Syriaca.org documentation pages. 
+ : @param $wiki pulls content from specified wiki or wiki page. 
+:)
+declare function app:wiki-data($nodes as node()*) {
+    for $node in $nodes
+    return 
+        typeswitch($node)
+            case element() return
+                element { node-name($node) } {
+                    if($node/@id) then attribute id { replace($node/@id,'user-content-','') } else (),
+                    $node/@*[name()!='id'], app:wiki-data($node/node())
+                }
+            default return $node               
 };
 
 (:~
@@ -438,7 +465,7 @@ declare function app:wiki-page-content($node, $model){
 :)
 declare function app:wiki-menu($node, $model, $wiki-uri){
     let $wiki-data := app:wiki-rest-request($wiki-uri)
-    let $menu := app:wiki-links($wiki-data//html:div[@id='wiki-rightbar']/descendant::html:ul, $wiki-uri)
+    let $menu := app:wiki-links($wiki-data//html:div[@class='wiki-rightbar']/descendant::html:ul, $wiki-uri)
     return $menu
 };
 
@@ -462,29 +489,6 @@ declare function app:wiki-links($nodes as node()*, $wiki) {
                     $node/@*, app:wiki-links($node/node(), $wiki)
                 }
             default return $node               
-};
-
-(:~
- : Typeswitch to processes wiki menu links for use with Syriaca.org documentation pages. 
- : @param $wiki pulls content from specified wiki or wiki page. 
-:)
-declare function app:wiki-links($nodes as node()*, $wiki) {
-    for $node in $nodes
-    return 
-        typeswitch($node)
-            case element(html:a) return
-                let $wiki-path := substring-after($wiki,'https://github.com')
-                let $href := concat($config:nav-base, replace($node/@href, $wiki-path, "/documentation/wiki.html?wiki-page="),'&amp;wiki-uri=', $wiki)
-                return
-                    <a href="{$href}">
-                        {$node/@* except $node/@href, $node/node()}
-                    </a>
-            case element() return
-                element { node-name($node) } {
-                    $node/@*, app:wiki-links($node/node(), $wiki)
-                }
-            default return
-                $node               
 };
 
 (:~ 
@@ -511,7 +515,7 @@ function app:fix-links($node as node(), $model as map(*)) {
 (:~
  : Recurse through menu output absolute urls based on repo-config.xml values.
  : Addapted from https://github.com/eXistSolutions/hsg-shell 
- : @param $nodes html elements containing links with '$app-root'
+ : @param $nodes html elements containing links with '$nav-base'
 :)
 declare %private function app:fix-links($nodes as node()*) {
     for $node in $nodes
