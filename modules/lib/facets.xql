@@ -38,7 +38,7 @@ declare variable $sf:sortFields :=  let $fields :=
                                         if($sf:sortFieldsConfig != '') then
                                             for $f in $sf:sortFieldsConfig
                                             return $f 
-                                        else ("title", "author","titleSyriac","titleArabic")
+                                        else ("title", "idno", "author","titleSyriac","titleArabic")
                                     return map { "fields": $fields };
 
 (:~ 
@@ -80,20 +80,24 @@ declare function sf:build-index(){
                            }
                 else 
                    ( <field name="title" expression="sf:field(descendant-or-self::tei:body,'title')"/>,
+                    <field name="idno" expression="sf:field(descendant-or-self::tei:body,'idno')"/>,
                     <field name="titleSyriac" expression="sf:field(descendant-or-self::tei:body, 'titleSyriac')"/>,
                     <field name="titleArabic" expression="sf:field(descendant-or-self::tei:body, 'titleArabic')"/>,
                     <field name="author" expression="sf:field(descendant-or-self::tei:body, 'author')"/>)
             }
             </text>
-            <text qname="tei:teiHeader" boost="5.0"/>
             <text qname="tei:fileDesc"/>
             <text qname="tei:biblStruct"/>
+            <text qname="tei:div"/>
             <text qname="tei:author" boost="5.0"/>
             <text qname="tei:persName" boost="5.0"/>
             <text qname="tei:placeName" boost="5.0"/>
             <text qname="tei:title" boost="10.5"/>
+            <text qname="tei:location"/>
             <text qname="tei:desc" boost="2.0"/>
-            <text qname="tei:div"/>
+            <!--<text qname="tei:event"/> -->
+            <text qname="tei:note"/>
+            <!--<text qname="tei:term"/>-->
         </lucene> 
         <range>
             <create qname="@syriaca-computed-start" type="xs:date"/>
@@ -116,12 +120,16 @@ declare function sf:build-index(){
             <create qname="@level" type="xs:string"/>
             <create qname="@status" type="xs:string"/>
             <create qname="tei:idno" type="xs:string"/>
+            <!--
             <create qname="tei:title" type="xs:string"/>
+            -->
             <create qname="tei:geo" type="xs:string"/>
             <create qname="tei:relation" type="xs:string"/>
             <create qname="tei:persName" type="xs:string"/>
             <create qname="tei:placeName" type="xs:string"/>
+            <!--
             <create qname="tei:author" type="xs:string"/>
+            -->
         </range>
     </index>
 </collection>
@@ -246,7 +254,7 @@ declare function sf:sort($facets as map(*)?) {
         if (exists($facets)) then
             for $key in map:keys($facets)
             let $value := map:get($facets, $key)
-            order by $key ascending
+            order by $key[1] ascending
             return
                 map { $key: $value }
         else
@@ -273,7 +281,7 @@ if($facet-definition/facet:order-by/text() = 'value') then
             if (exists($facets)) then
                 for $key in map:keys($facets)
                 let $value := map:get($facets, $key)
-                order by $key descending
+                order by $key[1] descending
                 return
                     map { $key: $value }
             else
@@ -284,7 +292,7 @@ if($facet-definition/facet:order-by/text() = 'value') then
             if (exists($facets)) then
                 for $key in map:keys($facets)
                 let $value := map:get($facets, $key)
-                order by $key ascending
+                order by $key[1] ascending
                 return
                     map { $key: $value }
             else
@@ -299,7 +307,7 @@ if($facet-definition/facet:range) then
                 let $value := map:get($facets, $key)
                 let $order := string($facet-definition/facet:range/facet:bucket[@name = $key]/@order)
                 let $order := if($order castable as xs:integer) then xs:integer($order) else 0
-                order by $order descending
+                order by $order[1] descending
                 return
                     map { $key: $value }
             else
@@ -312,7 +320,7 @@ if($facet-definition/facet:range) then
                 let $value := map:get($facets, $key)
                 let $order := string($facet-definition/facet:range/facet:bucket[@name = $key]/@order)
                 let $order := if($order castable as xs:integer) then xs:integer($order) else 0
-                order by $order ascending
+                order by $order[1] ascending
                 return
                     map { $key: $value }
             else
@@ -323,7 +331,7 @@ else if($facet-definition/facet:order-by[@direction='descending']) then
         if(exists($facets)) then
             for $key in map:keys($facets)
             let $value := map:get($facets, $key)
-            order by $value descending
+            order by $value[1] descending
             return
                 map { $key: $value }
         else
@@ -334,7 +342,7 @@ else
         if(exists($facets)) then
             for $key in map:keys($facets)
             let $value := map:get($facets, $key)
-            order by $value ascending
+            order by $value[1] ascending
             return
                 map { $key: $value }
         else
@@ -505,6 +513,13 @@ declare function sf:field-title($element as item()*, $name as xs:string){
 };
 
 (:~
+ : TEI idno field, specific to Srophe applications 
+ :)
+declare function sf:field-idno($element as item()*, $name as xs:string){
+    replace($element/ancestor-or-self::tei:TEI/descendant::tei:publicationStmt/tei:idno[@type="URI"][1],'/tei','')
+};
+
+(:~
  : TEI Title field - Syriac, specific to Srophe applications 
  :)
 declare function sf:field-titleSyriac($element as item()*, $name as xs:string){
@@ -547,6 +562,49 @@ declare function sf:field-titleArabic($element as item()*, $name as xs:string){
     else ()
 };
 
+(:~
+ : TEI Title field - French, specific to Srophe applications 
+ :)
+declare function sf:field-titleFrench($element as item()*, $name as xs:string){
+    if($element/descendant-or-self::*[contains(@syriaca-tags,'#syriaca-headword')][@xml:lang = 'fr']) then 
+        for $title in $element/descendant::*[contains(@syriaca-tags,'#syriaca-headword')][@xml:lang = 'fr']
+        let $ar := string-join($title/descendant::*[contains(@syriaca-tags,'#syriaca-headword')][@xml:lang = 'fr'][not(empty(node()))],' ')
+        return sf:build-sort-string($ar)
+    else if($element/descendant-or-self::*[contains(@srophe:tags,'#headword')][@xml:lang = 'fr']) then
+        for $title in $element/descendant::*[contains(@syriaca-tags,'#syriaca-headword')][@xml:lang = 'fr']
+        let $ar := string-join($element/descendant::*[contains(@srophe:tags,'#headword')][@xml:lang = 'fr'][not(empty(node()))],' ')
+        return sf:build-sort-string($ar)
+    else if($element/descendant::tei:person/tei:persName[@xml:lang = 'fr']) then 
+        for $title in $element/descendant::tei:person/tei:persName[@xml:lang = 'fr'][1]
+        return sf:build-sort-string($title) 
+    else if($element/descendant::tei:place/tei:placeName[@xml:lang = 'fr']) then 
+        for $title in $element/descendant::tei:place/tei:placeName[@xml:lang = 'fr'][1]
+        return sf:build-sort-string($title)        
+    else ()
+};
+
+(:~
+ : TEI Title field - French, specific to Srophe applications 
+ :)
+declare function sf:field-titleTransliteration($element as item()*, $name as xs:string){
+    if($element/descendant-or-self::*[contains(@syriaca-tags,'#syriaca-headword')][@xml:lang = 'en-x-gedsh']) then 
+        for $title in $element/descendant::*[contains(@syriaca-tags,'#syriaca-headword')][@xml:lang = 'en-x-gedsh']
+        let $ar := string-join($title/descendant::*[contains(@syriaca-tags,'#syriaca-headword')][@xml:lang = 'en-x-gedsh'][not(empty(node()))],' ')
+        return sf:build-sort-string($ar)
+    else if($element/descendant-or-self::*[contains(@srophe:tags,'#headword')][@xml:lang = 'en-x-gedsh']) then
+        for $title in $element/descendant::*[contains(@syriaca-tags,'#syriaca-headword')][@xml:lang = 'en-x-gedsh']
+        let $ar := string-join($element/descendant::*[contains(@srophe:tags,'#headword')][@xml:lang = 'en-x-gedsh'][not(empty(node()))],' ')
+        return sf:build-sort-string($ar)
+    else if($element/descendant::tei:person/tei:persName[@xml:lang = 'en-x-gedsh']) then 
+        for $title in $element/descendant::tei:person/tei:persName[@xml:lang = 'en-x-gedsh']
+        return sf:build-sort-string($title) 
+    else if($element/descendant::tei:place/tei:placeName[@xml:lang = 'en-x-gedsh']) then 
+        for $title in $element/descendant::tei:place/tei:placeName[@xml:lang = 'en-x-gedsh']
+        return sf:build-sort-string($title)
+    else ()
+};
+
+
 (: Title Facet :)
 declare function sf:facet-title($element as item()*, $facet-definition as item(), $name as xs:string){
     if($element/ancestor-or-self::tei:TEI/descendant::tei:biblStruct) then 
@@ -576,5 +634,26 @@ declare function sf:facet-authors($element as item()*, $facet-definition as item
     else $element/ancestor-or-self::tei:TEI/descendant::tei:titleStmt/descendant::tei:author
 };
 
+(:~
+ : Syriaca.org special facet for place and person types 
+ :)
+ 
+(:~
+ : TEI author facet, specific to Srophe bibl module
+ :)
+declare function sf:facet-biblAuthors($element as item()*, $facet-definition as item(), $name as xs:string){
+    if($element/ancestor-or-self::tei:TEI/descendant::tei:biblStruct) then 
+        $element/ancestor-or-self::tei:TEI/descendant::tei:biblStruct/descendant::tei:author | $element/ancestor-or-self::tei:TEI/descendant::tei:biblStruct/descendant::tei:editor
+    else $element/ancestor-or-self::tei:TEI/descendant::tei:titleStmt/descendant::tei:author
+}; 
+(:~
+ : Syriaca.org special field for place and person types 
+ :)
+declare function sf:facet-type($element as item()*, $facet-definition as item(), $name as xs:string){
+    if($element/descendant-or-self::tei:place/@type) then
+        lower-case($element/descendant-or-self::tei:place/@type)    
+    else if($element/descendant-or-self::tei:person/@ana) then
+        tokenize(lower-case(replace($element/descendant-or-self::tei:person/@ana,'#syriaca-','')),' ')
+    else ()
+};
 
-(: Custom Fields and facets:)
