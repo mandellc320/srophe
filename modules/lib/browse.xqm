@@ -3,28 +3,38 @@ xquery version "3.1";
  : Builds HTML browse pages for Srophe Collections and sub-collections 
  : Alphabetical English and Syriac Browse lists, browse by type, browse by date, map browse. 
  :)
-module namespace browse="http://syriaca.org/srophe/browse";
+module namespace browse="http://srophe.org/srophe/browse";
 
 (:eXist templating module:)
-import module namespace templates="http://exist-db.org/xquery/templates" ;
+import module namespace templates="http://exist-db.org/xquery/html-templating" ;
 
 (: Import Srophe application modules. :)
-import module namespace config="http://syriaca.org/srophe/config" at "../config.xqm";
-import module namespace data="http://syriaca.org/srophe/data" at "data.xqm";
-import module namespace tei2html="http://syriaca.org/srophe/tei2html" at "../content-negotiation/tei2html.xqm";
-import module namespace maps="http://syriaca.org/srophe/maps" at "maps.xqm";
-import module namespace page="http://syriaca.org/srophe/page" at "paging.xqm";
+import module namespace config="http://srophe.org/srophe/config" at "../config.xqm";
+import module namespace data="http://srophe.org/srophe/data" at "data.xqm";
+import module namespace tei2html="http://srophe.org/srophe/tei2html" at "../content-negotiation/tei2html.xqm";
+import module namespace timeline = "http://srophe.org/srophe/timeline" at "lib/timeline.xqm";
+import module namespace sf="http://srophe.org/srophe/facets" at "facets.xql";
+import module namespace maps="http://srophe.org/srophe/maps" at "maps.xqm";
+import module namespace page="http://srophe.org/srophe/page" at "paging.xqm";
 
 (: Namespaces :)
 declare namespace tei="http://www.tei-c.org/ns/1.0";
 declare namespace html="http://www.w3.org/1999/xhtml";
+declare namespace srophe="https://srophe.app";
 
 (: Global Variables :)
 declare variable $browse:alpha-filter {request:get-parameter('alpha-filter', '')};
 declare variable $browse:lang {request:get-parameter('lang', '')};
 declare variable $browse:view {request:get-parameter('view', '')};
-declare variable $browse:start {request:get-parameter('start', 1) cast as xs:integer};
-declare variable $browse:perpage {request:get-parameter('perpage', 25) cast as xs:integer};
+declare variable $browse:start {
+    if(request:get-parameter('start', 1)[1] castable as xs:integer) then 
+        xs:integer(request:get-parameter('start', 1)[1]) 
+    else 1};
+declare variable $browse:perpage {
+    if(request:get-parameter('perpage', 25)[1] castable as xs:integer) then 
+        xs:integer(request:get-parameter('perpage', 25)[1]) 
+    else 25
+    };
 
 (:~
  : Build initial browse results based on parameters
@@ -34,7 +44,7 @@ declare variable $browse:perpage {request:get-parameter('perpage', 25) cast as x
  : @param $facets facet xml file name, relative to collection directory
 :)  
 declare function browse:get-all($node as node(), $model as map(*), $collection as xs:string*, $element as xs:string?, $facets as xs:string?){
-    map{"hits" := data:get-records($collection, $element) }
+    map{"hits" : data:get-records($collection, $element) }
 };
 
 (:
@@ -44,10 +54,13 @@ declare function browse:get-all($node as node(), $model as map(*), $collection a
 declare function browse:show-hits($node as node(), $model as map(*), $collection, $sort-options as xs:string*,$view-options as xs:string*, $facets as xs:string?){
   let $hits := $model("hits")
   return 
-    (
     if($browse:view = 'map') then 
         <div class="col-md-12 map-lg" xmlns="http://www.w3.org/1999/xhtml">
             {browse:get-map($hits)}
+        </div>
+    else if($browse:view = 'timeline') then 
+        <div class="col-md-12 map-lg" xmlns="http://www.w3.org/1999/xhtml">
+            {timeline:timeline($hits, 'Timeline', 'tei:teiHeader/tei:publicationStmt/tei:date')}
         </div>
     else
         <div class="{if($browse:view = 'type' or $browse:view = 'date' or $browse:view = 'facets') then 'col-md-8 col-md-push-4' else 'col-md-12'}" xmlns="http://www.w3.org/1999/xhtml">
@@ -71,7 +84,6 @@ declare function browse:show-hits($node as node(), $model as map(*), $collection
                 </div>
             )}
         </div>
-    )
 };
 
 (:
@@ -80,8 +92,12 @@ declare function browse:show-hits($node as node(), $model as map(*), $collection
 declare function browse:display-hits($hits){
     for $hit in subsequence($hits, $browse:start,$browse:perpage)
     let $sort-title := 
-        if($browse:lang != 'en' and $browse:lang != 'syr') then 
-            <span class="sort-title" lang="{$browse:lang}" xml:lang="{$browse:lang}">{(if($browse:lang='ar') then attribute dir { "rtl" } else (), string($hit/@sort-title))}</span> 
+        if($browse:lang != 'en') then 
+            <span class="sort-title" lang="{$browse:lang}" xml:lang="{$browse:lang}">{(if($browse:lang='ar' or $browse:lang='syr') then attribute dir { "rtl" } else (), 
+                if($browse:lang = 'syr') then ft:field($hit, "titleSyriac")[1]
+                else if($browse:lang = 'ar') then ft:field($hit, "titleArabic")[1]
+                else ()
+            )}</span> 
         else () 
     let $uri := replace($hit/descendant::tei:publicationStmt/tei:idno[1],'/tei','')
     return 
@@ -123,7 +139,7 @@ declare function browse:get-map($hits as node()*){
         let $locations := 
             for $id in $places
             for $geo in collection($config:data-root || '/places/tei')//tei:idno[. = $id][ancestor::tei:TEI[descendant::tei:geo]]
-            let $title := $geo/ancestor::tei:TEI/descendant::*[@syriaca-tags="#syriaca-headword"][1]
+            let $title := $geo/ancestor::tei:TEI/descendant::*[@syriaca-tags="#syriaca-headword"][1] | $geo/ancestor::tei:TEI/descendant::*[@srophe:tags="#headword"][1]
             let $type := string($geo/ancestor::tei:TEI/descendant::tei:place/@type)
             let $geo := $geo/ancestor::tei:TEI/descendant::tei:geo
             return 

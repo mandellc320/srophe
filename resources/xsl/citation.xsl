@@ -34,12 +34,13 @@
         
         <!-- title of the entry -->
         <xsl:text>“</xsl:text>
-            <xsl:apply-templates select="t:title[@level='a'][1]" mode="footnote"/>
+        <xsl:apply-templates select="t:title[@level='a'][1]" mode="footnote"/>
         <xsl:text>”</xsl:text>
         
         <!-- monographic title -->
         <xsl:text> in </xsl:text>
-        <xsl:apply-templates select="../descendant::t:title[@level='m'][1]" mode="footnote"/>
+        <xsl:apply-templates select="../descendant::t:titleStmt/t:title[@level='m'][1]" mode="footnote"/>
+        <xsl:text>, </xsl:text>
         
         <!-- publication date statement -->
         <xsl:text> last modified </xsl:text>
@@ -78,7 +79,7 @@
         
         <!-- monographic title -->
         <xsl:text> In </xsl:text>
-        <xsl:apply-templates select="../descendant::t:title[@level='m'][1]" mode="footnote"/>
+        <xsl:apply-templates select="../descendant::t:titleStmt/t:title[@level='m'][1]" mode="footnote"/>
         
         <!-- general editors -->
         <xsl:text>, edited by </xsl:text>
@@ -100,7 +101,18 @@
             <xsl:sequence select="local:emit-responsible-persons(t:editor[@role='general'],'footnote',1)"/>
             <xsl:text>.</xsl:text>
         </xsl:for-each>
-        <xsl:text> Syriaca.org, 2016-.</xsl:text>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="../t:publicationStmt/t:authority"/>,
+        <xsl:for-each select="../t:publicationStmt/t:date[1]">
+            <xsl:choose>
+                <xsl:when test=". castable as xs:date">
+                    <xsl:value-of select="format-date(xs:date(.), '[Y]')"/>.
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="."/>.
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:for-each>
         <!-- publication date statement -->
         <xsl:text> Entry published </xsl:text>
         <xsl:for-each select="../t:publicationStmt/t:date[1]">
@@ -165,7 +177,7 @@
                         <xsl:text>, editor</xsl:text>
                         <xsl:if test="count(t:editor[@role='general'])&gt; 1">s</xsl:if>
                         <xsl:text>, </xsl:text>
-                        <xsl:apply-templates select="../descendant::t:title[@level='m'][1]" mode="footnote"/>
+                        <xsl:apply-templates select="../descendant::t:titleStmt/t:title[@level='m'][1]" mode="footnote"/>
                     </li>
                     <li>
                         <!-- Process editors/authors using local function in helper-functions.xsl local:emit-responsible-persons -->
@@ -231,7 +243,9 @@
                         <xsl:text>, editor</xsl:text>
                         <xsl:if test="count(t:editor[@role='general'])&gt; 1">s</xsl:if>
                         <xsl:text>, </xsl:text>
-                        <em><xsl:value-of select="$collection-title"/></em>
+                        <em>
+                            <xsl:value-of select="$collection-title"/>
+                        </em>
                     </li>
                     <xsl:for-each select="t:editor[@role= ('creator','contributor')]">
                         <li>

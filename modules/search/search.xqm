@@ -2,38 +2,43 @@ xquery version "3.1";
 (:~  
  : Builds HTML search forms and HTMl search results Srophe Collections and sub-collections   
  :) 
-module namespace search="http://syriaca.org/srophe/search";
+module namespace search="http://srophe.org/srophe/search";
 
 (:eXist templating module:)
-import module namespace templates="http://exist-db.org/xquery/templates" ;
+import module namespace templates="http://exist-db.org/xquery/html-templating" ;
 
 (: Import KWIC module:)
 import module namespace kwic="http://exist-db.org/xquery/kwic";
 
 (: Import Srophe application modules. :)
-import module namespace config="http://syriaca.org/srophe/config" at "../config.xqm";
-import module namespace data="http://syriaca.org/srophe/data" at "../lib/data.xqm";
-import module namespace global="http://syriaca.org/srophe/global" at "../lib/global.xqm";
-import module namespace facet="http://expath.org/ns/facet" at "facet.xqm";
-import module namespace page="http://syriaca.org/srophe/page" at "../lib/paging.xqm";
-import module namespace slider = "http://syriaca.org/srophe/slider" at "../lib/date-slider.xqm";
-import module namespace tei2html="http://syriaca.org/srophe/tei2html" at "../content-negotiation/tei2html.xqm";
-import module namespace d3xquery="http://syriaca.org/srophe/d3xquery" at "../../d3xquery/d3xquery.xqm";
-import module namespace timeline = "http://syriaca.org/srophe/timeline" at "../lib/timeline.xqm";
-
+import module namespace config="http://srophe.org/srophe/config" at "../config.xqm";
+import module namespace data="http://srophe.org/srophe/data" at "../lib/data.xqm";
+import module namespace global="http://srophe.org/srophe/global" at "../lib/global.xqm";
+import module namespace facet="http://expath.org/ns/facet" at "../lib/facet.xqm";
+import module namespace sf="http://srophe.org/srophe/facets" at "../lib/facets.xql";
+import module namespace page="http://srophe.org/srophe/page" at "../lib/paging.xqm";
+import module namespace slider = "http://srophe.org/srophe/slider" at "../lib/date-slider.xqm";
+import module namespace tei2html="http://srophe.org/srophe/tei2html" at "../content-negotiation/tei2html.xqm";
+import module namespace d3xquery="http://srophe.org/srophe/d3xquery" at "../../d3xquery/d3xquery.xqm";
 (: Syriaca.org search modules :)
-import module namespace bibls="http://syriaca.org/srophe/bibls" at "bibl-search.xqm";
+import module namespace bibls="http://srophe.org/srophe/bibls" at "bibl-search.xqm";
 
 declare namespace tei="http://www.tei-c.org/ns/1.0";
 
-(: Variables:)
-declare variable $search:start {request:get-parameter('start', 1) cast as xs:integer};
-declare variable $search:perpage {request:get-parameter('perpage', 20) cast as xs:integer};
-
+(: Global Variables:)
+declare variable $search:start {
+    if(request:get-parameter('start', 1)[1] castable as xs:integer) then 
+        xs:integer(request:get-parameter('start', 1)[1]) 
+    else 1};
+declare variable $search:perpage {
+    if(request:get-parameter('perpage', 25)[1] castable as xs:integer) then 
+        xs:integer(request:get-parameter('perpage', 25)[1]) 
+    else 25
+    };
 (:~
  : Search results stored in map for use by other HTML display functions
 :)
-declare %templates:wrap function search:search-data($node as node(), $model as map(*), $collection as xs:string?, $sort-element as xs:string?){
+declare %templates:wrap function search:search-data($node as node(), $model as map(*), $collection as xs:string?, $sort-element as xs:string*){
     let $queryExpr := if($collection = 'bibl') then
                             bibls:query-string()
                       else search:query-string($collection)                 
@@ -51,21 +56,21 @@ declare %templates:wrap function search:search-data($node as node(), $model as m
                                         return $ch
                 return 
                     map {
-                        "hits" := $collectionHits,                              
-                        "collectionTypes" :=  $collectionTypes,
-                        "query" := $queryExpr,
-                        "sort" := $sort-element
+                        "hits" : $collectionHits,                              
+                        "collectionTypes" :  $collectionTypes,
+                        "query" : $queryExpr,
+                        "sort" : $sort-element
                         } 
         else 
             map {
-                "hits" := $hits,
-                "query" := $queryExpr,
-                "sort" := $sort-element
+                "hits" : $hits,
+                "query" : $queryExpr,
+                "sort" : $sort-element
             } 
 };
 
 declare %templates:wrap function search:group-by-author($node as node(), $model as map(*), $collection as xs:string?){
-   map {"group-by-authors" := 
+   map {"group-by-authors" : 
         let $hits := $model("hits")
         let $authors := distinct-values(
                         for $a in $hits/descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:author | $hits/descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:editor 
@@ -124,7 +129,9 @@ function search:show-collections($node as node()*, $model as map(*), $collection
                     return
                     <div>
                         <span class="collection-titles">{tei2html:summary-view($collection, '', $collection-id)}</span>
-                        <div class="toolbar">{page:pages($model("hits"), $collection, $search:start, $search:perpage,'', 'author,title,pubDate,pubPlace',())}</div>
+                        <div class="toolbar">{
+                        page:pages($model("hits"), $collection, $search:start, $search:perpage,'', 'author,title,pubDate,pubPlace',())
+                        }</div>
                         {
                         for $work at $p in subsequence($collectionHits,$search:start,$search:perpage) 
                         let $work-id := replace($work/descendant::tei:publicationStmt/tei:idno[1],'/tei','')
@@ -194,7 +201,9 @@ function search:show-authors($node as node()*, $model as map(*), $collection as 
                     return 
                     <div class="result authors" xmlns="http://www.w3.org/1999/xhtml"> 
                         {if((count($model("hits")) gt $search:perpage) and request:get-parameter('author-exact', '') != '') then
-                            <div class="toolbar-min">{page:pages($model("hits"), $collection, $search:start, $search:perpage,'', 'author,title,pubDate,pubPlace',())}</div>
+                            <div class="toolbar-min">{
+                            page:pages($model("hits"), $collection, $search:start, $search:perpage,'', 'author,title,pubDate,pubPlace',())
+                            }</div>
                         else ()}
                          <a href="{request:get-uri()}?author-exact={string($a/@author)}">{string($a/@author)}</a>
                          {
@@ -240,23 +249,23 @@ function search:show-hits($node as node()*, $model as map(*), $collection as xs:
                     return d3xquery:html-display($hits, $relationship, $type)
                 else 
                     for $hit at $p in subsequence($hits, $search:start, $search:perpage)
-                    let $id := replace($hit/descendant::tei:idno[1],'/tei','')
-                    let $kwic := if($kwic = ('true','yes','true()','kwic')) then kwic:expand($hit) else ()
-                    return 
-                     <div class="row result" xmlns="http://www.w3.org/1999/xhtml">
-                         <div class="col-md-1" style="margin-right:-1em; padding-top:.25em;">        
-                             <span class="badge" style="margin-right:1em;">{$search:start + $p - 1}</span>
-                         </div>
-                         <div class="col-md-11" style="margin-right:-1em; padding-top:.25em;">
-                             {tei2html:summary-view($hit, '', $id)}
-                             {
-                                if($kwic//exist:match) then 
-                                    tei2html:output-kwic($kwic, $id)
-                                else ()
-                             }
-                         </div>
-                     </div>   
-   }  
+            let $id := replace($hit/descendant::tei:idno[1],'/tei','')
+            let $kwic := if($kwic = ('true','yes','true()','kwic')) then kwic:expand($hit) else () 
+            return 
+             <div class="row result" xmlns="http://www.w3.org/1999/xhtml">
+                 <div class="col-md-1" style="margin-right:-1em; padding-top:.25em;">        
+                     <span class="badge" style="margin-right:1em;">{$search:start + $p - 1}</span>
+                 </div>
+                 <div class="col-md-11" style="margin-right:-1em; padding-top:.25em;">
+                     {tei2html:summary-view($hit, '', $id)}
+                     {
+                        if($kwic//exist:match) then 
+                           tei2html:output-kwic($kwic, $id)
+                        else ()
+                     }
+                 </div>
+             </div>   
+  }  
 </div>
 };
 
@@ -264,7 +273,8 @@ function search:show-hits($node as node()*, $model as map(*), $collection as xs:
  : Build advanced search form using either search-config.xml or the default form search:default-search-form()
  : @param $collection. Optional parameter to limit search by collection. 
  : @note Collections are defined in repo-config.xml
- : @note Additional Search forms can be developed to replace the default search form. 
+ : @note Additional Search forms can be developed to replace the default search form.
+ : @depreciated: do a manual HTML build, add xquery keyboard options 
 :)
 declare function search:search-form($node as node(), $model as map(*), $collection as xs:string?){
 if(exists(request:get-parameter-names())) then ()
@@ -284,7 +294,8 @@ else
  : search-config.xml provides a simple mechinisim for creating custom inputs and XPaths, 
  : For more complicated advanced search options, especially those that require multiple XPath combinations
  : we recommend you add your own customizations to search.xqm
- : @param $search-config a values to use for the default search form and for the XPath search filters. 
+ : @param $search-config a values to use for the default search form and for the XPath search filters.
+ : @depreciated: do a manual HTML build, add xquery keyboard options 
 :)
 declare function search:build-form($search-config) {
     let $config := doc($search-config)
@@ -433,7 +444,7 @@ declare function search:author() as xs:string? {
 };
 
 declare function search:author-exact() as xs:string? {
-    if(request:get-parameter('author-exact', '') != '') then 
+ if(request:get-parameter('author-exact', '') != '') then 
         if(request:get-parameter('author-exact', '') = ('Anonymous',' Anonymous')) then 
             "[descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:author
             [contains(.,('Unknown','unknown','Anonymous','anonymous','[anon.]','[anon]','[Anon.]'))] 
@@ -456,15 +467,15 @@ declare function search:author-exact() as xs:string? {
     else ()    
 };
 
-declare function search:collection-type() as xs:string? {
+declare function    search:collection-type() as xs:string? {
     if(request:get-parameter('collection-type', '') != '') then 
-    concat("[descendant::tei:catRef[@scheme='#g'][contains(@target,'#",request:get-parameter('collection-type', ''),"')]]")
+        concat("[descendant::tei:catRef[@scheme='#g'][contains(@target,'#",request:get-parameter('collection-type', ''),"')]]")
     else ()    
 };
 
 declare function search:collection-id() as xs:string? {
     if(request:get-parameter('collection-id', '') != '') then 
-    concat("[descendant::tei:seriesStmt[tei:idno ='",request:get-parameter('collection-id', ''),"']]")
+           concat("[descendant::tei:seriesStmt[tei:idno ='",request:get-parameter('collection-id', ''),"']]")
     else ()    
 };
 
@@ -476,13 +487,13 @@ declare function search:works() as xs:string? {
 declare function search:pubPlace() as xs:string? {
     if(request:get-parameter('pubplace', '') != '') then 
         concat("[ft:query(descendant::tei:sourceDesc/descendant::tei:imprint/tei:pubPlace,'",data:clean-string(request:get-parameter('pubplace', '')),"',data:search-options())]")
-    else ()  
+        else ()  
 };
 
 declare function search:publisher() as xs:string? {
-    if(request:get-parameter('publisher', '') != '') then 
-        concat("[ft:query(descendant::tei:sourceDesc/descendant::tei:imprint/tei:publisher,'",data:clean-string(request:get-parameter('publisher', '')),"',data:search-options())]")
-    else ()  
+    if(request:get-parameter('publisher', '') != '') then  
+            concat("[ft:query(descendant::tei:sourceDesc/descendant::tei:imprint/tei:publisher,'",data:clean-string(request:get-parameter('publisher', '')),"',data:search-options())]")
+            else ()  
 };
 
 (:~
@@ -491,13 +502,13 @@ declare function search:publisher() as xs:string? {
 :)
 declare function search:date-range() as xs:string?{
  if(request:get-parameter('startDate', '') != '' and request:get-parameter('endDate', '') != '') then
-     concat("[descendant::tei:sourceDesc/descendant::tei:imprint/tei:date[@when gt ",global:make-iso-date(request:get-parameter('startDate', ''))," and @when lt ",global:make-iso-date(request:get-parameter('endDate', '')),"]]")
- else if(request:get-parameter('startDate', '') != '' and request:get-parameter('endDate', '') = '') then 
-    concat("[descendant::tei:sourceDesc/descendant::tei:imprint/tei:date[@when gt ",global:make-iso-date(request:get-parameter('startDate', '')),"]]")
- else if(request:get-parameter('startDate', '') = '' and request:get-parameter('endDate', '') != '') then
-    concat("[descendant::tei:sourceDesc/descendant::tei:imprint/tei:date[@when lt ",global:make-iso-date(request:get-parameter('endDate', '')),"]]") 
- else ()
-}; 
+            concat("[descendant::tei:sourceDesc/descendant::tei:imprint/tei:date[@when gt ",global:make-iso-date(request:get-parameter('startDate', ''))," and @when lt ",global:make-iso-date(request:get-parameter('endDate', '')),"]]")
+            else if(request:get-parameter('startDate', '') != '' and request:get-parameter('endDate', '') = '') then 
+            concat("[descendant::tei:sourceDesc/descendant::tei:imprint/tei:date[@when gt ",global:make-iso-date(request:get-parameter('startDate', '')),"]]")
+            else if(request:get-parameter('startDate', '') = '' and request:get-parameter('endDate', '') != '') then
+            concat("[descendant::tei:sourceDesc/descendant::tei:imprint/tei:date[@when lt ",global:make-iso-date(request:get-parameter('endDate', '')),"]]") 
+            else ()
+};            
 
 (:~   
  : Builds general search string from main syriaca.org page and search api.
@@ -508,8 +519,8 @@ let $collection-data := string(config:collection-vars($collection)/@data-root)
 return
     if($collection != '') then 
         if(doc-available($search-config)) then 
-           concat(data:build-collection-path($collection),
-           facet:facet-filter(global:facet-definition-file($collection)),
+          concat(data:build-collection-path($collection),
+        facet:facet-filter(global:facet-definition-file($collection)),
            slider:date-filter(()),data:dynamic-paths($search-config))
         else
             concat("collection('",$config:data-root,"/",$collection-data,"')//tei:TEI",
@@ -548,7 +559,7 @@ return
         )
 };
 
-declare function search:author-menu($node as node(), $model as map(*), $sort-options){
+declare function search:author-menu($node as node(), $model as map(*)){
     <div class="browse-alpha tabbable" xmlns="http://www.w3.org/1999/xhtml">
         <ul class="list-inline">
         {
@@ -558,6 +569,6 @@ declare function search:author-menu($node as node(), $model as map(*), $sort-opt
         </ul>
     </div>
 };
-declare function search:collection-id-param($node as node(), $model as map(*), $sort-options){
+declare function search:collection-id-param($node as node(), $model as map(*)){
     <input xmlns="http://www.w3.org/1999/xhtml" type="hidden" name="collection-id" id="collection-id" value="{request:get-parameter('collection-id', '')}"/>
 };

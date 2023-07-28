@@ -18,8 +18,8 @@ xquery version "3.1";
  :)
  
 module namespace facet = "http://expath.org/ns/facet";
-import module namespace global="http://syriaca.org/srophe/global" at "global.xqm";
-import module namespace config="http://syriaca.org/srophe/config" at "../config.xqm";
+import module namespace global="http://srophe.org/srophe/global" at "global.xqm";
+import module namespace config="http://srophe.org/srophe/config" at "../config.xqm";
 import module namespace functx="http://www.functx.com";
 declare namespace tei = "http://www.tei-c.org/ns/1.0";
 
@@ -347,7 +347,7 @@ declare function facet:taxonomy($results as item()*, $facet-definition as elemen
     let $facets := 
         for $cat in tokenize(string-join($d,' '),' ')
         let $catRef := substring-after($cat,'#')
-        let $taxRef := replace($catRef,'\d*','')
+        let $taxRef := replace($catRef,'\d+','')
         group by $taxGrp := $taxRef
         let $taxonomy := $taxonomies[@xml:id = $taxGrp][1]
         let $taxLabel := $taxonomy/tei:bibl/text()
