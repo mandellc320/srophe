@@ -1,6 +1,9 @@
 xquery version "3.1";
 
-module namespace d3xquery="http://syriaca.org/srophe/d3xquery";
+module namespace d3xquery="http://srophe.org/srophe/d3xquery";
+import module namespace config="http://srophe.org/srophe/config" at "../modules/config.xqm";
+import module namespace tei2html="http://srophe.org/srophe/tei2html" at "../modules/content-negotiation/tei2html.xqm";
+import module namespace bibl2html="http://srophe.org/srophe/bibl2html" at "../modules/content-negotiation/bibl2html.xqm";
 import module namespace functx="http://www.functx.com";
 declare namespace tei="http://www.tei-c.org/ns/1.0";
 declare namespace json="http://www.json.org";

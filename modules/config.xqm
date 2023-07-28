@@ -114,7 +114,7 @@ declare variable $config:data-root :=
 declare variable $config:nav-base := 
     if($config:get-config//repo:nav-base/text() != '') then $config:get-config//repo:nav-base/text()
     else if($config:get-config//repo:nav-base/text() = '/') then ''
-    else '';
+    else ();
 
 (: Base URI used in record tei:idno :)
 declare variable $config:base-uri := $config:get-config//repo:base_uri/text();

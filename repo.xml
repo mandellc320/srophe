@@ -10,5 +10,4 @@
     <target>poetess</target>
     <prepare>pre-install.xql</prepare>
     <finish>post-install.xql</finish>
-    
 <deployed>2021-10-29T11:31:14.218-04:00</deployed></meta>

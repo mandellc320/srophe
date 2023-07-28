@@ -12,16 +12,18 @@ import module namespace templates="http://exist-db.org/xquery/html-templating" ;
 (: Import Srophe application modules. :)
 import module namespace config="http://srophe.org/srophe/config" at "config.xqm";
 import module namespace data="http://srophe.org/srophe/data" at "lib/data.xqm";
+import module namespace sf="http://srophe.org/srophe/facets" at "lib/facets.xql";
 import module namespace facet="http://expath.org/ns/facet" at "lib/facet.xqm";
 import module namespace global="http://srophe.org/srophe/global" at "lib/global.xqm";
 import module namespace maps="http://srophe.org/srophe/maps" at "lib/maps.xqm";
 import module namespace page="http://srophe.org/srophe/page" at "lib/paging.xqm";
-import module namespace rel="http://srophe.org/srophe/related" at "lib/get-related.xqm";
+import module namespace relations="http://srophe.org/srophe/relationships" at "lib/relationships.xqm";
 import module namespace slider = "http://srophe.org/srophe/slider" at "lib/date-slider.xqm";
 import module namespace timeline = "http://srophe.org/srophe/timeline" at "lib/timeline.xqm";
 import module namespace teiDocs="http://srophe.org/srophe/teiDocs" at "teiDocs/teiDocs.xqm";
 import module namespace tei2html="http://srophe.org/srophe/tei2html" at "content-negotiation/tei2html.xqm";
-
+import module namespace bibl2html="http://srophe.org/srophe/bibl2html" at "content-negotiation/bibl2html.xqm";
+import module namespace d3xquery="http://srophe.org/srophe/d3xquery" at "../d3xquery/d3xquery.xqm";
 
 (: Namespaces :)
 declare namespace output = "http://www.w3.org/2010/xslt-xquery-serialization";
@@ -230,8 +232,8 @@ return
  : Display paging functions in html templates
  : Used by browse and search pages. 
 :)
-declare %templates:wrap function app:pageination($node as node()*, $model as map(*), $collection as xs:string?, $sort-options as xs:string*, $search-string as xs:string?){
-   page:pages($model("hits"), $collection, $app:start, $app:perpage,$search-string, $sort-options)
+declare %templates:wrap function app:pageination($node as node()*, $model as map(*), $collection as xs:string?, $sort-options as xs:string*, $search-string as xs:string?, $view-options as xs:string*){
+   page:pages($model("hits"), $collection, $app:start, $app:perpage,$search-string, $sort-options, $view-options)
 };
 
 (:~
@@ -320,8 +322,11 @@ declare function app:display-facets($node as node(), $model as map(*), $collecti
     let $facet-config := global:facet-definition-file($collection)
     return 
         if(not(empty($facet-config))) then 
-            sf:display($model("hits"),$facet-config)
-           (:(facet:output-html-facets($hits, $facet-config/descendant::facet:facets/facet:facet-definition)):)
+            (:sf:display($model("hits"),$facet-config):)
+            (
+            facet:selected-facets-display($hits, $facet-config[1]/descendant::facet:facets/facet:facet-definition), 
+            facet:output-html-facets($hits, $facet-config[1]/descendant::facet:facets/facet:facet-definition)
+            )
         else ()
 };
 
@@ -593,18 +598,6 @@ declare %templates:wrap function app:build-editor-list($node as node(), $model a
             <li>{normalize-space($name)}</li>
             else ''
         else ''  
-};
-
-(:~ 
- : Adds google analytics from config.xml
- : @param $node
- : @param $model
- : @param $path path to html content file, relative to app root. 
-:)
-declare  
-    %templates:wrap 
-function app:google-analytics($node as node(), $model as map(*)){
-   $config:get-config//google_analytics/text() 
 };
 
 (: Poetess function :)

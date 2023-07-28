@@ -78,11 +78,11 @@ declare function global:keyboard-select-menu($input-id as xs:string){
 (:~
  : Get facet-definition file if it exists. 
 :)
-declare function global:facet-definition-file($collection as xs:string?){
+declare function global:facet-definition-file($collection as xs:string*){
     let $facet-config-file := 'facet-def.xml'
     let $facet-config := 
         if($collection != '') then 
-            concat($config:app-root, '/', string(config:collection-vars($collection)/@app-root),'/',$facet-config-file) 
+            concat($config:app-root, '/', string(config:collection-vars($collection[1])/@app-root),'/',$facet-config-file) 
         else concat($config:app-root,'/',$facet-config-file)
     return 
         if(doc-available($facet-config)) then

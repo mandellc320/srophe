@@ -19,7 +19,7 @@ import module namespace sf="http://srophe.org/srophe/facets" at "../lib/facets.x
 import module namespace page="http://srophe.org/srophe/page" at "../lib/paging.xqm";
 import module namespace slider = "http://srophe.org/srophe/slider" at "../lib/date-slider.xqm";
 import module namespace tei2html="http://srophe.org/srophe/tei2html" at "../content-negotiation/tei2html.xqm";
-
+import module namespace d3xquery="http://srophe.org/srophe/d3xquery" at "../../d3xquery/d3xquery.xqm";
 (: Syriaca.org search modules :)
 import module namespace bibls="http://srophe.org/srophe/bibls" at "bibl-search.xqm";
 
@@ -38,7 +38,7 @@ declare variable $search:perpage {
 (:~
  : Search results stored in map for use by other HTML display functions
 :)
-declare %templates:wrap function search:search-data($node as node(), $model as map(*), $collection as xs:string?, $sort-element as xs:string?){
+declare %templates:wrap function search:search-data($node as node(), $model as map(*), $collection as xs:string?, $sort-element as xs:string*){
     let $queryExpr := if($collection = 'bibl') then
                             bibls:query-string()
                       else search:query-string($collection)                 
@@ -56,21 +56,21 @@ declare %templates:wrap function search:search-data($node as node(), $model as m
                                         return $ch
                 return 
                     map {
-                        "hits" := $collectionHits,                              
-                        "collectionTypes" :=  $collectionTypes,
-                        "query" := $queryExpr,
-                        "sort" := $sort-element
+                        "hits" : $collectionHits,                              
+                        "collectionTypes" :  $collectionTypes,
+                        "query" : $queryExpr,
+                        "sort" : $sort-element
                         } 
         else 
             map {
-                "hits" := $hits,
-                "query" := $queryExpr,
-                "sort" := $sort-element
+                "hits" : $hits,
+                "query" : $queryExpr,
+                "sort" : $sort-element
             } 
 };
 
 declare %templates:wrap function search:group-by-author($node as node(), $model as map(*), $collection as xs:string?){
-   map {"group-by-authors" := 
+   map {"group-by-authors" : 
         let $hits := $model("hits")
         let $authors := distinct-values(
                         for $a in $hits/descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:author | $hits/descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:editor 
@@ -129,7 +129,9 @@ function search:show-collections($node as node()*, $model as map(*), $collection
                     return
                     <div>
                         <span class="collection-titles">{tei2html:summary-view($collection, '', $collection-id)}</span>
-                        <div class="toolbar">{page:pages($model("hits"), $collection, $search:start, $search:perpage,'', 'author,title,pubDate,pubPlace',())}</div>
+                        <div class="toolbar">{
+                        page:pages($model("hits"), $collection, $search:start, $search:perpage,'', 'author,title,pubDate,pubPlace',())
+                        }</div>
                         {
                         for $work at $p in subsequence($collectionHits,$search:start,$search:perpage) 
                         let $work-id := replace($work/descendant::tei:publicationStmt/tei:idno[1],'/tei','')
@@ -199,7 +201,9 @@ function search:show-authors($node as node()*, $model as map(*), $collection as 
                     return 
                     <div class="result authors" xmlns="http://www.w3.org/1999/xhtml"> 
                         {if((count($model("hits")) gt $search:perpage) and request:get-parameter('author-exact', '') != '') then
-                            <div class="toolbar-min">{page:pages($model("hits"), $collection, $search:start, $search:perpage,'', 'author,title,pubDate,pubPlace',())}</div>
+                            <div class="toolbar-min">{
+                            page:pages($model("hits"), $collection, $search:start, $search:perpage,'', 'author,title,pubDate,pubPlace',())
+                            }</div>
                         else ()}
                          <a href="{request:get-uri()}?author-exact={string($a/@author)}">{string($a/@author)}</a>
                          {
@@ -235,11 +239,20 @@ function search:show-hits($node as node()*, $model as map(*), $collection as xs:
 <div class="indent" id="search-results" xmlns="http://www.w3.org/1999/xhtml">
     {
             let $hits := $model("hits")
-            for $hit at $p in subsequence($hits, $search:start, $search:perpage)
+            return 
+                if(request:get-parameter('view', '') = 'timeline') then 
+                    (:timeline:timeline($hits, 'Timeline'):)
+                    d3xquery:timeline-display($hits, (), $collection, 'Timeline')
+                else if(request:get-parameter('view', '') = 'dataVis') then 
+                    let $type := if(request:get-parameter('type', '') != '') then request:get-parameter('type', '') else 'Force'
+                    let $relationship := if(request:get-parameter('relationship', '') != '') then request:get-parameter('relationship', '') else 'people'
+                    return d3xquery:html-display($hits, $relationship, $type)
+                else 
+                    for $hit at $p in subsequence($hits, $search:start, $search:perpage)
             let $id := replace($hit/descendant::tei:idno[1],'/tei','')
             let $kwic := if($kwic = ('true','yes','true()','kwic')) then kwic:expand($hit) else () 
             return 
-             <div class="row record" xmlns="http://www.w3.org/1999/xhtml" style="border-bottom:1px dotted #eee; padding-top:.5em">
+             <div class="row result" xmlns="http://www.w3.org/1999/xhtml">
                  <div class="col-md-1" style="margin-right:-1em; padding-top:.25em;">        
                      <span class="badge" style="margin-right:1em;">{$search:start + $p - 1}</span>
                  </div>
@@ -425,43 +438,137 @@ declare function search:default-search-form() {
     </form>
 };
 
+declare function search:author() as xs:string? {
+    if(request:get-parameter('author', '') != '') then concat("[ft:query(descendant::tei:author,'",data:clean-string(request:get-parameter('author', '')),"',data:search-options()) or ft:query(descendant::tei:editor,'",data:clean-string(request:get-parameter('author', '')),"',data:search-options())]")
+    else ()    
+};
+
+declare function search:author-exact() as xs:string? {
+ if(request:get-parameter('author-exact', '') != '') then 
+        if(request:get-parameter('author-exact', '') = ('Anonymous',' Anonymous')) then 
+            "[descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:author
+            [contains(.,('Unknown','unknown','Anonymous','anonymous','[anon.]','[anon]','[Anon.]'))] 
+            or 
+            descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:editor
+            [contains(.,('Unknown','unknown','Anonymous','anonymous','[anon.]','[anon]','[Anon.]'))]
+            or descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:author/tei:name[@reg[contains(.,('Unknown','unknown','Anonymous','anonymous','[anon.]','[anon]','[Anon.]'))]]
+            or descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:editor/tei:name[@reg[contains(.,('Unknown','unknown','Anonymous','anonymous','[anon.]','[anon]','[Anon.]'))]]
+            ]"
+        else 
+            concat("
+            [descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:author
+            [ft:query(.,'",data:clean-string(request:get-parameter('author-exact', '')),"',data:search-options())] 
+            or 
+            descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:editor
+            [ft:query(.,'",data:clean-string(request:get-parameter('author-exact', '')),"',data:search-options())]
+            or descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:author/tei:name[@reg ='",request:get-parameter('author-exact', ''),"']
+            or descendant::tei:sourceDesc/tei:biblStruct/descendant-or-self::tei:editor/tei:name[@reg ='",request:get-parameter('author-exact', ''),"']
+            ]")
+    else ()    
+};
+
+declare function    search:collection-type() as xs:string? {
+    if(request:get-parameter('collection-type', '') != '') then 
+        concat("[descendant::tei:catRef[@scheme='#g'][contains(@target,'#",request:get-parameter('collection-type', ''),"')]]")
+    else ()    
+};
+
+declare function search:collection-id() as xs:string? {
+    if(request:get-parameter('collection-id', '') != '') then 
+           concat("[descendant::tei:seriesStmt[tei:idno ='",request:get-parameter('collection-id', ''),"']]")
+    else ()    
+};
+
+declare function search:works() as xs:string? {
+    if(request:get-parameter('works', '') != '') then concat("[ft:query(descendant::tei:sourceDesc/descendant::tei:title,'",data:clean-string(request:get-parameter('works', '')),"',data:search-options())]")
+    else ()    
+};
+
+declare function search:pubPlace() as xs:string? {
+    if(request:get-parameter('pubplace', '') != '') then 
+        concat("[ft:query(descendant::tei:sourceDesc/descendant::tei:imprint/tei:pubPlace,'",data:clean-string(request:get-parameter('pubplace', '')),"',data:search-options())]")
+        else ()  
+};
+
+declare function search:publisher() as xs:string? {
+    if(request:get-parameter('publisher', '') != '') then  
+            concat("[ft:query(descendant::tei:sourceDesc/descendant::tei:imprint/tei:publisher,'",data:clean-string(request:get-parameter('publisher', '')),"',data:search-options())]")
+            else ()  
+};
+
+(:~
+ : Build date range 
+ : Assumes @when on tei:date
+:)
+declare function search:date-range() as xs:string?{
+ if(request:get-parameter('startDate', '') != '' and request:get-parameter('endDate', '') != '') then
+            concat("[descendant::tei:sourceDesc/descendant::tei:imprint/tei:date[@when gt ",global:make-iso-date(request:get-parameter('startDate', ''))," and @when lt ",global:make-iso-date(request:get-parameter('endDate', '')),"]]")
+            else if(request:get-parameter('startDate', '') != '' and request:get-parameter('endDate', '') = '') then 
+            concat("[descendant::tei:sourceDesc/descendant::tei:imprint/tei:date[@when gt ",global:make-iso-date(request:get-parameter('startDate', '')),"]]")
+            else if(request:get-parameter('startDate', '') = '' and request:get-parameter('endDate', '') != '') then
+            concat("[descendant::tei:sourceDesc/descendant::tei:imprint/tei:date[@when lt ",global:make-iso-date(request:get-parameter('endDate', '')),"]]") 
+            else ()
+};            
+
 (:~   
  : Builds general search string from main syriaca.org page and search api.
 :)
 declare function search:query-string($collection as xs:string?) as xs:string?{
 let $search-config := concat($config:app-root, '/', string(config:collection-vars($collection)/@app-root),'/','search-config.xml')
+let $collection-data := string(config:collection-vars($collection)/@data-root)
 return
     if($collection != '') then 
         if(doc-available($search-config)) then 
-           concat("collection('",$config:data-root,"/",$collection,"')//tei:TEI",facet:facet-filter(global:facet-definition-file($collection)),slider:date-filter(()),data:dynamic-paths($search-config))
-        else if($collection = 'places') then  
-            concat("collection('",$config:data-root,"')//tei:TEI",
-            facet:facet-filter(global:facet-definition-file($collection)),
-            slider:date-filter(()),
-            data:keyword-search(),
-            data:element-search('placeName',request:get-parameter('placeName', '')),
-            data:element-search('title',request:get-parameter('title', '')),
-            data:element-search('bibl',request:get-parameter('bibl', '')),
-            data:uri(),
-            data:element-search('term',request:get-parameter('term', ''))
-          )
+          concat(data:build-collection-path($collection),
+        facet:facet-filter(global:facet-definition-file($collection)),
+           slider:date-filter(()),data:dynamic-paths($search-config))
         else
-            concat("collection('",$config:data-root,"/",$collection,"')//tei:TEI",facet:facet-filter(global:facet-definition-file($collection)),
+            concat("collection('",$config:data-root,"/",$collection-data,"')//tei:TEI",
             facet:facet-filter(global:facet-definition-file($collection)),
             slider:date-filter(()),
             data:keyword-search(),
+            search:author(),
+            search:author-exact(),
+            search:collection-id(),
+            search:collection-type(),
+            search:works(),
+            search:pubPlace(),
+            search:publisher(),
+            search:date-range(),
             data:element-search('placeName',request:get-parameter('placeName', '')),
             data:element-search('title',request:get-parameter('title', '')),
             data:element-search('bibl',request:get-parameter('bibl', '')),
             data:uri()
           )
     else concat("collection('",$config:data-root,"')//tei:TEI",
-        facet:facet-filter(global:facet-definition-file($collection)),facet:facet-filter(global:facet-definition-file($collection)),
+        facet:facet-filter(global:facet-definition-file($collection)),
         slider:date-filter(()),
         data:keyword-search(),
+        search:author(),
+        search:author-exact(),
+        search:collection-id(),
+        search:collection-type(),
+        search:works(),
+        search:pubPlace(),
+        search:publisher(),
+        search:date-range(),
         data:element-search('placeName',request:get-parameter('placeName', '')),
         data:element-search('title',request:get-parameter('title', '')),
         data:element-search('bibl',request:get-parameter('bibl', '')),
         data:uri()
         )
+};
+
+declare function search:author-menu($node as node(), $model as map(*)){
+    <div class="browse-alpha tabbable" xmlns="http://www.w3.org/1999/xhtml">
+        <ul class="list-inline">
+        {
+            for $letter in tokenize('A B C D E F G H I J K L M N O P Q R S T U V W X Y Z Anonymous', ' ')
+            return <li><a href="{if(request:get-parameter('author-exact', '') != '') then request:get-url() else ()}#{$letter}">{$letter}</a></li>
+        }
+        </ul>
+    </div>
+};
+declare function search:collection-id-param($node as node(), $model as map(*)){
+    <input xmlns="http://www.w3.org/1999/xhtml" type="hidden" name="collection-id" id="collection-id" value="{request:get-parameter('collection-id', '')}"/>
 };

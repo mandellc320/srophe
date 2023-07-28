@@ -1,4 +1,4 @@
-<<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <config>
     <!-- Configuration for Github webhooks sync feature -->
     <git-config>

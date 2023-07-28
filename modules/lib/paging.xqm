@@ -22,13 +22,22 @@ declare namespace xlink = "http://www.w3.org/1999/xlink";
 :)
 declare function page:pages(
     $hits as node()*, 
-    $collection as xs:string?,
-    $start as xs:integer?, 
-    $perpage as xs:integer?, 
-    $search-string as xs:string*,
-    $sort-options as xs:string*){
-let $perpage := if($perpage) then xs:integer($perpage) else 20
-let $start := if($start) then $start else 1
+    $collection,
+    $start, 
+    $perpage, 
+    $search-string,
+    $sort-options,
+    $view-options){
+let $perpage := if($perpage) then 
+                    if($perpage[1] castable as xs:integer) then 
+                        xs:integer($perpage[1]) 
+                    else 20
+                 else 20
+let $start := if($start) then 
+                if($start[1] castable as xs:integer) then 
+                    xs:integer($start[1]) 
+                else 1 
+              else 1 
 let $total-result-count := count($hits)
 let $end := 
     if ($total-result-count lt $perpage) then 
@@ -41,7 +50,7 @@ let $cleanParams :=
         string-join(
         for $pramName in request:get-parameter-names()
         return 
-            if($pramName = ('start','perpage','sort-element','sort')) then () 
+            if($pramName = ('start','perpage','sort-element','sort','view')) then () 
             else 
                 for $param in request:get-parameter($pramName, '')
                 where $param != ''
@@ -51,6 +60,10 @@ let $sortParams :=
         if(request:get-parameter('sort-element', '') != '') then 
             ('sort-element'|| '=' || request:get-parameter('sort-element', '')[1])
         else()
+let $viewParams := 
+        if(request:get-parameter('view', '') != '') then 
+            ('view'|| '=' || request:get-parameter('view', '')[1])
+        else()        
 let $param-string := 
         if($cleanParams != '' and $sortParams != '') then 
             ('?' || $cleanParams || '&amp;' || $sortParams ||'&amp;start=')
@@ -58,9 +71,9 @@ let $param-string :=
             ('?' || $cleanParams ||'&amp;start=')
         else if($sortParams != '') then 
             ('?' || $sortParams || '&amp;start=')
-        else '?start='
-return 
-    <div class="row alpha-pages" xmlns="http://www.w3.org/1999/xhtml">
+        else '?start='       
+let $pagination-links := 
+    (<div class="row alpha-pages" xmlns="http://www.w3.org/1999/xhtml">
             {
             if($search-string = ('yes','Yes')) then  
                 if(page:display-search-params($collection) != '') then 
@@ -112,9 +125,10 @@ return
                         else <li><a href="{concat($param-string, $start + $perpage)}">Next</a></li>,
                         if($sort-options != '') then page:sort($param-string, $start, $sort-options)
                         else(),
-                        <li><a href="{concat($param-string,'1&amp;perpage=',$total-result-count)}">All</a></li>,
+                        if($view-options != '') then page:view-options($param-string, $start, $view-options)
+                        else(),
                         if($search-string != '') then
-                            <li class="pull-right search-new"><a href="{request:get-uri()}"><span class="glyphicon glyphicon-search"/> New</a></li>
+                            <li class="pull-right search-new"><a href="search.html"><span class="glyphicon glyphicon-search"/> New</a></li>
                         else ()    
                         )}
                 </ul>
@@ -126,13 +140,15 @@ return
                     if($view-options != '') then page:view-options($param-string, $start, $view-options)
                     else(),
                     if($search-string = ('yes','Yes')) then   
-                        <li class="pull-right"><a href="{request:get-uri()}" class="clear-search"><span class="glyphicon glyphicon-search"/> New</a></li>
+                        <li class="pull-right"><a href="search.html" class="clear-search"><span class="glyphicon glyphicon-search"/> New</a></li>
                     else() 
                     )}
                 </ul>
                 }
             </div>
     </div>
+    )    
+return $pagination-links
 };
 
 (:~
@@ -210,7 +226,6 @@ declare function page:view-options($param-string as xs:string?, $start as xs:int
 </li>
 };
 
-
 (:~
  : User friendly display of search parameters for HTML pages
  : Filters out $start, $sort-element and $perpage parameters. 
@@ -222,7 +237,7 @@ declare function page:display-search-params($collection as xs:string?){
     for  $parameter in $parameters
     return 
         if(request:get-parameter($parameter, '') != '') then
-            if($parameter = 'start' or $parameter = 'sort-element' or $parameter = 'fq') then ()
+            if($parameter = 'start' or $parameter = 'sort-element' or $parameter = 'fq' or $parameter = 'view') then ()
             else if(starts-with($parameter,'feature-num:')) then request:get-parameter($parameter, '')
             else if(starts-with($parameter,'feature:')) then global:get-label(substring-after($parameter,'feature:'))
             else if($parameter = ('q','keyword')) then 

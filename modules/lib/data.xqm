@@ -31,33 +31,24 @@ declare function data:get-document() {
     (: Get document by id or tei:idno:)
     if(request:get-parameter('id', '') != '') then  
         if($config:document-id) then 
-           collection($config:data-root)//tei:idno[. = request:get-parameter('id', '')][@type='URI']/ancestor::tei:TEI
+           collection($config:data-root)//tei:idno[. = request:get-parameter('id', '')]/ancestor::tei:TEI
         else collection($config:data-root)/id(request:get-parameter('id', ''))/ancestor::tei:TEI
     (: Get document by document path. :)
     else if(request:get-parameter('doc', '') != '') then 
         if(starts-with(request:get-parameter('doc', ''),$config:data-root)) then 
-            if(ends-with(request:get-parameter('doc', ''),'.xml')) then
-                 doc(xmldb:encode-uri(request:get-parameter('doc', '')))
-            else doc(xmldb:encode-uri(request:get-parameter('doc', '') || '.xml'))
-        else if(ends-with(request:get-parameter('doc', ''),'.xml')) then
-            doc(xmldb:encode-uri($config:data-root || "/" || request:get-parameter('doc', '')))
+            doc(xmldb:encode-uri(request:get-parameter('doc', '') || '.xml'))
         else doc(xmldb:encode-uri($config:data-root || "/" || request:get-parameter('doc', '') || '.xml'))
     else ()
 };
 
-(:~
- : Return document by id/tei:idno or document path
- : @param $id return document by id or tei:idno
- : @param $doc return document path relative to data-root
-:)
 declare function data:get-document($id as xs:string?) {
     if(starts-with($id,'http')) then
         if($config:document-id) then 
-            collection($config:data-root)//tei:idno[. = $id][@type='URI']/ancestor::tei:TEI
+            collection($config:data-root)//tei:idno[. = $id]/ancestor::tei:TEI
         else collection($config:data-root)/id($id)/ancestor::tei:TEI
     else if(starts-with($id,$config:data-root)) then 
             doc(xmldb:encode-uri($id || '.xml'))
-    else doc(xmldb:encode-uri($config:data-root || "/" || $id || '.xml'))
+        else doc(xmldb:encode-uri($config:data-root || "/" || $id || '.xml'))
 };
 
 (:~
@@ -193,7 +184,7 @@ declare function data:get-records($collection as xs:string*, $element as xs:stri
  : Build a search XPath based on search parameters. 
  : Add sort options. 
 :)
-declare function data:search($collection as xs:string*, $queryString as xs:string?, $sort-element as xs:string?) {                      
+declare function data:search($collection as xs:string*, $queryString as xs:string?, $sort-element as xs:string*) {                      
     let $eval-string := if($queryString != '') then $queryString 
                         else concat(data:build-collection-path($collection), data:create-query($collection),facet:facet-filter(global:facet-definition-file($collection)))
     return 
@@ -216,7 +207,7 @@ declare function data:search($collection as xs:string*, $queryString as xs:strin
  : Build a search XPath based on search parameters. 
  : Add sort options. 
 :)
-declare function data:apiSearch($collection as xs:string*, $element as xs:string?, $queryString as xs:string?, $sort-element as xs:string?) {                      
+declare function data:apiSearch($collection as xs:string*, $element as xs:string?, $queryString as xs:string?, $sort-element as xs:string*) {                      
     let $elementSearch :=  
                 if(exists($element) and $element != '') then  
                     for $e in $element

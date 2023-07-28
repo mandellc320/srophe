@@ -9,6 +9,7 @@ module namespace timeline="http://srophe.org/srophe/timeline";
 :)
 import module namespace config="http://srophe.org/srophe/config" at "../config.xqm";
 import module namespace global="http://srophe.org/srophe/global" at "global.xqm";
+import module namespace tei2html="http://srophe.org/srophe/tei2html" at "../content-negotiation/tei2html.xqm";
 
 declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
 declare namespace json = "http://www.json.org";

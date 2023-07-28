@@ -8,21 +8,6 @@ declare variable $exist:controller external;
 declare variable $exist:prefix external;
 declare variable $exist:root external;
 
-(:
-<div>
-    $exist:path : {$exist:path}<br/>
-    $exist:resource : {$exist:resource } <br/>
-    $exist:controller : {$exist:controller} <br/>
-    $exist:prefix : {$exist:prefix} <br/>
-    $exist:root : {$exist:root}
-</div>
-
-<div>
-$exist:record-uris : {$exist:record-uris} <br/>
-$exist:collection-uris : {$exist:collection-uris}
-</div>
-:)
-
 (: Get variables for Srophe collections. :)
 declare variable $exist:record-uris  := 
     distinct-values(for $collection in $config:get-config//repo:collection
@@ -43,6 +28,9 @@ declare variable $exist:collection-uris  :=
     let $short-path := replace($collection/@app-root,$config:base-uri,'')
     return $short-path)    
 ; 
+
+(: Get eXist repository location :)
+declare variable $exist:app-location  := tokenize($config:app-root,'/')[last()];
 
 (: Send to content negotiation:)
 declare function local:content-negotiation($exist:path, $exist:resource){
@@ -112,22 +100,15 @@ else if(contains($exist:path,'/d3xquery/')) then
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
         <cache-control cache="yes"/>
     </dispatch>
-    
-else if(contains($exist:path,'/documentation/') and ends-with($exist:path,('.tei','.xml','.txt','.pdf'))) then
-    (: Pass though XML,pdf and txt records everything else is passed through :)
-    <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
-        <cache-control cache="yes"/>
-    </dispatch>
-    
 (: Passes any api requests to correct endpoint:)    
 else if (contains($exist:path,'/api/')) then
   if (ends-with($exist:path,"/")) then
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
-        <redirect url="{concat($config:nav-base,'/api-documentation/index.html')}"/>
+        <redirect url="/api-documentation/index.html"/>
     </dispatch> 
    else if($exist:resource = 'index.html') then
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
-        <redirect url="{concat($config:nav-base,'/api-documentation/index.html')}"/>
+        <redirect url="/api-documentation/index.html"/>
     </dispatch>
     else if($exist:resource = 'oai') then
      <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
@@ -139,20 +120,65 @@ else if (contains($exist:path,'/api/')) then
      </dispatch>
     else
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
-        <forward url="{concat('/restxq/srophe', $exist:path)}" absolute="yes"/>
+        <forward url="{concat('/restxq/',$exist:app-location, $exist:path)}" absolute="yes"/>
     </dispatch>
 
-(: Passes data to content negotiation module:)
-else if(request:get-parameter('format', '') != '' and request:get-parameter('format', '') != 'html') then
-    local:content-negotiation($exist:path, $exist:resource)
-else if(ends-with($exist:path,('/tei','/xml','/txt','/pdf','/json','/geojson','/kml','/jsonld','/rdf','/ttl','/atom'))) then
-    local:content-negotiation($exist:path, $exist:resource)
-else if(ends-with($exist:resource,('.tei','.xml','.txt','.pdf','.json','.geojson','.kml','.jsonld','.rdf','.ttl','.atom'))) then
-    local:content-negotiation($exist:path, $exist:resource)
-    
-(: Checks for any record uri patterns as defined in repo.xml :)    
-else if(replace($exist:path, $exist:resource,'') =  $exist:record-uris) then
-    if($exist:resource = ('index.html','search.html','browse.html','about.html')) then    
+(: For poetess records :)    
+else if(contains($exist:path, '/work/')) then
+    (: Passes data to content negotiation module:)
+    if(request:get-parameter('format', '') != '' and request:get-parameter('format', '') != 'html') then
+        local:content-negotiation($exist:path, $exist:resource)
+    else if(ends-with($exist:path,('/tei','/xml','/txt','/pdf','/json','/geojson','/kml','/jsonld','/rdf','/ttl','/atom'))) then
+        local:content-negotiation($exist:path, $exist:resource)
+    else if(ends-with($exist:resource,('.tei','.xml','.txt','.pdf','.json','.geojson','.kml','.jsonld','.rdf','.ttl','.atom'))) then
+        local:content-negotiation($exist:path, $exist:resource)
+    else    
+        let $path := substring-before($exist:path,'/work/')
+        let $document := substring-after($exist:path,'/work/')
+        let $id := if(ends-with($document,('.html','/html'))) then
+                        replace($document,'/html|.html','')
+                   else $document
+        let $record-uri-root := replace($exist:path,$exist:resource,'')
+        let $id := if($config:get-config//repo:collection[ends-with(@record-URI-pattern, $record-uri-root)]) then
+                        concat($config:get-config//repo:collection[ends-with(@record-URI-pattern, $record-uri-root)]/@record-URI-pattern,$id)
+                   else $id
+        let $html-path := concat($path,'/record.html')
+        let $format := fn:tokenize($exist:resource, '\.')[fn:last()]
+        return 
+          <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+                <forward url="{$exist:controller}{$html-path}"></forward>
+                <view>
+                    <forward url="{$exist:controller}/modules/view.xql">
+                       <add-parameter name="id" value="{$id}"/>
+                    </forward>
+                </view>
+                <error-handler>
+                    <forward url="{$exist:controller}/error-page.html" method="get"/>
+                    <forward url="{$exist:controller}/modules/view.xql"/>
+                </error-handler>
+            </dispatch>  
+(:            
+<div>
+full path : {concat($exist:controller,$html-path)}
+$html-path : {$html-path}
+$exist:path : {$exist:path}<br/>
+$exist:resource : {$exist:resource} <br/> 
+$exist:controller : {$exist:controller} <br/>
+$exist:prefix : {$exist:prefix} <br/> 
+$exist:root : {$exist:root} <br/> 
+replace($exist:path, $exist:resource,'') : {replace($exist:path, $exist:resource,'')}<br/>
+$exist:record-uris {$exist:record-uris} <br/>
+replace(replace($exist:path, $exist:resource,''),'/','') : {replace(replace($exist:path, $exist:resource,''),'/','')} <br/>
+$exist:collection-names : {$exist:collection-names}<br/>
+$exist:collection-uris : {$exist:collection-uris}
+</div>
+:)
+(: Checks for any record uri patterns as defined in repo.xml 
+ : Syriaca.org pattern, use the above 'work' pattern for poetess   
+else if(replace($exist:path, $exist:resource,'') =  $exist:record-uris or 
+    replace($exist:path, $exist:resource,'') = $exist:collection-uris 
+    or replace(replace($exist:path, $exist:resource,''),'/','') = $exist:collection-names) then
+    if($exist:resource = ('index.html', 'index2.html','search.html','browse.html','about.html')) then    
         <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
             <view>
                 <forward url="{$exist:controller}/modules/view.xql"/>
@@ -169,16 +195,11 @@ else if(replace($exist:path, $exist:resource,'') =  $exist:record-uris) then
         let $record-uri-root := replace($exist:path,$exist:resource,'')
         let $id := if($config:get-config//repo:collection[ends-with(@record-URI-pattern, $record-uri-root)]) then
                         concat($config:get-config//repo:collection[ends-with(@record-URI-pattern, $record-uri-root)][1]/@record-URI-pattern,$id)
-                   else if($config:get-config//repo:collection[ends-with(@app-root, $record-uri-root)]) then      
-                        concat($config:get-config//repo:collection[ends-with(@app-root, $record-uri-root)][1]/@record-URI-pattern,$id)
                    else $id
-        let $html-path := if($config:get-config//repo:collection[ends-with(@record-URI-pattern, $record-uri-root)]) then 
-                            concat($config:get-config//repo:collection[ends-with(@record-URI-pattern, $record-uri-root)][1]/@app-root,'record.html')
-                          else concat($config:get-config//repo:collection[ends-with(@app-root, $record-uri-root)][1]/@app-root,'record.html')
+        let $html-path := concat($config:get-config//repo:collection[ends-with(@record-URI-pattern, $record-uri-root)][1]/@app-root,'record.html')
         let $format := fn:tokenize($exist:resource, '\.')[fn:last()]
         return 
-        (:<div>HTML page for id: {$id} root: {$record-uri-root} HTML: {$html-path}</div>:)
-            <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+             <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
                 <forward url="{$exist:controller}{$html-path}"></forward>
                 <view>
                     <forward url="{$exist:controller}/modules/view.xql">
@@ -203,8 +224,7 @@ else if(replace($exist:path, $exist:resource,'') =  $exist:record-uris) then
                           else concat(replace($exist:path, $exist:resource,''),'record.html')
         let $format := fn:tokenize($exist:resource, '\.')[fn:last()]
         return 
-        (:<div>HTML page for id: [{$id}] root: [{$record-uri-root}] HTML: [{$html-path}] controler: [{$exist:controller}]</div>:)
-           <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+          <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
                 <forward url="{$exist:controller}{$html-path}"></forward>
                 <view>
                     <forward url="{$exist:controller}/modules/view.xql">
