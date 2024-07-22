@@ -1,45 +1,77 @@
-<div xmlns="http://www.w3.org/1999/xhtml" xmlns:xi="http://www.w3.org/2001/XInclude" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
+<div xmlns="http://www.w3.org/1999/xhtml" xmlns:xi="http://www.w3.org/2001/XInclude"
+    data-template="templates:surround" data-template-with="templates/page.html"
+    data-template-at="content">
     <div data-template="search:search-data" data-template-collection="critarchive">
         <div class="poetess-banner">
             <span class="img-credit">
-                <label>Photo Credit</label>  
-                <button class="btn btn-link white-link" data-toggle="collapse" data-target="#img-rights">
+                <label>Photo Credit</label>
+                <button class="btn btn-link white-link" data-toggle="collapse"
+                    data-target="#img-rights">
                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"/>
                 </button>
-                <div id="img-rights" class="collapse">
-                    Place Holder
-                </div>
+                <div id="img-rights" class="collapse"> Place Holder </div>
             </span>
         </div>
         <div class="search-banner">
             <div class="row">
                 <div class="col-lg-3">
-                    <label for="keyword" class="control-label pull-right">Search Criticism Archive: </label><!-- /input-group -->
-                </div><!-- /.col-lg-6 -->
+                    <label for="keyword" class="control-label pull-right">Search Criticism Archive: </label>
+                    <!-- /input-group -->
+                </div>
+                <!-- /.col-lg-6 -->
                 <div class="col-lg-9">
                     <form action="search.html" method="get" title="Limit Search Results">
                         <div class="input-group">
-                            <input type="text" class="form-control keyboard" placeholder="Search for ..." name="keyword" id="keyword"/>
+                            <input type="text" class="form-control keyboard"
+                                placeholder="Search for ..." name="keyword" id="keyword"/>
                             <span class="input-group-btn">
-                                <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"/></button>
+                                <button class="btn btn-default" type="button"><span
+                                    class="glyphicon glyphicon-search"/></button>
                             </span>
                             <span class="input-group-btn">
-                                <a href="search.html" class="btn btn-default"><span class="glyphicon glyphicon-search"/> Advanced Search</a>
+                                <a href="search.html" class="btn btn-default"><span
+                                    class="glyphicon glyphicon-search"/> Advanced Search</a>
                             </span>
                             <span class="input-group-btn">
-                                <a href="browse.html" class="btn btn-default"><span class="glyphicon glyphicon-th-list"/> Browse the Archive</a>
+                                <a href="search.html" class="btn btn-default"><span
+                                    class="glyphicon glyphicon-th-list"/> Browse the Archive</a>
                             </span>
                         </div><!-- /input-group -->
                     </form>
-                </div><!-- /.col-lg-6 -->
+                </div>
+                <!-- /.col-lg-6 -->
             </div>
         </div>
-        <div>
+        <div data-template="search:search-data" data-template-collection="critarchive">
             <div class="row">
-                <div class="col-md-7">
-                    <div data-template="app:d3-timeline" data-template-collection="critarchive" data-template-json-file="d3xquery/critarchivePublications.json"/>
-                </div>
                 <div class="col-md-5">
+                    <div class="well-dark">
+                        <h2>Criticism Archive Editor</h2>
+                        <h3>Ed. Mary A. Waters</h3>
+                        <p>Mary A. Waters, editor of the Criticism Archive, is Melba V. Hughes
+                            Professor of English at Wichita State University. Specializing in
+                            literary criticism by eighteenth- and nineteenth-century British women
+                            writers, Dr. Waters is author of <em>British Women Writers and the
+                                Profession of Literary Criticism, 1789-1832</em> and the editor of <em>British
+                                    Women Writers of the Romantic Period: An Anthology of their Literary
+                                    Criticism</em>. Her essays have appeared in venues such as <em>Eighteenth-Century
+                                        Studies, Nineteenth-Century Prose, Women's Writing</em>, and collections from
+                            Ashgate and Cambridge University Press.</p>
+                        <p><a href="cv.pdf">CV</a></p>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div data-template="app:display-timeline"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <h2>Data</h2>
+                    <!-- Metadata CSV  -->
+                    <p>Critisicsm archive of 100 TEI encoded Texts</p>
+                    <a href="#">RDF XML</a>
+                </div>
+                <div class="col-md-7">
                     <div class="poetess-well">
                         <h2 id="top">About the Criticism Archive</h2>
                         <h3>Mary Waters, Editor</h3>
@@ -81,7 +113,7 @@
                                 Archive schema</a>.</p>
                         <h3 id="fullIntro">Criticism Archive: An Introduction</h3>
                         <header class="headBibl"><span class="title">Introduction to the Criticism Archive<span class="sup"><a href="#1" id="back1"><sup>1</sup></a> </span></span></header>
-         <p class="pnoindent">In the decades since Anne K. Mellor published her landmark
+         <p>In the decades since Anne K. Mellor published her landmark
             					essay "A Criticism of Their Own," literary criticism by
             					early women writers has drawn increasing interest.<span class="sup"><a href="#2" id="back2"><sup>2</sup></a> </span> Among just a few of
             					the recent studies examining criticism by pre-twentieth-century British women,
@@ -117,7 +149,7 @@
             					aesthetics, this collection can encourage new perspectives on the nature,
             					purposes, and principles of eighteenth- and nineteenth-century literary
             					criticism, regardless of who may be the author. </p>
-         <p class="pnoindent">I. Aesthetic Innovations</p>
+         <p>I. Aesthetic Innovations</p>
          <p> Study of criticism by women reveals that women critics could be in the vanguard
             					of debates over literary standards and aesthetics. For example, <a href="people.html#WordsworthWilliam">Wordsworth</a>'s 1800 preface
             					to <span class="italics">Lyrical Ballads</span> is considered a
@@ -192,7 +224,7 @@
             					published in inexpensive, weekly installments. Though lacking the grandeur of
             					the costly collection, this more ephemeral form of publication could reach a
             					wider, more diverse audience. </p>
-         <p class="pnoindent">II. Literary Reviewing</p>
+         <p>II. Literary Reviewing</p>
          <p> While the prestige of prefatory essays to major collections is undeniable, no
             					criticism by Romantic-era British women writers reached as many readers and yet
             					has been as underrated as that in literary magazines, particularly literary
@@ -217,7 +249,7 @@
             					writers' careers. Reviewing and similar literary commentary provided both
             					income and an avenue to public authority, and many women writers followed this
             					model of professionalism. </p>
-         <p class="pnoindent">A. Establishing Literary Authority in a Changing Print
+         <p>A. Establishing Literary Authority in a Changing Print
             					Culture</p>
          <p> The earliest women literary critics usually came from the genteel classes. These
             					women had access to education and leisure to read and write. Moreover, until
@@ -293,7 +325,7 @@
             					literary taste.<span class="sup"><a href="#10" id="back10"><sup>10</sup></a> </span> Yet the popularity of scores of novels scorned in reviews
             					reveals a disquieting gap between the critic and an anonymous reading public
             					with inclinations that resisted critical discipline. </p>
-         <p class="pnoindent">B. Revising Aesthetic Standards</p>
+         <p>B. Revising Aesthetic Standards</p>
          <p> If criticism failed to fully control public response to literary works,
             					aesthetic standards shifted as well. While the neoclassical standards that had
             					once held wide currency lost much favor by the end of the eighteenth century,
@@ -355,7 +387,7 @@
             					accepted ideas as for original and rigorous criticism. The fact that some of
             					these articles held the prestigious lead article positions confirms that this
             					purpose was accepted by publishers and readers alike. </p>
-         <p class="pnoindent">C. Further Insights</p>
+         <p>C. Further Insights</p>
          <p> Much remains to be uncovered in early literary criticism by women. A few
             					additional issues have already emerged, however, that are worth noting. For one,
             					women critics often used commentary on literature to participate in wide-ranging
@@ -377,7 +409,7 @@
             					contemporaries' clubby assurance of feminine literary inferiority. Where
             					women critics include patronizing expressions like "the fair author,"
             					close reading of the discussion often reveals elements of parody or humor. </p>
-         <p class="pnoindent">III. Conclusion</p>
+         <p>III. Conclusion</p>
          <p> There is much to be gained, then, from incorporating early women's literary
             					criticism into our study of our literary past. The aspiration in creating this
             					archive is to make this criticism more accessible, encouraging teaching,
