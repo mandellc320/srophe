@@ -1,77 +1,45 @@
-<div xmlns="http://www.w3.org/1999/xhtml" xmlns:xi="http://www.w3.org/2001/XInclude"
-    data-template="templates:surround" data-template-with="templates/page.html"
-    data-template-at="content">
+<div xmlns="http://www.w3.org/1999/xhtml" xmlns:xi="http://www.w3.org/2001/XInclude" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
     <div data-template="search:search-data" data-template-collection="critarchive">
         <div class="poetess-banner">
             <span class="img-credit">
-                <label>Photo Credit</label>
-                <button class="btn btn-link white-link" data-toggle="collapse"
-                    data-target="#img-rights">
+                <label>Photo Credit</label>  
+                <button class="btn btn-link white-link" data-toggle="collapse" data-target="#img-rights">
                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"/>
                 </button>
-                <div id="img-rights" class="collapse"> Place Holder </div>
+                <div id="img-rights" class="collapse">
+                    Place Holder
+                </div>
             </span>
         </div>
         <div class="search-banner">
             <div class="row">
                 <div class="col-lg-3">
-                    <label for="keyword" class="control-label pull-right">Search Criticism Archive: </label>
-                    <!-- /input-group -->
-                </div>
-                <!-- /.col-lg-6 -->
+                    <label for="keyword" class="control-label pull-right">Search Criticism Archive: </label><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
                 <div class="col-lg-9">
                     <form action="search.html" method="get" title="Limit Search Results">
                         <div class="input-group">
-                            <input type="text" class="form-control keyboard"
-                                placeholder="Search for ..." name="keyword" id="keyword"/>
+                            <input type="text" class="form-control keyboard" placeholder="Search for ..." name="keyword" id="keyword"/>
                             <span class="input-group-btn">
-                                <button class="btn btn-default" type="button"><span
-                                        class="glyphicon glyphicon-search"/></button>
+                                <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"/></button>
                             </span>
                             <span class="input-group-btn">
-                                <a href="search.html" class="btn btn-default"><span
-                                        class="glyphicon glyphicon-search"/> Advanced Search</a>
+                                <a href="search.html" class="btn btn-default"><span class="glyphicon glyphicon-search"/> Advanced Search</a>
                             </span>
                             <span class="input-group-btn">
-                                <a href="search.html" class="btn btn-default"><span
-                                        class="glyphicon glyphicon-th-list"/> Browse the Archive</a>
+                                <a href="browse.html" class="btn btn-default"><span class="glyphicon glyphicon-th-list"/> Browse the Archive</a>
                             </span>
                         </div><!-- /input-group -->
                     </form>
-                </div>
-                <!-- /.col-lg-6 -->
+                </div><!-- /.col-lg-6 -->
             </div>
         </div>
-        <div data-template="search:search-data" data-template-collection="critarchive">
+        <div>
             <div class="row">
-                <div class="col-md-5">
-                    <div class="well-dark">
-                        <h2>Criticism Archive Editor</h2>
-                        <h3>Ed. Mary A. Waters</h3>
-                        <p>Mary A. Waters, editor of the Criticism Archive, is Melba V. Hughes
-                            Professor of English at Wichita State University. Specializing in
-                            literary criticism by eighteenth- and nineteenth-century British women
-                            writers, Dr. Waters is author of <em>British Women Writers and the
-                            Profession of Literary Criticism, 1789-1832</em> and the editor of <em>British
-                            Women Writers of the Romantic Period: An Anthology of their Literary
-                            Criticism</em>. Her essays have appeared in venues such as <em>Eighteenth-Century
-                            Studies, Nineteenth-Century Prose, Women's Writing</em>, and collections from
-                            Ashgate and Cambridge University Press.</p>
-                        <p><a href="cv.pdf">CV</a></p>
-                    </div>
-                </div>
                 <div class="col-md-7">
-                    <div data-template="app:display-timeline"/>
+                    <div data-template="app:d3-timeline" data-template-collection="critarchive" data-template-json-file="d3xquery/critarchivePublications.json"/>
                 </div>
-            </div>
-            <div class="row">
                 <div class="col-md-5">
-                    <h2>Data</h2>
-                    <!-- Metadata CSV  -->
-                    <p>Critisicsm archive of 100 TEI encoded Texts</p>
-                    <a href="#">RDF XML</a>
-                </div>
-                <div class="col-md-7">
                     <div class="poetess-well">
                         <h2>About the Criticism Archive</h2>
                         <p>The Criticism Archive is and for many years will remain a work in
@@ -100,12 +68,24 @@
                         <h4>Encoding Decisions</h4>
                         <p>Encoding conforms to TEI guidelines, allowing for representation of some
                             features of the original text while still enabling expedient publication
-                            to extend text availability. Here you will find <a
-                                href="https://docs.google.com/document/d/1ZmbMgdB0WtRIWdZg4BBBhmJzhORY9jyV/edit?usp=sharing&amp;ouid=115342384201459288831&amp;'rtpof=true&amp;sd=true"
-                                target="_blank">the Criticism Archive Encoding Decisions manual</a>,
+                            to extend text availability. Here you will find <a href="https://urldefense.com/v3/__https://docs.google.com/document/d/1ZmbMgdB0WtRIWdZg4BBBhmJzhORY9jyV/edit?usp=sharing&amp;ouid=115342384201459288831&amp;'rtpof=true&amp;sd=true__;!!KwNVnqRv!AFYV2iKmDwK7zd7T_GYoSfGYeIfWLAzPZagjE1wJAZHxLi2Wcd5xGkpVq1aNDuYAIerXfihHEOHW7aHJ$" target="_blank">the Criticism Archive Encoding Decisions manual</a>,
                             providing details about TEI encoding using <a href="PA.rnc">the Poetess
                                 Archive schema</a>.</p>
-                        <h4><a href="intro.pdf">Criticism Archive: An Introduction</a></h4>
+                        <p>Please see also the full <a href="/criticism/work/IntrototheCriticismArchive">Introduction to the Criticism Archive</a>, by Mary Waters.</p>
+                    </div>
+                    <div class="well-dark">
+                        <h2>Criticism Archive Editor</h2>
+                        <h3>Ed. Mary A. Waters</h3>
+                        <p>Mary A. Waters, editor of the Criticism Archive, is Melba V. Hughes
+                            Professor of English at Wichita State University. Specializing in
+                            literary criticism by eighteenth- and nineteenth-century British women
+                            writers, Dr. Waters is author of <em>British Women Writers and the
+                                Profession of Literary Criticism, 1789-1832</em> and the editor of <em>British
+                                    Women Writers of the Romantic Period: An Anthology of their Literary
+                                    Criticism</em>. Her essays have appeared in venues such as <em>Eighteenth-Century
+                                        Studies, Nineteenth-Century Prose, Women's Writing</em>, and collections from
+                            Ashgate and Cambridge University Press.</p>
+                        <p><a href="cv.pdf">CV</a></p>
                     </div>
                 </div>
             </div>
